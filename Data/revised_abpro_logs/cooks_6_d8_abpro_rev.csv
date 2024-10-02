@@ -1,0 +1,211 @@
+Date_ymd, Time_Absolute_hms, Time_Relative_hms, Time_Relative_s, Time_Lag_s, Duration_s, Observation_Name, Log_File_Name, Actor, Behavior, Receiver, Modifier_1, Modifier_2, Modifier_3, Modifier_4, Modifier_5, Modifier_6, Other_Modifiers, Event_Type, Observer_ID, Notes, Coding_Scheme
+9/27/2021, 09:57:00, 00:00:00,0,1.691,902.478," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 09:57:02, 00:00:02,2.359,1.1,86.544," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 09:57:04, 00:00:04,4.225,1.015,3618.019," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Unknown"""," ""GFN"""," ""Unknown""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 09:58:29, 00:01:28,88.903,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 09:58:29, 00:01:28,88.903,1.639,5.283," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 09:58:34, 00:01:34,94.186,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 09:58:34, 00:01:34,94.186,2.79,5.091," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 09:58:39, 00:01:39,99.277,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 09:58:39, 00:01:39,99.277,1.29,227.199," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:02:26, 00:05:26,326.477,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:02:26, 00:05:26,326.477,0.84,3.868," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:02:30, 00:05:30,330.345,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:02:30, 00:05:30,330.345,1.597,19.122," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:02:49, 00:05:49,349.467,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:02:49, 00:05:49,349.467,3.025,4.584," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:02:54, 00:05:54,354.051,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:02:54, 00:05:54,354.051,0.923,717.316," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:12:02, 00:15:02,902.479,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:12:02, 00:15:02,902.479,1.898,9.649," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:12:12, 00:15:12,912.128,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:12:12, 00:15:12,912.128,1.898,21.09," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:12:33, 00:15:33,933.218,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:12:33, 00:15:33,933.218,1.557,7.05," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:12:40, 00:15:40,940.269,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:12:40, 00:15:40,940.269,1.439,24.864," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:13:05, 00:16:05,965.132,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:13:05, 00:16:05,965.132,1.915,21.332," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Brooding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:13:26, 00:16:26,986.464,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Brooding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:13:26, 00:16:26,986.464,1.263,55.421," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:14:22, 00:17:21,1041.886,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:14:22, 00:17:21,1041.886,1.59,9.875," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:14:32, 00:17:31,1051.76,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:14:32, 00:17:31,1051.76,1.249,18.137," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:14:50, 00:17:49,1069.897,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:14:50, 00:17:49,1069.897,0.836,171.873," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:14:51, 00:17:51,1071.367,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:14:51, 00:17:51,1071.367,1.64,8.299," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:15:00, 00:17:59,1079.667,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:15:00, 00:17:59,1079.667,4.34,5.232," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:15:05, 00:18:04,1084.898,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:15:05, 00:18:04,1084.898,0.909,40.657," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:15:45, 00:18:45,1125.555,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:15:45, 00:18:45,1125.555,1.107,3.407," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:15:49, 00:18:48,1128.962,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:15:49, 00:18:48,1128.962,2.1,10.091," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:15:59, 00:18:59,1139.053,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:15:59, 00:18:59,1139.053,6.416,18.724," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Brooding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:16:18, 00:19:17,1157.777,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Brooding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:16:18, 00:19:17,1157.777,2.266,81.552," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:17:39, 00:20:39,1239.329,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:17:39, 00:20:39,1239.329,1.914,92.645," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:17:42, 00:20:41,1241.771,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:17:42, 00:20:41,1241.771,1.423,8.359," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:17:50, 00:20:50,1250.13,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:17:50, 00:20:50,1250.13,2.174,79.978," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:19:10, 00:22:10,1330.107,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:19:10, 00:22:10,1330.107,1.088,38.997," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:19:12, 00:22:11,1331.974,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:19:12, 00:22:11,1331.974,2.164,5.74," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:19:18, 00:22:17,1337.714,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:19:18, 00:22:17,1337.714,1.115,24.39," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:19:42, 00:22:42,1362.104,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:19:42, 00:22:42,1362.104,2.682,4.908," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:19:47, 00:22:47,1367.013,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:19:47, 00:22:47,1367.013,1.148,74.115," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:19:49, 00:22:49,1369.105,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:19:49, 00:22:49,1369.105,1.406,3.874," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:19:53, 00:22:52,1372.978,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:19:53, 00:22:52,1372.978,0.924,33.034," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:20:26, 00:23:26,1406.012,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:20:26, 00:23:26,1406.012,2.332,5.634," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:20:32, 00:23:31,1411.646,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:20:32, 00:23:31,1411.646,1.224,4.216," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:20:36, 00:23:35,1415.862,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:20:36, 00:23:35,1415.862,1.191,49.314," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:21:01, 00:24:01,1441.127,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:21:01, 00:24:01,1441.127,2.249,13.724," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:21:15, 00:24:14,1454.851,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:21:15, 00:24:14,1454.851,2.908,6.083," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:21:21, 00:24:20,1460.935,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:21:21, 00:24:20,1460.935,1.481,71.696," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:21:25, 00:24:25,1465.176,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:21:25, 00:24:25,1465.176,1.348,3.742," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:21:29, 00:24:28,1468.918,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:21:29, 00:24:28,1468.918,6.34,54.472," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:22:23, 00:25:23,1523.39,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:22:23, 00:25:23,1523.39,7.423,12.391," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:22:33, 00:25:32,1532.631,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:22:33, 00:25:32,1532.631,1.874,4.583," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:22:36, 00:25:35,1535.781,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:22:36, 00:25:35,1535.781,0.882,86.019," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:22:37, 00:25:37,1537.214,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:22:37, 00:25:37,1537.214,0.858,113.128," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:24:02, 00:27:01,1621.8,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:24:02, 00:27:01,1621.8,1.357,14.45," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:24:16, 00:27:16,1636.25,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:24:16, 00:27:16,1636.25,1.967,12.659," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:24:29, 00:27:28,1648.908,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:24:29, 00:27:28,1648.908,0.907,122.144," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:24:30, 00:27:30,1650.342,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:24:30, 00:27:30,1650.342,1.716,15.451," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:24:46, 00:27:45,1665.792,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:24:46, 00:27:45,1665.792,1.406,3.865," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:24:50, 00:27:49,1669.657,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:24:50, 00:27:49,1669.657,3.957,45.205," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Brooding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:25:35, 00:28:34,1714.862,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Brooding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:25:35, 00:28:34,1714.862,1.482,33.949," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:26:09, 00:29:08,1748.812,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:26:09, 00:29:08,1748.812,2.298,14.449," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:26:23, 00:29:23,1763.26,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:26:23, 00:29:23,1763.26,1.558,403.446," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:26:31, 00:29:31,1771.052,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:26:31, 00:29:31,1771.052,1.207,13.891," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:26:45, 00:29:44,1784.943,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:26:45, 00:29:44,1784.943,1.516,18.515," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Brooding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:27:03, 00:30:03,1803.458,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Brooding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:27:03, 00:30:03,1803.458,1.556,9.142," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:27:13, 00:30:12,1812.6,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:27:13, 00:30:12,1812.6,2.224,10.707," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:27:23, 00:30:23,1823.306,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:27:23, 00:30:23,1823.306,1.784,24.516," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:27:48, 00:30:47,1847.823,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:27:48, 00:30:47,1847.823,0.824,212.164," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:31:20, 00:34:19,2059.986,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:31:20, 00:34:19,2059.986,1.232,15.994," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:31:36, 00:34:35,2075.98,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:31:36, 00:34:35,2075.98,2.687,6.481," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:31:42, 00:34:42,2082.461,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:31:42, 00:34:42,2082.461,1.274,62.071," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:32:44, 00:35:44,2144.532,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:32:44, 00:35:44,2144.532,3.214,20.524," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Brooding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:33:05, 00:36:05,2165.056,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Brooding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:33:05, 00:36:05,2165.056,0.956,46.39," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:33:07, 00:36:06,2166.706,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:33:07, 00:36:06,2166.706,1.707,19.29," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:33:26, 00:36:25,2185.996,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:33:26, 00:36:25,2185.996,0.858,40.341," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:33:51, 00:36:51,2211.446,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:33:51, 00:36:51,2211.446,2.54,10.915," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:34:02, 00:37:02,2222.361,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:34:02, 00:37:02,2222.361,1.158,189.5," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:34:06, 00:37:06,2226.337,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:34:06, 00:37:06,2226.337,2.098,12.508," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:34:19, 00:37:18,2238.845,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:34:19, 00:37:18,2238.845,0.965,47.531," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:35:06, 00:38:06,2286.376,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:35:06, 00:38:06,2286.376,2.024,6.033," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:35:12, 00:38:12,2292.409,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:35:12, 00:38:12,2292.409,0.774,171.982," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:37:12, 00:40:11,2411.861,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:37:12, 00:40:11,2411.861,2.789,6.274," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:37:18, 00:40:18,2418.135,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:37:18, 00:40:18,2418.135,2.716,8.35," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:37:26, 00:40:26,2426.485,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:37:26, 00:40:26,2426.485,1.057,31.19," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:37:58, 00:40:57,2457.675,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:37:58, 00:40:57,2457.675,2.147,10.792," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:38:04, 00:41:04,2464.391,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:38:04, 00:41:04,2464.391,2.425,8.992," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:38:08, 00:41:08,2468.467,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:38:08, 00:41:08,2468.467,0.94,113.993," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:38:13, 00:41:13,2473.383,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:38:13, 00:41:13,2473.383,11.605,15.565," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:38:29, 00:41:28,2488.948,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:38:29, 00:41:28,2488.948,1.666,4.568," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:38:33, 00:41:33,2493.515,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:38:33, 00:41:33,2493.515,0.94,588.727," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:40:02, 00:43:02,2582.46,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:40:02, 00:43:02,2582.46,3.091,7.725," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:40:10, 00:43:10,2590.185,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:40:10, 00:43:10,2590.185,1.332,143.001," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:42:33, 00:45:33,2733.186,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:42:33, 00:45:33,2733.186,1.273,10.871," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:42:44, 00:45:44,2744.057,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:42:44, 00:45:44,2744.057,1.923,336.411," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:48:20, 00:51:20,3080.468,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:48:20, 00:51:20,3080.468,1.297,7.016," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:48:22, 00:51:22,3082.243,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:48:22, 00:51:22,3082.243,1.932,2.758," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:48:25, 00:51:25,3085.001,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""AN"""," ""Male"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:48:25, 00:51:25,3085.001,1.399,537.243," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:48:27, 00:51:27,3087.484,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Feeding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:48:27, 00:51:27,3087.484,1.723,21.463," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:48:49, 00:51:48,3108.947,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:48:49, 00:51:48,3108.947,9.801,18.175," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:49:07, 00:52:07,3127.122,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:49:07, 00:52:07,3127.122,1.491,16.491," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:49:24, 00:52:23,3143.613,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:49:24, 00:52:23,3143.613,2.958,12.124," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Brooding""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:49:36, 00:52:35,3155.737,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Brooding""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:49:36, 00:52:35,3155.737,5.432,49.23," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:50:25, 00:53:24,3204.968,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:50:25, 00:53:24,3204.968,1.832,5.576," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:50:30, 00:53:30,3210.543,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:50:30, 00:53:30,3210.543,2.341,23.49," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Preening""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:50:54, 00:53:54,3234.033,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Preening""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:50:54, 00:53:54,3234.033,1.755,12.033," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:51:06, 00:54:06,3246.066,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:51:06, 00:54:06,3246.066,3.191,20.957," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:51:27, 00:54:27,3267.024,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:51:27, 00:54:27,3267.024,1.74,82.721," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:52:50, 00:55:49,3349.745,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Sanitizing""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:52:50, 00:55:49,3349.745,8.414,13.79," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Preening""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:53:03, 00:56:03,3363.535,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Preening""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:53:03, 00:56:03,3363.535,1.949,20.023," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:53:23, 00:56:23,3383.558,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""AN"""," ""Female"""," ""Perching""",,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:53:23, 00:56:23,3383.558,1.065,238.686," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State start,7916," """"", Provisioning 
+9/27/2021, 10:57:22, 01:00:22,3622.244,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Unknown"""," ""GFN"""," ""Unknown""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:57:22, 01:00:22,3622.244,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Male"""," ""GFN"""," ""Male""",,,,,,,, State stop,7916," """"", Provisioning 
+9/27/2021, 10:57:22, 01:00:22,3622.244,0,0," ""AdLib"""," ""LogAdLibitum 20210927_095700.csv"""," ""Female"""," ""GFN"""," ""Female""",,,,,,,, State stop,7916," """"", Provisioning 
