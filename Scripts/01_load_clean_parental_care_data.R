@@ -10,52 +10,17 @@ library(tidyverse)
 library(lubridate)
 library(data.table)
 
-# Load parental care data
+## Load parental care data
 parent_data <- read.csv("./Data/parental_care_data.csv")
 
-# Clean up parental care metadata to match AB pro logs
+## Clean up parental care metadata to match AB pro logs
 parent_data_lowercase <- parent_data
 parent_data_lowercase$site <- tolower(parent_data_lowercase$site)
 parent_data_lowercase$site <- gsub(" ", "", parent_data_lowercase$site)
 parent_data_lowercase$nest <- as.character(parent_data_lowercase$nest)
 
-
-# Read in AB pro logs, calculate parental care measures,
-# and add to the relevant row of the parental care data
-parent_data_test <- parent_data_lowercase
-for(i in 1:length(parent_data_test$nest)){
-  file_name <-  paste("Data/", 
-                      "revised_abpro_logs/", 
-                      parent_data_test$site[i], "_", 
-                      as.character(parent_data_test$nest[i]), "_", 
-                      "d", as.character(parent_data_test$nestling_age[i]), "_", 
-                      "abpro", "_",
-                      "rev",
-                      ".csv", 
-                      sep = "")
-  if(file.exists(file_name)){
-    abpro_df <- read.csv(file_name)
-    abpro_df <- abpro_df %>% mutate(across(where(is.character), 
-                                           str_trim, 
-                                           side = c("both"))) 
-    abpro_df[] <- lapply(abpro_df, gsub, pattern='\"', replacement='')
-    abpro_df$Duration_s <- as.numeric(abpro_df$Duration_s)
-    rbind()
-    # Add avg feeding visit length
-    parent_data_test$feeding_vis_length[i] <- calculate_vis_length(abpro_df)[1,2]
-    # Add avg  sanitizing visit length
-    parent_data_test$san_vis_length[i] <- calculate_vis_length(abpro_df)[2,2]
-  } 
-}
-
-parent_data_test <- filter(parent_data_test, observer != "MJA" & 
-                             is.na(feeding_vis_length) == F &
-                             is.na(san_vis_length) == F)
-mean(parent_data_test$feeding_vis_length)
-mean(parent_data_test$san_vis_length)
-
-
-# Create empty columns in parental care data sheet
+## Create empty columns in parental care data sheet for each parental care variabke
+## I want to calculate 
 parent_data_lowercase$total_visits <- NA
 parent_data_lowercase$female_visits <- NA
 parent_data_lowercase$male_visits <- NA
@@ -74,8 +39,8 @@ parent_data_lowercase$female_sanitizing_visits <- NA
 parent_data_lowercase$male_sanitizing_visits <- NA
 
 
-# Read in AB pro logs, calculate parental care measures,
-# and add to the relevant row of the parental care data
+## Read in AB pro logs, calculate parental care measures,
+## and add to the relevant row of the parental care data
 for(i in 1:length(parent_data_lowercase$nest)){
   file_name <-  paste("Data/", 
                       "revised_abpro_logs/", 
@@ -119,12 +84,13 @@ for(i in 1:length(parent_data_lowercase$nest)){
   } 
 }
 
+# Remove rows with no total visits or duration, indicating no successful observation
 filter(parent_data_lowercase, is.na(total_visits) == TRUE)
 filter(parent_data_lowercase, is.na(total_an_duration) == TRUE)
 
 colnames(parent_data_lowercase)
 
-## SET durations to NA for MJA logs
+## SET durations to NA for MJA logs (these were determined to have been inaccurately recorded)
 for(i in 1:length(parent_data_lowercase$female_band)){
   if(parent_data_lowercase$observer[i] == "MJA"){
     parent_data_lowercase$total_an_duration[i] <- NA
@@ -136,14 +102,11 @@ for(i in 1:length(parent_data_lowercase$female_band)){
   } 
 }
 
+# Select only the columns I need for the final dataset
 parent_data_sel <- select(parent_data_lowercase, female_band, 
                                 nest, site, obs_date, nestling_age, 
                            21:36)
 
-
-
+# Write out the data
 write.csv(parent_data_sel, file = "Output/ab_pro_summary_data.csv")
-
-
-
 

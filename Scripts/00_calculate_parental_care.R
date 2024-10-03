@@ -2,22 +2,29 @@
 ####### animal behavior pro logs
 ####### By: Sage Madden and Aleea Pardue
 ####### Created: 7/15/2021
-####### Last modified: 6/15/2022
+####### Last modified: 10/2/2024
 
 
+# Code Blocks
+# 1: Configure work space
+# 2: Create functions
+
+
+###############################################################################
+##############                Configure work space              ##############
+###############################################################################
+
+### Load relevant packages 
 library(tidyverse)
 
-abpro_df <- read.csv("Data/revised_abpro_logs/bluecloud_17_d4_abpro_rev.csv")
 
-abpro_df <- abpro_df %>% mutate(across(where(is.character), 
-                                       str_trim, 
-                                       side = c("both"))) 
-abpro_df[] <- lapply(abpro_df, gsub, pattern='\"', replacement='')
+###############################################################################
+##############                Create functions                  ##############
+###############################################################################
 
-abpro_df$Duration_s <- as.numeric(abpro_df$Duration_s)
+### Create functions to quantify different types of parental care behavior
 
-
-#Function to calculate total visitation rate from an animal behavior pro .csv
+# Function to calculate total visitation rate from an animal behavior pro .csv
 calculate_visitation <- function(abpro_df) {
   #Calculate female visitation
   #Filter to include only female visits
@@ -88,7 +95,7 @@ calculate_visitation <- function(abpro_df) {
                              male_visits))
 }
 
-#Function to calculate feeding rate from an animal behavior pro .csv
+# Function to calculate feeding rate from an animal behavior pro .csv
 calculate_feeding <- function(abpro_df) {
   #Calculate female visitation
   #Filter to include only female visits
@@ -147,7 +154,7 @@ calculate_feeding <- function(abpro_df) {
 }
 
 
-#Function to calculate sanitation rate from an animal behavior pro .csv
+# Function to calculate sanitation rate from an animal behavior pro .csv
 calculate_sanitizing <- function(abpro_df) {
   #Calculate female visitation
   #Filter to include only female visits
@@ -205,7 +212,7 @@ calculate_sanitizing <- function(abpro_df) {
                              male_sanitizing_visits))
 }
 
-#Function to calculate duration at the nest from an animal behavior pro .csv
+# Function to calculate duration at the nest from an animal behavior pro .csv
 calculate_an_duration <- function(abpro_df) {
   #Calculate female visitation
   #Filter to include only female visits
@@ -227,7 +234,7 @@ calculate_an_duration <- function(abpro_df) {
 }
 
 
-#Function to calculate duration brooding at the nest from an animal behavior pro .csv
+# unction to calculate duration brooding at the nest from an animal behavior pro .csv
 calculate_brooding_duration <- function(abpro_df) {
   #Calculate female visitation
   #Filter to include only female visits
@@ -254,7 +261,7 @@ calculate_brooding_duration <- function(abpro_df) {
 }
 
 
-#Function to calculate duration brooding at the nest from an animal behavior pro .csv
+# Function to calculate duration brooding at the nest from an animal behavior pro .csv
 calculate_sanitizing_duration <- function(abpro_df) {
   #Calculate female visitation
   #Filter to include only female visits
@@ -281,7 +288,7 @@ calculate_sanitizing_duration <- function(abpro_df) {
 }
 
 
-#Function to calculate total length of obs in seconds
+# Function to calculate total length of obs in seconds
 calculate_obs_duration <- function(abpro_df) {
   #Divide by observation duration (hours) to get visitation rate
   obs_dur <- (as.numeric(abpro_df$Time_Relative_s[length(abpro_df$Time_Relative_s)]) -
@@ -290,17 +297,8 @@ calculate_obs_duration <- function(abpro_df) {
 }
 
 
-calculate_visitation(abpro_df)[3,2]
-calculate_feeding(abpro_df)
-calculate_sanitizing(abpro_df)
-calculate_an_duration(abpro_df)
-calculate_brooding_duration(abpro_df)
-calculate_sanitizing_duration(abpro_df)
-calculate_obs_duration(abpro_df)
-
-
-### Calculate avg feeding and sanitizing visit lengths to add to sheets
-### with missing time stamps
+## Function to calculate avg feeding and sanitizing visit lengths to add to sheets
+## with missing time stamps
 calculate_vis_length <- function(abpro_df) {
   #Calculate female visitation
   start_only_df <- dplyr::filter(abpro_df, Event_Type == "State start")
@@ -345,4 +343,4 @@ calculate_vis_length <- function(abpro_df) {
                              san_duration/san_visit_number))
 }
 
-calculate_vis_length(abpro_df)
+
