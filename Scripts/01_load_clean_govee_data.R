@@ -1,7 +1,7 @@
 ####### Purpose: combine all govee datasheets into a single df and clean it
 ####### By: Sage Madden
 ####### Created: 3/1/2022
-####### Last modified: 10/2/2024
+####### Last modified: 10/4/2024
 
 # Code Blocks
 # 1: Configure work space
@@ -204,7 +204,7 @@ joined_select <- joined_df3 %>% select(ymd_hms, temp_c, humid_perc, site, nest,
 ###############################################################################
 ##############                       Save data                   ##############
 ###############################################################################
-write.csv(joined_df3, file = "Output/govee_data_for_filling_in_camera_obs.csv")
-write.csv(joined_select, file = "Output/govee_used_nests_filt.csv")
+write.csv(joined_df3, file = "Data/Tidy/govee_data_for_filling_in_camera_obs.csv")
+write.csv(joined_select, file = "Data/Tidy/govee_used_nests_filt.csv")
 
 

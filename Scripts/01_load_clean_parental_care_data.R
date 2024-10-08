@@ -3,7 +3,7 @@
 ####### metadata
 ####### By: Sage Madden
 ####### Created: 4/27/2021
-####### Last modified: 6/15/2022
+####### Last modified: 10/4/2024
 
 ## Load relevant packages 
 library(tidyverse)
@@ -108,5 +108,5 @@ parent_data_sel <- select(parent_data_lowercase, female_band,
                            21:36)
 
 # Write out the data
-write.csv(parent_data_sel, file = "Output/ab_pro_summary_data.csv")
+write.csv(parent_data_sel, file = "Data/Tidy/ab_pro_summary_data.csv")
 
