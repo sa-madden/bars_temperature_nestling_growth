@@ -2,10 +2,19 @@
 ####### nest microclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 1/16/2023
-####### Last modified: 1/16/2023
+####### Last modified: 10/8/2024
+
+# Code Blocks
+# 1: Configure work space
+# 2: Load data
+# 3: Nestling growth vs. covariates
+# 4: Temperature vs. covariates
+# 5: Parental care vs. covariates
+# 6: Growth vs. parental care
+
 
 ###############################################################################
-##############             1.  Configure work space              ##############
+##############                 Configure work space              ##############
 ###############################################################################
 
 ### 1.1 Global options
@@ -54,12 +63,12 @@ R.Version()
 sessionInfo()
 
 ###############################################################################
-##############                    2. Load RData                  ##############
+##############                     Load Data                     ##############
 ###############################################################################  
 
 ### 2.1 Load RData
 ## Load RData tidy barn swallow data
-load('Data/tidy_parent_nestl_weather_data_with_pci.RData')
+load('Data/Tidy/tidy_parent_nestl_weather_data_10-4_with_BLUPs.RData')
 
 # Make site a factor
 late_nestling_parent_care$fsite <- as.factor(late_nestling_parent_care$site)
@@ -69,7 +78,7 @@ late_nestling_parent_care$num_pairs <- as.numeric(late_nestling_parent_care$num_
 
 
 ###############################################################################
-##############      3. Growth                                   ##############
+##############           Nestling growth vs. covariates          ##############
 ###############################################################################
 
 ## Mass and hatch date -- not significant, but marginal  
@@ -201,7 +210,7 @@ infIndexPlot(wing_colony_lmer, vars=c("Studentized"))
 summary(wing_colony_lmer)
 confint(wing_colony_lmer)
 
-## wing and brood size -- not significant, but marginal
+## wing and brood size -- significant negative relationship
 wing_brood_lmer <- lmer(rt_wing_length ~ scale(nestling_number) + (1|fsite) +
                           (1|fnest_id), 
                         data = subset(late_nestling_parent_care,
@@ -222,7 +231,7 @@ infIndexPlot(wing_brood_lmer, vars=c("Studentized"))
 summary(wing_brood_lmer)
 confint(wing_brood_lmer)
 
-## wing and nestling age -- not significant 
+## wing and nestling age -- significant positive relationship
 wing_age_lmer <- lmer(rt_wing_length ~ scale(nestling_age) + (1|fsite) +
                         (1|fnest_id), 
                       data = subset(late_nestling_parent_care,
@@ -246,7 +255,7 @@ confint(wing_age_lmer)
 
 
 ###############################################################################
-##############        Temperature                               ##############
+##############        Temperature vs. covariates                 ##############
 ###############################################################################
 # Remove duplicates for nest level measures
 one_measure <- distinct(late_nestling_parent_care, nest_id, .keep_all = TRUE)
@@ -273,7 +282,7 @@ summary(max_temp_hatch_lmer)
 confint(max_temp_hatch_lmer)
 
 
-## min_temp and hatch date -- not significant, but marginal  
+## min_temp and hatch date -- significant positive relationship 
 min_temp_hatch_lmer <- lmer(nest_min_temp ~ scale(days_summer) + (1|fsite), 
                             data = subset(one_measure,
                                           !is.na(x = nest_min_temp) & 
@@ -294,7 +303,7 @@ summary(min_temp_hatch_lmer)
 confint(min_temp_hatch_lmer)
 
 
-## iqr_temp and hatch date -- not significant, but marginal  
+## iqr_temp and hatch date -- significant negative relationship
 iqr_temp_hatch_lmer <- lmer(nest_iqr_temp ~ scale(days_summer) + (1|fsite), 
                             data = subset(one_measure,
                                           !is.na(x = nest_iqr_temp) & 
@@ -315,9 +324,9 @@ summary(iqr_temp_hatch_lmer)
 confint(iqr_temp_hatch_lmer)
 
 ###############################################################################
-##############      Parental care                                ##############
+##############         Parental care  vs. covariates             ##############
 ###############################################################################
-## feeding_blups and hatch date -- not significant, but marginal  
+## feeding_blups and hatch date -- not significant
 feeding_blups_hatch_lmer <- lmer(feeding_expontd_blups ~ scale(days_summer) + (1|fsite), 
                         data = subset(one_measure,
                                       !is.na(x = feeding_expontd_blups) & 
@@ -357,7 +366,7 @@ infIndexPlot(feeding_blups_colony_lmer, vars=c("Studentized"))
 summary(feeding_blups_colony_lmer)
 confint(feeding_blups_colony_lmer)
 
-## feeding_blups and brood size -- not significant, but marginal
+## feeding_blups and brood size -- not significant
 feeding_blups_brood_lmer <- lmer(feeding_expontd_blups ~ scale(nestling_number) + (1|fsite), 
                         data = subset(one_measure,
                                       !is.na(x = feeding_expontd_blups) & 
@@ -377,7 +386,7 @@ infIndexPlot(feeding_blups_brood_lmer, vars=c("Studentized"))
 summary(feeding_blups_brood_lmer)
 confint(feeding_blups_brood_lmer)
 
-## feeding_blups and nestling age -- not significant 
+## feeding_blups and nestling age
 feeding_blups_age_lmer <- lmer(feeding_expontd_blups ~ scale(nestling_age) + (1|fsite), 
                       data = subset(one_measure,
                                     !is.na(x = feeding_expontd_blups) & 
@@ -398,92 +407,9 @@ summary(feeding_blups_age_lmer)
 confint(feeding_blups_age_lmer)
 
 
-## brooding_blups and hatch date -- not significant, but marginal  
-brooding_blups_hatch_lmer <- lmer(brooding_blups ~ scale(days_summer) + (1|fsite), 
-                                 data = subset(one_measure,
-                                               !is.na(x = brooding_blups) & 
-                                                 !is.na(x = days_summer)))
-
-## Check diagnostics for the full model
-plot(brooding_blups_hatch_lmer)
-# Normal QQplot
-{qqnorm(resid(brooding_blups_hatch_lmer))
-  qqline(resid(brooding_blups_hatch_lmer))}
-# Histogram of residuals
-hist(resid(brooding_blups_hatch_lmer))
-# Checking for influential outliers
-infIndexPlot(brooding_blups_hatch_lmer, vars=c("Cook"))
-infIndexPlot(brooding_blups_hatch_lmer, vars=c("Studentized"))
-
-summary(brooding_blups_hatch_lmer)
-confint(brooding_blups_hatch_lmer)
-
-## brooding_blupsand colony size -- not significant 
-brooding_blups_colony_lmer <- lmer(brooding_blups ~ scale(num_pairs) + (1|fsite), 
-                                  data = subset(one_measure,
-                                                !is.na(x = brooding_blups) & 
-                                                  !is.na(x = num_pairs)))
-
-## Check diagnostics for the full model
-plot(brooding_blups_colony_lmer)
-# Normal QQplot
-{qqnorm(resid(brooding_blups_colony_lmer))
-  qqline(resid(brooding_blups_colony_lmer))}
-# Histogram of residuals
-hist(resid(brooding_blups_colony_lmer))
-# Checking for influential outliers
-infIndexPlot(brooding_blups_colony_lmer, vars=c("Cook"))
-infIndexPlot(brooding_blups_colony_lmer, vars=c("Studentized"))
-
-summary(brooding_blups_colony_lmer)
-confint(brooding_blups_colony_lmer)
-
-## brooding_blupsand brood size -- not significant, but marginal
-brooding_blups_brood_lmer <- lmer(brooding_blups ~ scale(nestling_number) + (1|fsite), 
-                                 data = subset(one_measure,
-                                               !is.na(x = brooding_blups) & 
-                                                 !is.na(x = nestling_number)))
-
-## Check diagnostics for the full model
-plot(brooding_blups_brood_lmer)
-# Normal QQplot
-{qqnorm(resid(brooding_blups_brood_lmer))
-  qqline(resid(brooding_blups_brood_lmer))}
-# Histogram of residuals
-hist(resid(brooding_blups_brood_lmer))
-# Checking for influential outliers
-infIndexPlot(brooding_blups_brood_lmer, vars=c("Cook"))
-infIndexPlot(brooding_blups_brood_lmer, vars=c("Studentized"))
-
-summary(brooding_blups_brood_lmer)
-confint(brooding_blups_brood_lmer)
-
-## brooding_blupsand nestling age -- not significant 
-brooding_blups_age_lmer <- lmer(brooding_blups ~ scale(nestling_age) + (1|fsite), 
-                               data = subset(one_measure,
-                                             !is.na(x = brooding_blups) & 
-                                               !is.na(x = nestling_age)))
-
-## Check diagnostics for the full model
-plot(brooding_blups_age_lmer)
-# Normal QQplot
-{qqnorm(resid(brooding_blups_age_lmer))
-  qqline(resid(brooding_blups_age_lmer))}
-# Histogram of residuals
-hist(resid(brooding_blups_age_lmer))
-# Checking for influential outliers
-infIndexPlot(brooding_blups_age_lmer, vars=c("Cook"))
-infIndexPlot(brooding_blups_age_lmer, vars=c("Studentized"))
-
-summary(brooding_blups_age_lmer)
-confint(brooding_blups_age_lmer)
-
-
-
-
 
 ###############################################################################
-##############        Growth + parental care                     ##############
+##############             Growth vs. parental care              ##############
 ###############################################################################
 
 ## Mass and feeding BLUPs
@@ -507,27 +433,6 @@ infIndexPlot(mass_feeding_lmer, vars=c("Studentized"))
 summary(mass_feeding_lmer)
 confint(mass_feeding_lmer)
 
-## Mass and brooding BLUPs
-mass_brooding_lmer <- lmer(mass_pre_obs ~ brooding_blups + (1|fsite) +
-                            (1|fnest_id), 
-                          data = subset(late_nestling_parent_care,
-                                        !is.na(x = mass_pre_obs) & 
-                                          !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_brooding_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_brooding_lmer))
-  qqline(resid(mass_brooding_lmer))}
-# Histogram of residuals
-hist(resid(mass_brooding_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_brooding_lmer, vars=c("Cook"))
-infIndexPlot(mass_brooding_lmer, vars=c("Studentized"))
-
-summary(mass_brooding_lmer)
-confint(mass_brooding_lmer)
-
 ## Wing and feeding BLUPs
 wing_feeding_lmer <- lmer(rt_wing_length ~ feeding_expontd_blups + (1|fsite) +
                             (1|fnest_id), 
@@ -549,28 +454,7 @@ infIndexPlot(wing_feeding_lmer, vars=c("Studentized"))
 summary(wing_feeding_lmer)
 confint(wing_feeding_lmer)
 
-## wing and brooding BLUPs
-wing_brooding_lmer <- lmer(rt_wing_length ~ brooding_blups + (1|fsite) +
-                             (1|fnest_id), 
-                           data = subset(late_nestling_parent_care,
-                                         !is.na(x = rt_wing_length) & 
-                                           !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(wing_brooding_lmer)
-# Normal QQplot
-{qqnorm(resid(wing_brooding_lmer))
-  qqline(resid(wing_brooding_lmer))}
-# Histogram of residuals
-hist(resid(wing_brooding_lmer))
-# Checking for influential outliers
-infIndexPlot(wing_brooding_lmer, vars=c("Cook"))
-infIndexPlot(wing_brooding_lmer, vars=c("Studentized"))
-
-summary(wing_brooding_lmer)
-confint(wing_brooding_lmer)
-
-
+# Calculate avg feeding rates as an alternative to BLUPs
 avg_parent_care <- prim_merged %>% group_by(nest_id) %>%
   summarise(avg_feeding = mean(total_feeding_visits),
             avg_brooding = mean(total_brooding_duration))
@@ -599,29 +483,6 @@ infIndexPlot(mass_feeding_avg_lmer, vars=c("Studentized"))
 summary(mass_feeding_avg_lmer)
 confint(mass_feeding_avg_lmer)
 
-## Mass and avg brooding duration
-joined_care$avg_brooding_min <- joined_care$avg_brooding/3600
-mass_brooding_avg_lmer <- lmer(mass_pre_obs ~ avg_brooding_min + (1|fsite) +
-                                (1|fnest_id), 
-                              data = subset(joined_care,
-                                            !is.na(x = mass_pre_obs) & 
-                                              !is.na(x = avg_brooding_min)))
-
-## Check diagnostics for the full model
-plot(mass_brooding_avg_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_brooding_avg_lmer))
-  qqline(resid(mass_brooding_avg_lmer))}
-# Histogram of residuals
-hist(resid(mass_brooding_avg_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_brooding_avg_lmer, vars=c("Cook"))
-infIndexPlot(mass_brooding_avg_lmer, vars=c("Studentized"))
-
-summary(mass_brooding_avg_lmer)
-confint(mass_brooding_avg_lmer)
-
-
 ## Wing and average feeding rate
 wing_feeding_avg_lmer <- lmer(rt_wing_length ~ avg_feeding + (1|fsite) +
                                 (1|fnest_id), 
@@ -642,25 +503,3 @@ infIndexPlot(wing_feeding_avg_lmer, vars=c("Studentized"))
 
 summary(wing_feeding_avg_lmer)
 confint(wing_feeding_avg_lmer)
-
-## wing and avg brooding duration
-wing_brooding_avg_lmer <- lmer(rt_wing_length ~ avg_brooding_min + (1|fsite) +
-                                 (1|fnest_id), 
-                               data = subset(joined_care,
-                                             !is.na(x = rt_wing_length) & 
-                                               !is.na(x = avg_brooding_min)))
-
-## Check diagnostics for the full model
-plot(wing_brooding_avg_lmer)
-# Normal QQplot
-{qqnorm(resid(wing_brooding_avg_lmer))
-  qqline(resid(wing_brooding_avg_lmer))}
-# Histogram of residuals
-hist(resid(wing_brooding_avg_lmer))
-# Checking for influential outliers
-infIndexPlot(wing_brooding_avg_lmer, vars=c("Cook"))
-infIndexPlot(wing_brooding_avg_lmer, vars=c("Studentized"))
-
-summary(wing_brooding_avg_lmer)
-confint(wing_brooding_avg_lmer)
-

@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset at nestling level
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 10/7/2024
+####### Last modified: 10/8/2024
 
 ##### Fill in code blocks + write down parental care stats
 
@@ -10,9 +10,10 @@
 # Code Blocks
 # 1: Configure work space
 # 2: Load data
-# 3: 
-# 4: 
-# 5: 
+# 3: Univariate descriptive statistics
+# 4: Univariate visualizations
+# 5: Bivariate descriptive statistics
+# 6: Bivariate visualizations
 
 
 ###############################################################################
@@ -38,9 +39,6 @@ library('viridis')
 library ('gridExtra')
 library('ggpubr')
 
-## Modelling Packages
-library('lme4')
-
 
 ### 1.3 Get Version and Session Info
 R.Version()
@@ -63,6 +61,305 @@ nest_dat <- nest_dat %>% filter(duplicate == FALSE) %>%
 
 ###############################################################################
 ##############             Univariate descriptive stats          ##############
+###############################################################################
+
+### Univariate statistics
+## Parental care
+# Feeding BLUPs
+univar_feeding_blups <- late_nestling_parent_care %>%
+  summarise (n = sum(!is.na(feeding_expontd_blups)),
+             avg = round (mean(feeding_expontd_blups, 
+                               na.rm = T),2),
+             stdev = round (sd(feeding_expontd_blups, 
+                               na.rm = T), 2),
+             med = round(median(feeding_expontd_blups,
+                                na.rm = T), 2),
+             min = round(min(feeding_expontd_blups,
+                             na.rm = T), 2),
+             max = round(max(feeding_expontd_blups,
+                             na.rm = T), 2)
+  )
+
+
+
+# Feeding rate
+univar_feeding_rate <- prim_merged %>%
+  summarise (n = sum(!is.na(total_visits)),
+             avg = round (mean(total_visits/(obs_duration/3600), 
+                               na.rm = T),2),
+             stdev = round (sd(total_visits/(obs_duration/3600), 
+                               na.rm = T), 2),
+             med = round(median(total_visits/(obs_duration/3600),
+                                na.rm = T), 2),
+             min = round(min(total_visits/(obs_duration/3600),
+                             na.rm = T), 2),
+             max = round(max(total_visits/(obs_duration/3600),
+                             na.rm = T), 2)
+  )
+
+
+# Brooding duration
+univar_brooding_dur <- prim_merged %>%
+  summarise (n = sum(!is.na(total_brooding_duration)),
+             avg = round (mean(total_brooding_duration/(obs_duration/3600), 
+                               na.rm = T)/60,2),
+             stdev = round (sd(total_brooding_duration/(obs_duration/3600), 
+                               na.rm = T)/60, 2),
+             med = round(median(total_brooding_duration/(obs_duration/3600),
+                                na.rm = T)/60, 2),
+             min = round(min(total_brooding_duration/(obs_duration/3600),
+                             na.rm = T)/60, 2),
+             max = round(max(total_brooding_duration/(obs_duration/3600),
+                             na.rm = T)/60, 2)
+  )
+
+
+# Bind the parental care stats together
+univar_parental_care <- rbind(univar_feeding_blups, univar_feeding_rate, univar_brooding_dur)
+
+univar_parental_care$variable_name <- c("feeding_blups", "feeding_rate", "brooding_duration")
+
+## save the data frame of summary stats as a pdf into output file
+pdf('Output/univar_feeding_blups.pdf', height = 3, width = 14)
+grid.table(univar_feeding_blups)
+dev.off()
+
+
+## Brood size
+univar_brood_size <- nest_dat %>%
+  summarise (n = sum(!is.na(nestling_number)),
+             avg = round (mean(nestling_number, 
+                               na.rm = T),2),
+             stdev = round (sd(nestling_number, 
+                               na.rm = T), 2),
+             med = round(median(nestling_number,
+                                na.rm = T), 2),
+             min = round(min(nestling_number,
+                             na.rm = T), 2),
+             max = round(max(nestling_number,
+                             na.rm = T), 2)
+  )
+
+univar_brood_size$variable_name <- c("brood_size")
+
+## save the data frame of summary stats as a pdf into output file
+pdf('Output/univar_brood_size.pdf', height = 3, width = 14)
+grid.table(univar_brood_size)
+dev.off()
+
+## Nestling age
+univar_nestling_age <- nest_dat %>%
+  summarise (n = sum(!is.na(nestling_age)),
+             avg = round (mean(nestling_age, 
+                               na.rm = T),2),
+             stdev = round (sd(nestling_age, 
+                               na.rm = T), 2),
+             med = round(median(nestling_age,
+                                na.rm = T), 2),
+             min = round(min(nestling_age,
+                             na.rm = T), 2),
+             max = round(max(nestling_age,
+                             na.rm = T), 2)
+  )
+
+univar_nestling_age$variable_name <- c("nestling_age")
+
+## save the data frame of summary stats as a pdf into output file
+pdf('Output/univar_nestling_age.pdf', height = 3, width = 14)
+grid.table(univar_nestling_age)
+dev.off()
+
+## Colony size
+nest_dat$num_pairs <- as.integer(nest_dat$num_pairs)
+univar_colony_size <- nest_dat %>%
+  summarise (n = sum(!is.na(num_pairs)),
+             avg = round (mean(num_pairs, 
+                               na.rm = T),2),
+             stdev = round (sd(num_pairs, 
+                               na.rm = T), 2),
+             med = round(median(num_pairs,
+                                na.rm = T), 2),
+             min = round(min(num_pairs,
+                             na.rm = T), 2),
+             max = round(max(num_pairs,
+                             na.rm = T), 2)
+  )
+
+univar_colony_size$variable_name <- c("colony_size")
+
+## save the data frame of summary stats as a pdf into output file
+pdf('Output/univar_colony_size.pdf', height = 3, width = 14)
+grid.table(univar_colony_size)
+dev.off()
+
+## Hatch date
+univar_hatch_date <- nest_dat %>%
+  summarise (n = sum(!is.na(days_summer)),
+             avg = round (mean(days_summer, 
+                               na.rm = T),2),
+             stdev = round (sd(days_summer, 
+                               na.rm = T), 2),
+             med = round(median(days_summer,
+                                na.rm = T), 2),
+             min = round(min(days_summer,
+                             na.rm = T), 2),
+             max = round(max(days_summer,
+                             na.rm = T), 2)
+  )
+
+univar_hatch_date$variable_name <- c("hatch_date")
+
+## save the data frame of summary stats as a pdf into output file
+pdf('Output/univar_hatch_date.pdf', height = 3, width = 14)
+grid.table(univar_hatch_date)
+dev.off()
+
+## Nest temperature
+# Median temp
+univar_temp_med <- nest_dat %>%
+  summarise (n = sum(!is.na(nest_med_temp)),
+             avg = round (mean(nest_med_temp, 
+                               na.rm = T),2),
+             stdev = round (sd(nest_med_temp, 
+                               na.rm = T), 2),
+             med = round(median(nest_med_temp,
+                                na.rm = T), 2),
+             min = round(min(nest_med_temp,
+                             na.rm = T), 2),
+             max = round(max(nest_med_temp,
+                             na.rm = T), 2)
+  )
+
+# Min temp
+univar_temp_min <- nest_dat %>%
+  summarise (n = sum(!is.na(nest_min_temp)),
+             avg = round (mean(nest_min_temp, 
+                               na.rm = T),2),
+             stdev = round (sd(nest_min_temp, 
+                               na.rm = T), 2),
+             med = round(median(nest_min_temp,
+                                na.rm = T), 2),
+             min = round(min(nest_min_temp,
+                             na.rm = T), 2),
+             max = round(max(nest_min_temp,
+                             na.rm = T), 2)
+  )
+
+# Max temp
+univar_temp_max <- nest_dat %>%
+  summarise (n = sum(!is.na(nest_max_temp)),
+             avg = round (mean(nest_max_temp, 
+                               na.rm = T),2),
+             stdev = round (sd(nest_max_temp, 
+                               na.rm = T), 2),
+             med = round(median(nest_max_temp,
+                                na.rm = T), 2),
+             min = round(min(nest_max_temp,
+                             na.rm = T), 2),
+             max = round(max(nest_max_temp,
+                             na.rm = T), 2)
+  )
+
+# IQR of temp
+univar_temp_iqr <- nest_dat %>%
+  summarise (n = sum(!is.na(nest_iqr_temp)),
+             avg = round (mean(nest_iqr_temp, 
+                               na.rm = T),2),
+             stdev = round (sd(nest_iqr_temp, 
+                               na.rm = T), 2),
+             med = round(median(nest_iqr_temp,
+                                na.rm = T), 2),
+             min = round(min(nest_iqr_temp,
+                             na.rm = T), 2),
+             max = round(max(nest_iqr_temp,
+                             na.rm = T), 2)
+  )
+
+# Before thermo median
+univar_temp_bef_thermo <- nest_dat %>%
+  summarise (n = sum(!is.na(thermo_bef_med_temp)),
+             avg = round (mean(thermo_bef_med_temp, 
+                               na.rm = T),2),
+             stdev = round (sd(thermo_bef_med_temp, 
+                               na.rm = T), 2),
+             med = round(median(thermo_bef_med_temp,
+                                na.rm = T), 2),
+             min = round(min(thermo_bef_med_temp,
+                             na.rm = T), 2),
+             max = round(max(thermo_bef_med_temp,
+                             na.rm = T), 2)
+  )
+
+# After thermo median
+univar_temp_aft_thermo <- nest_dat %>%
+  summarise (n = sum(!is.na(thermo_aft_med_temp)),
+             avg = round (mean(thermo_aft_med_temp, 
+                               na.rm = T),2),
+             stdev = round (sd(thermo_aft_med_temp, 
+                               na.rm = T), 2),
+             med = round(median(thermo_aft_med_temp,
+                                na.rm = T), 2),
+             min = round(min(thermo_aft_med_temp,
+                             na.rm = T), 2),
+             max = round(max(thermo_aft_med_temp,
+                             na.rm = T), 2)
+  )
+
+univar_temp <- rbind(univar_temp_med, univar_temp_min, univar_temp_max, 
+                     univar_temp_iqr, univar_temp_bef_thermo, univar_temp_aft_thermo)
+
+univar_temp$variable_name <- c("nest_med_temp", "nest_min_temp", 
+                               "nest_max_temp", "nest_iqr_temp",
+                               "thermo_bef_med_temp", "thermo_aft_med_temp")
+
+## save the data frame of summary stats as a pdf into output file
+pdf('Output/univar_temp.pdf', height = 3, width = 14)
+grid.table(univar_temp)
+dev.off()
+
+## Nestling growth 
+# Wing day 12
+univar_growth_wing <- late_nestling_parent_care %>%
+  summarise (n = sum(!is.na(rt_wing_length)),
+             avg = round (mean(rt_wing_length, 
+                               na.rm = T),2),
+             stdev = round (sd(rt_wing_length, 
+                               na.rm = T), 2),
+             med = round(median(rt_wing_length,
+                                na.rm = T), 2),
+             min = round(min(rt_wing_length,
+                             na.rm = T), 2),
+             max = round(max(rt_wing_length,
+                             na.rm = T), 2)
+  )
+
+# Mass day 12
+univar_growth_mass <- late_nestling_parent_care %>%
+  summarise (n = sum(!is.na(mass_pre_obs)),
+             avg = round (mean(mass_pre_obs, 
+                               na.rm = T),2),
+             stdev = round (sd(mass_pre_obs, 
+                               na.rm = T), 2),
+             med = round(median(mass_pre_obs,
+                                na.rm = T), 2),
+             min = round(min(mass_pre_obs,
+                             na.rm = T), 2),
+             max = round(max(mass_pre_obs,
+                             na.rm = T), 2)
+  )
+
+univar_growth <- rbind(univar_growth_wing, univar_growth_mass)
+
+univar_growth$variable_name <- c("univar_growth_wing", "univar_growth_mass")
+
+## save the data frame of summary stats as a pdf into output file
+pdf('Output/univar_growth.pdf', height = 3, width = 14)
+grid.table(univar_growth)
+dev.off()
+
+
+###############################################################################
+##############             Univariate visualization               ##############
 ###############################################################################
 
 ## Parental care 
@@ -388,300 +685,6 @@ ggsave('mass_12_hist.png', plot = mass_12_hist,
        units = c('in'), dpi = 300, limitsize = TRUE)
 
 
-### Univariate statistics
-## Parental care
-# Feeding BLUPs
-univar_feeding_blups <- late_nestling_parent_care %>%
-  summarise (n = sum(!is.na(feeding_expontd_blups)),
-             avg = round (mean(feeding_expontd_blups, 
-                               na.rm = T),2),
-             stdev = round (sd(feeding_expontd_blups, 
-                               na.rm = T), 2),
-             med = round(median(feeding_expontd_blups,
-                                na.rm = T), 2),
-             min = round(min(feeding_expontd_blups,
-                             na.rm = T), 2),
-             max = round(max(feeding_expontd_blups,
-                             na.rm = T), 2)
-  )
-
-
-
-# Feeding rate
-univar_feeding_rate <- prim_merged %>%
-  summarise (n = sum(!is.na(total_visits)),
-             avg = round (mean(total_visits, 
-                               na.rm = T),2),
-             stdev = round (sd(total_visits, 
-                               na.rm = T), 2),
-             med = round(median(total_visits,
-                                na.rm = T), 2),
-             min = round(min(total_visits,
-                             na.rm = T), 2),
-             max = round(max(total_visits,
-                             na.rm = T), 2)
-  )
-
-
-# Brooding duration
-univar_brooding_dur <- prim_merged %>%
-  summarise (n = sum(!is.na(total_brooding_duration)),
-             avg = round (mean(total_brooding_duration, 
-                               na.rm = T),2),
-             stdev = round (sd(total_brooding_duration, 
-                               na.rm = T), 2),
-             med = round(median(total_brooding_duration,
-                                na.rm = T), 2),
-             min = round(min(total_brooding_duration,
-                             na.rm = T), 2),
-             max = round(max(total_brooding_duration,
-                             na.rm = T), 2)
-  )
-
-
-# Bind the parental care stats together
-univar_parental_care <- rbind(univar_feeding_blups, univar_feeding_rate, univar_brooding_dur)
-
-univar_parental_care$variable_name <- c("feeding_blups", "feeding_rate", "brooding_duration")
-
-## save the data frame of summary stats as a pdf into output file
-pdf('Output/univar_feeding_blups.pdf', height = 3, width = 14)
-grid.table(univar_feeding_blups)
-dev.off()
-
-
-## Brood size
-univar_brood_size <- nest_dat %>%
-  summarise (n = sum(!is.na(nestling_number)),
-             avg = round (mean(nestling_number, 
-                               na.rm = T),2),
-             stdev = round (sd(nestling_number, 
-                               na.rm = T), 2),
-             med = round(median(nestling_number,
-                                na.rm = T), 2),
-             min = round(min(nestling_number,
-                             na.rm = T), 2),
-             max = round(max(nestling_number,
-                             na.rm = T), 2)
-  )
-
-univar_brood_size$variable_name <- c("brood_size")
-
-## save the data frame of summary stats as a pdf into output file
-pdf('Output/univar_brood_size.pdf', height = 3, width = 14)
-grid.table(univar_brood_size)
-dev.off()
-
-## Nestling age
-univar_nestling_age <- nest_dat %>%
-  summarise (n = sum(!is.na(nestling_age)),
-             avg = round (mean(nestling_age, 
-                               na.rm = T),2),
-             stdev = round (sd(nestling_age, 
-                               na.rm = T), 2),
-             med = round(median(nestling_age,
-                                na.rm = T), 2),
-             min = round(min(nestling_age,
-                             na.rm = T), 2),
-             max = round(max(nestling_age,
-                             na.rm = T), 2)
-  )
-
-univar_nestling_age$variable_name <- c("nestling_age")
-
-## save the data frame of summary stats as a pdf into output file
-pdf('Output/univar_nestling_age.pdf', height = 3, width = 14)
-grid.table(univar_nestling_age)
-dev.off()
-
-## Colony size
-nest_dat$num_pairs <- as.integer(nest_dat$num_pairs)
-univar_colony_size <- nest_dat %>%
-  summarise (n = sum(!is.na(num_pairs)),
-             avg = round (mean(num_pairs, 
-                               na.rm = T),2),
-             stdev = round (sd(num_pairs, 
-                               na.rm = T), 2),
-             med = round(median(num_pairs,
-                                na.rm = T), 2),
-             min = round(min(num_pairs,
-                             na.rm = T), 2),
-             max = round(max(num_pairs,
-                             na.rm = T), 2)
-  )
-
-univar_colony_size$variable_name <- c("colony_size")
-
-## save the data frame of summary stats as a pdf into output file
-pdf('Output/univar_colony_size.pdf', height = 3, width = 14)
-grid.table(univar_colony_size)
-dev.off()
-
-## Hatch date
-univar_hatch_date <- nest_dat %>%
-  summarise (n = sum(!is.na(days_summer)),
-             avg = round (mean(days_summer, 
-                               na.rm = T),2),
-             stdev = round (sd(days_summer, 
-                               na.rm = T), 2),
-             med = round(median(days_summer,
-                                na.rm = T), 2),
-             min = round(min(days_summer,
-                             na.rm = T), 2),
-             max = round(max(days_summer,
-                             na.rm = T), 2)
-  )
-
-univar_hatch_date$variable_name <- c("hatch_date")
-
-## save the data frame of summary stats as a pdf into output file
-pdf('Output/univar_hatch_date.pdf', height = 3, width = 14)
-grid.table(univar_hatch_date)
-dev.off()
-
-## Nest temperature
-# Median temp
-univar_temp_med <- nest_dat %>%
-  summarise (n = sum(!is.na(nest_med_temp)),
-             avg = round (mean(nest_med_temp, 
-                               na.rm = T),2),
-             stdev = round (sd(nest_med_temp, 
-                               na.rm = T), 2),
-             med = round(median(nest_med_temp,
-                                na.rm = T), 2),
-             min = round(min(nest_med_temp,
-                             na.rm = T), 2),
-             max = round(max(nest_med_temp,
-                             na.rm = T), 2)
-  )
-
-# Min temp
-univar_temp_min <- nest_dat %>%
-  summarise (n = sum(!is.na(nest_min_temp)),
-             avg = round (mean(nest_min_temp, 
-                               na.rm = T),2),
-             stdev = round (sd(nest_min_temp, 
-                               na.rm = T), 2),
-             med = round(median(nest_min_temp,
-                                na.rm = T), 2),
-             min = round(min(nest_min_temp,
-                             na.rm = T), 2),
-             max = round(max(nest_min_temp,
-                             na.rm = T), 2)
-  )
-
-# Max temp
-univar_temp_max <- nest_dat %>%
-  summarise (n = sum(!is.na(nest_max_temp)),
-             avg = round (mean(nest_max_temp, 
-                               na.rm = T),2),
-             stdev = round (sd(nest_max_temp, 
-                               na.rm = T), 2),
-             med = round(median(nest_max_temp,
-                                na.rm = T), 2),
-             min = round(min(nest_max_temp,
-                             na.rm = T), 2),
-             max = round(max(nest_max_temp,
-                             na.rm = T), 2)
-  )
-
-# IQR of temp
-univar_temp_iqr <- nest_dat %>%
-  summarise (n = sum(!is.na(nest_iqr_temp)),
-             avg = round (mean(nest_iqr_temp, 
-                               na.rm = T),2),
-             stdev = round (sd(nest_iqr_temp, 
-                               na.rm = T), 2),
-             med = round(median(nest_iqr_temp,
-                                na.rm = T), 2),
-             min = round(min(nest_iqr_temp,
-                             na.rm = T), 2),
-             max = round(max(nest_iqr_temp,
-                             na.rm = T), 2)
-  )
-
-# Before thermo median
-univar_temp_bef_thermo <- nest_dat %>%
-  summarise (n = sum(!is.na(thermo_bef_med_temp)),
-             avg = round (mean(thermo_bef_med_temp, 
-                               na.rm = T),2),
-             stdev = round (sd(thermo_bef_med_temp, 
-                               na.rm = T), 2),
-             med = round(median(thermo_bef_med_temp,
-                                na.rm = T), 2),
-             min = round(min(thermo_bef_med_temp,
-                             na.rm = T), 2),
-             max = round(max(thermo_bef_med_temp,
-                             na.rm = T), 2)
-  )
-
-# After thermo median
-univar_temp_aft_thermo <- nest_dat %>%
-  summarise (n = sum(!is.na(thermo_aft_med_temp)),
-             avg = round (mean(thermo_aft_med_temp, 
-                               na.rm = T),2),
-             stdev = round (sd(thermo_aft_med_temp, 
-                               na.rm = T), 2),
-             med = round(median(thermo_aft_med_temp,
-                                na.rm = T), 2),
-             min = round(min(thermo_aft_med_temp,
-                             na.rm = T), 2),
-             max = round(max(thermo_aft_med_temp,
-                             na.rm = T), 2)
-  )
-
-univar_temp <- rbind(univar_temp_med, univar_temp_min, univar_temp_max, 
-                     univar_temp_iqr, univar_temp_bef_thermo, univar_temp_aft_thermo)
-
-univar_temp$variable_name <- c("nest_med_temp", "nest_min_temp", 
-                               "nest_max_temp", "nest_iqr_temp",
-                               "thermo_bef_med_temp", "thermo_aft_med_temp")
-
-## save the data frame of summary stats as a pdf into output file
-pdf('Output/univar_temp.pdf', height = 3, width = 14)
-grid.table(univar_temp)
-dev.off()
-
-## Nestling growth 
-# Wing day 12
-univar_growth_wing <- late_nestling_parent_care %>%
-  summarise (n = sum(!is.na(rt_wing_length)),
-             avg = round (mean(rt_wing_length, 
-                               na.rm = T),2),
-             stdev = round (sd(rt_wing_length, 
-                               na.rm = T), 2),
-             med = round(median(rt_wing_length,
-                                na.rm = T), 2),
-             min = round(min(rt_wing_length,
-                             na.rm = T), 2),
-             max = round(max(rt_wing_length,
-                             na.rm = T), 2)
-  )
-
-# Mass day 12
-univar_growth_mass <- late_nestling_parent_care %>%
-  summarise (n = sum(!is.na(mass_pre_obs)),
-             avg = round (mean(mass_pre_obs, 
-                               na.rm = T),2),
-             stdev = round (sd(mass_pre_obs, 
-                               na.rm = T), 2),
-             med = round(median(mass_pre_obs,
-                                na.rm = T), 2),
-             min = round(min(mass_pre_obs,
-                             na.rm = T), 2),
-             max = round(max(mass_pre_obs,
-                             na.rm = T), 2)
-  )
-
-univar_growth <- rbind(univar_growth_wing, univar_growth_mass)
-
-univar_growth$variable_name <- c("univar_growth_wing", "univar_growth_mass")
-
-## save the data frame of summary stats as a pdf into output file
-pdf('Output/univar_growth.pdf', height = 3, width = 14)
-grid.table(univar_growth)
-dev.off()
-
 
 ###############################################################################
 ##############              Bivariate descriptive stats          ##############
@@ -920,15 +923,15 @@ bivar_feeding_devel <- prim_merged %>%
   group_by(obs_state) %>%
   filter(!is.na(obs_state)) %>%
   summarise (n = sum(!is.na(total_visits)),
-             avg = round (mean(total_visits, 
+             avg = round (mean(total_visits/(obs_duration/3600), 
                                na.rm = T),2),
-             stdev = round (sd(total_visits, 
+             stdev = round (sd(total_visits/(obs_duration/3600), 
                                na.rm = T), 2),
-             med = round(median(total_visits,
+             med = round(median(total_visits/(obs_duration/3600),
                                 na.rm = T), 2),
-             min = round(min(total_visits,
+             min = round(min(total_visits/(obs_duration/3600),
                              na.rm = T), 2),
-             max = round(max(total_visits,
+             max = round(max(total_visits/(obs_duration/3600),
                              na.rm = T), 2)
   )
 
@@ -946,16 +949,16 @@ bivar_brooding_devel <- prim_merged %>%
   group_by(obs_state) %>%
   filter(!is.na(obs_state)) %>%
   summarise (n = sum(!is.na(total_brooding_duration)),
-             avg = round (mean(total_brooding_duration, 
-                               na.rm = T),2),
-             stdev = round (sd(total_brooding_duration, 
-                               na.rm = T), 2),
-             med = round(median(total_brooding_duration,
-                                na.rm = T), 2),
-             min = round(min(total_brooding_duration,
-                             na.rm = T), 2),
-             max = round(max(total_brooding_duration,
-                             na.rm = T), 2)
+             avg = round (mean(total_brooding_duration/(obs_duration/3600), 
+                               na.rm = T)/60,2),
+             stdev = round (sd(total_brooding_duration/(obs_duration/3600), 
+                               na.rm = T)/60, 2),
+             med = round(median(total_brooding_duration/(obs_duration/3600),
+                                na.rm = T)/60, 2),
+             min = round(min(total_brooding_duration/(obs_duration/3600),
+                             na.rm = T)/60, 2),
+             max = round(max(total_brooding_duration/(obs_duration/3600),
+                             na.rm = T)/60, 2)
   )
 
 
@@ -968,6 +971,9 @@ grid.table(bivar_brooding_devel)
 dev.off()
 
 
+###############################################################################
+##############             Bivariate visualizations              ##############
+###############################################################################
 
 ### Visualization of nestling growth by other predictors
 ## Parental care

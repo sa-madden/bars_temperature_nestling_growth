@@ -2,10 +2,19 @@
 ####### nest mircoclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 1/16/2023
+####### Last modified: 10/8/2024
+
+# Code Blocks
+# 1: Configure work space
+# 2: Load data
+# 3: Nestling growth vs. covariates
+# 4: Temperature vs. covariates
+# 5: Parental care vs. covariates
+# 6: Growth vs. parental care
+
 
 ###############################################################################
-##############             1.  Configure work space              ##############
+##############                 Configure work space              ##############
 ###############################################################################
 
 ### 1Global options
@@ -55,12 +64,12 @@ R.Version()
 sessionInfo()
 
 ###############################################################################
-##############                    2. Load RData                  ##############
+##############                      Load Data                    ##############
 ###############################################################################  
 
 ### Load RData
 ## Load RData tidy barn swallow data
-load('Data/tidy_parent_nestl_weather_data_8-23_with_pci.RData')
+load('Data/Tidy/tidy_parent_nestl_weather_data_10-4_with_BLUPs.RData')
 
 # Make site a factor
 late_nestling_parent_care$fsite <- as.factor(late_nestling_parent_care$site)
@@ -70,7 +79,7 @@ late_nestling_parent_care$num_pairs <- as.numeric(late_nestling_parent_care$num_
 
 
 ###############################################################################
-##############      3. Growth, temp, and parental care      ##############
+##############             Growth, temp, and parental care       ##############
 ###############################################################################
 ##### FEEDING 
 #### Minimum temp
@@ -216,7 +225,7 @@ summary(mass_min_temp_blups_high_adj_lmer)
 confint(mass_min_temp_blups_high_adj_lmer) 
 
 ### Mass adjusted with outliers removed
-mass_outliers_removed <- late_nestling_parent_care[-c(4, 7, 44), ]
+mass_outliers_removed <- late_nestling_parent_care[-c(4, 40), ]
 
 mass_min_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
                                        scale(feeding_expontd_blups) + scale(nestling_number) + 
@@ -360,13 +369,15 @@ confint(mass_max_temp_blups_noint_adj_lmer)
 
 anova(mass_max_temp_blups_noint_adj_lmer, type = "3", ddf = "Satterthwaite")
 
+mass_max_outliers_removed <- late_nestling_parent_care[-c(4, 39, 40), ]
+
 ### Mass adjusted -- outliers removed
 mass_max_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
                                        scale(feeding_expontd_blups) + 
                                        scale(nestling_number) + scale(days_summer) +
                                        (1|fsite) +
                                        (1|fnest_id), 
-                                     data = subset(mass_outliers_removed,
+                                     data = subset(mass_max_outliers_removed,
                                                    !is.na(x = mass_pre_obs) & 
                                                      !is.na(x = nest_max_temp) &
                                                      !is.na(x = feeding_expontd_blups)))
@@ -390,7 +401,7 @@ mass_max_temp_blups_noint_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_t
                                              scale(nestling_number) + scale(days_summer) +
                                              (1|fsite) +
                                              (1|fnest_id), 
-                                           data = subset(mass_outliers_removed,
+                                           data = subset(mass_max_outliers_removed,
                                                          !is.na(x = mass_pre_obs) & 
                                                            !is.na(x = nest_max_temp) &
                                                            !is.na(x = feeding_expontd_blups)))
@@ -482,7 +493,7 @@ mass_iqr_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
                                        scale(nestling_number) + scale(days_summer) +
                                        (1|fsite) +
                                        (1|fnest_id), 
-                                     data = subset(mass_outliers_removed,
+                                     data = subset(mass_max_outliers_removed,
                                                    !is.na(x = mass_pre_obs) & 
                                                      !is.na(x = nest_iqr_temp) &
                                                      !is.na(x = feeding_expontd_blups)))
@@ -506,7 +517,7 @@ mass_iqr_temp_blups_noint_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_t
                                              scale(nestling_number) + scale(days_summer) + 
                                              (1|fsite) +
                                              (1|fnest_id), 
-                                           data = subset( mass_outliers_removed,
+                                           data = subset(mass_max_outliers_removed,
                                                          !is.na(x = mass_pre_obs) & 
                                                            !is.na(x = nest_iqr_temp) &
                                                            !is.na(x = feeding_expontd_blups)))
@@ -515,271 +526,8 @@ summary(mass_iqr_temp_blups_noint_adj_noout_lmer)
 confint(mass_iqr_temp_blups_noint_adj_noout_lmer)
 
 
-
-##### BROODING
-#### Minimum temp
-### Mass unadjusted
-mass_min_temp_brooding_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                   scale(brooding_blups) + (1|fsite) +
-                                   (1|fnest_id), 
-                                 data = subset(late_nestling_parent_care,
-                                               !is.na(x = mass_pre_obs) & 
-                                                 !is.na(x = nest_min_temp) &
-                                                 !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_min_temp_brooding_blups_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_temp_brooding_blups_lmer))
-  qqline(resid(mass_min_temp_brooding_blups_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_temp_brooding_blups_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_min_temp_brooding_blups_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_temp_brooding_blups_lmer, vars=c("Studentized"))
-
-summary(mass_min_temp_brooding_blups_lmer)
-confint(mass_min_temp_brooding_blups_lmer) 
-
-# Model without interaction 
-mass_min_temp_brooding_blups_noint_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
-                                            (1|fsite) +
-                                            (1|fnest_id), 
-                                          data = subset(late_nestling_parent_care,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_min_temp) &
-                                                          !is.na(x = brooding_blups)))
-
-summary(mass_min_temp_brooding_blups_noint_lmer)
-confint(mass_min_temp_brooding_blups_noint_lmer)
-
-### Mass adjusted
-mass_min_temp_brooding_blups_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                       scale(brooding_blups) + scale(nestling_number) + 
-                                       scale(days_summer) + (1|fsite) +
-                                       (1|fnest_id), 
-                                     data = subset(late_nestling_parent_care,
-                                                   !is.na(x = mass_pre_obs) & 
-                                                     !is.na(x = nest_min_temp) &
-                                                     !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_min_temp_brooding_blups_adj_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_temp_brooding_blups_adj_lmer))
-  qqline(resid(mass_min_temp_brooding_blups_adj_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_temp_brooding_blups_adj_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_min_temp_brooding_blups_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_temp_brooding_blups_adj_lmer, vars=c("Studentized"))
-
-summary(mass_min_temp_brooding_blups_adj_lmer)
-confint(mass_min_temp_brooding_blups_adj_lmer)
-
-
-mass_brooding_outliers_removed <- late_nestling_parent_care[-c(4, 7), ]
-
-### Mass adjusted -- outliers removed 
-mass_min_temp_brooding_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                             scale(brooding_blups) + 
-                                             scale(nestling_number) + scale(days_summer) +
-                                             (1|fsite) +
-                                             (1|fnest_id), 
-                                           data = subset(mass_brooding_outliers_removed,
-                                                         !is.na(x = mass_pre_obs) & 
-                                                           !is.na(x = nest_min_temp) &
-                                                           !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_min_temp_brooding_blups_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_temp_brooding_blups_adj_noout_lmer))
-  qqline(resid(mass_min_temp_brooding_blups_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_temp_brooding_blups_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_min_temp_brooding_blups_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_temp_brooding_blups_adj_noout_lmer, vars=c("Studentized"))
-
-summary(mass_min_temp_brooding_blups_adj_noout_lmer)
-confint(mass_min_temp_brooding_blups_adj_noout_lmer)
-
-
-#### Maximum temp
-### Mass unadjusted
-mass_max_temp_brooding_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                            scale(brooding_blups) + (1|fsite) +
-                                            (1|fnest_id), 
-                                          data = subset(late_nestling_parent_care,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_max_temp) &
-                                                          !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_max_temp_brooding_blups_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_temp_brooding_blups_lmer))
-  qqline(resid(mass_max_temp_brooding_blups_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_temp_brooding_blups_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_max_temp_brooding_blups_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_temp_brooding_blups_lmer, vars=c("Studentized"))
-
-summary(mass_max_temp_brooding_blups_lmer)
-confint(mass_max_temp_brooding_blups_lmer)
-
-# Model without interaction 
-mass_max_temp_brooding_blups_noint_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
-                                            (1|fsite) +
-                                            (1|fnest_id), 
-                                          data = subset(late_nestling_parent_care,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_max_temp) &
-                                                          !is.na(x = brooding_blups)))
-
-summary(mass_max_temp_brooding_blups_noint_lmer)
-confint(mass_max_temp_brooding_blups_noint_lmer)
-
-### Mass adjusted
-mass_max_temp_brooding_blups_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                                scale(brooding_blups) + scale(nestling_number) + 
-                                                scale(days_summer) + (1|fsite) +
-                                                (1|fnest_id), 
-                                              data = subset(late_nestling_parent_care,
-                                                            !is.na(x = mass_pre_obs) & 
-                                                              !is.na(x = nest_max_temp) &
-                                                              !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_max_temp_brooding_blups_adj_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_temp_brooding_blups_adj_lmer))
-  qqline(resid(mass_max_temp_brooding_blups_adj_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_temp_brooding_blups_adj_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_max_temp_brooding_blups_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_temp_brooding_blups_adj_lmer, vars=c("Studentized"))
-
-summary(mass_max_temp_brooding_blups_adj_lmer)
-confint(mass_max_temp_brooding_blups_adj_lmer)
-
-### Mass adjusted -- outliers removed 
-mass_max_temp_brooding_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                                      scale(brooding_blups) + 
-                                                      scale(nestling_number) + scale(days_summer) +
-                                                      (1|fsite) +
-                                                      (1|fnest_id), 
-                                                    data = subset(mass_brooding_outliers_removed,
-                                                                  !is.na(x = mass_pre_obs) & 
-                                                                    !is.na(x = nest_max_temp) &
-                                                                    !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_max_temp_brooding_blups_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_temp_brooding_blups_adj_noout_lmer))
-  qqline(resid(mass_max_temp_brooding_blups_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_temp_brooding_blups_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_max_temp_brooding_blups_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_temp_brooding_blups_adj_noout_lmer, vars=c("Studentized"))
-
-summary(mass_max_temp_brooding_blups_adj_noout_lmer)
-confint(mass_max_temp_brooding_blups_adj_noout_lmer)
-
-
-#### IQR of temp
-### Mass unadjusted
-mass_iqr_temp_brooding_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                            scale(brooding_blups) + (1|fsite) +
-                                            (1|fnest_id), 
-                                          data = subset(late_nestling_parent_care,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_iqr_temp) &
-                                                          !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_iqr_temp_brooding_blups_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_iqr_temp_brooding_blups_lmer))
-  qqline(resid(mass_iqr_temp_brooding_blups_lmer))}
-# Histogram of residuals
-hist(resid(mass_iqr_temp_brooding_blups_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_iqr_temp_brooding_blups_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_temp_brooding_blups_lmer, vars=c("Studentized"))
-
-summary(mass_iqr_temp_brooding_blups_lmer)
-confint(mass_iqr_temp_brooding_blups_lmer)  
-
-# Model without interaction  
-mass_iqr_temp_brooding_blups_noint_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
-                                            (1|fsite) +
-                                            (1|fnest_id), 
-                                          data = subset(late_nestling_parent_care,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_iqr_temp) &
-                                                          !is.na(x = brooding_blups)))
-summary(mass_iqr_temp_brooding_blups_noint_lmer)
-confint(mass_iqr_temp_brooding_blups_noint_lmer)
-
-### Mass adjusted
-mass_iqr_temp_brooding_blups_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                                scale(brooding_blups) + scale(nestling_number) + 
-                                                scale(days_summer) + (1|fsite) +
-                                                (1|fnest_id), 
-                                              data = subset(late_nestling_parent_care,
-                                                            !is.na(x = mass_pre_obs) & 
-                                                              !is.na(x = nest_iqr_temp) &
-                                                              !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_iqr_temp_brooding_blups_adj_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_iqr_temp_brooding_blups_adj_lmer))
-  qqline(resid(mass_iqr_temp_brooding_blups_adj_lmer))}
-# Histogram of residuals
-hist(resid(mass_iqr_temp_brooding_blups_adj_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_iqr_temp_brooding_blups_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_temp_brooding_blups_adj_lmer, vars=c("Studentized"))
-
-summary(mass_iqr_temp_brooding_blups_adj_lmer)
-confint(mass_iqr_temp_brooding_blups_adj_lmer)
-
-### Mass adjusted -- outliers removed 
-mass_iqr_temp_brooding_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                                      scale(brooding_blups) + 
-                                                      scale(nestling_number) + scale(days_summer) +
-                                                      (1|fsite) +
-                                                      (1|fnest_id), 
-                                                    data = subset(mass_brooding_outliers_removed,
-                                                                  !is.na(x = mass_pre_obs) & 
-                                                                    !is.na(x = nest_iqr_temp) &
-                                                                    !is.na(x = brooding_blups)))
-
-## Check diagnostics for the full model
-plot(mass_iqr_temp_brooding_blups_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_iqr_temp_brooding_blups_adj_noout_lmer))
-  qqline(resid(mass_iqr_temp_brooding_blups_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_iqr_temp_brooding_blups_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_iqr_temp_brooding_blups_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_temp_brooding_blups_adj_noout_lmer, vars=c("Studentized"))
-
-summary(mass_iqr_temp_brooding_blups_adj_noout_lmer)
-confint(mass_iqr_temp_brooding_blups_adj_noout_lmer)
-
-
-
 ###############################################################################
-##############      3. Growth, temp, and relative size     ##############
+##############          Growth, temp, and relative size          ##############
 ###############################################################################
 
 ########################### MID SIZE #######################################
@@ -936,60 +684,6 @@ summary(mass_max_temp_mid_size_big_adj_lmer)
 confint(mass_max_temp_mid_size_big_adj_lmer)
 
 
-mid_mass_outliers_removed <- late_nestling_parent_care[-c(44), ]
-
-### Mass adjusted outliers removed
-mass_max_temp_mid_size_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                            mid_size_order + scale(nestling_number) +
-                                            scale(days_summer) + (1|fsite) +
-                                            (1|fnest_id), 
-                                          data = subset(mid_mass_outliers_removed,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_max_temp) &
-                                                          !is.na(x = mid_size_order)))
-
-## Check diagnostics for the full model
-plot(mass_max_temp_mid_size_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_temp_mid_size_adj_noout_lmer))
-  qqline(resid(mass_max_temp_mid_size_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_temp_mid_size_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_max_temp_mid_size_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_temp_mid_size_adj_noout_lmer, vars=c("Studentized"))
-
-summary(mass_max_temp_mid_size_adj_noout_lmer)
-confint(mass_max_temp_mid_size_adj_noout_lmer) 
-
-# SMALL nestlings
-mass_max_temp_mid_size_small_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
-                                                  scale(nestling_number) + scale(days_summer) +
-                                                  (1|fsite), 
-                                                data = subset(mid_mass_outliers_removed,
-                                                              mid_size_order == "min",
-                                                              !is.na(x = mass_pre_obs) & 
-                                                                !is.na(x = nest_max_temp) &
-                                                                !is.na(x = mid_size_order)))
-
-summary(mass_max_temp_mid_size_small_adj_noout_lmer)
-confint(mass_max_temp_mid_size_small_adj_noout_lmer)
-
-# BIG nestlings
-mass_max_temp_mid_size_big_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
-                                                scale(nestling_number) + scale(days_summer) +
-                                                (1|fsite) +
-                                                (1|fnest_id), 
-                                              data = subset(mid_mass_outliers_removed,
-                                                            mid_size_order == "other",
-                                                            !is.na(x = mass_pre_obs) & 
-                                                              !is.na(x = nest_max_temp) &
-                                                              !is.na(x = mid_size_order)))
-
-summary(mass_max_temp_mid_size_big_adj_noout_lmer)
-confint(mass_max_temp_mid_size_big_adj_noout_lmer)
-
-
 #### IQR temp
 ### Mass unadjusted
 mass_iqr_temp_mid_size_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
@@ -1092,60 +786,6 @@ mass_iqr_temp_mid_size_big_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) 
 
 summary(mass_iqr_temp_mid_size_big_adj_lmer)
 confint(mass_iqr_temp_mid_size_big_adj_lmer) 
-
-### Mass adjusted outliers removed
-mass_iqr_temp_mid_size_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                            mid_size_order + scale(nestling_number) + 
-                                            scale(days_summer) + (1|fsite) +
-                                            (1|fnest_id), 
-                                          data = subset(mass_outliers_removed,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_iqr_temp) &
-                                                          !is.na(x = mid_mid_size_order)))
-
-## Check diagnostics for the full model
-plot(mass_iqr_temp_mid_size_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_iqr_temp_mid_size_adj_noout_lmer))
-  qqline(resid(mass_iqr_temp_mid_size_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_iqr_temp_mid_size_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_iqr_temp_mid_size_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_temp_mid_size_adj_noout_lmer, vars=c("Studentized"))
-
-summary(mass_iqr_temp_mid_size_adj_noout_lmer)
-confint(mass_iqr_temp_mid_size_adj_noout_lmer) 
-
-# SMALL nestlings
-mass_iqr_temp_mid_size_small_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
-                                                  scale(nestling_number) + 
-                                                  scale(days_summer) +
-                                                  (1|fsite), 
-                                                data = subset(mid_mass_outliers_removed,
-                                                              mid_size_order == "min",
-                                                              !is.na(x = mass_pre_obs) & 
-                                                                !is.na(x = nest_iqr_temp) &
-                                                                !is.na(x = mid_size_order)))
-
-summary(mass_iqr_temp_mid_size_small_adj_noout_lmer)
-confint(mass_iqr_temp_mid_size_small_adj_noout_lmer) 
-
-# BIG nestlings
-mass_iqr_temp_mid_size_big_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
-                                                scale(nestling_number) + 
-                                                scale(days_summer) +
-                                                (1|fsite) +
-                                                (1|fnest_id), 
-                                              data = subset(mid_mass_outliers_removed,
-                                                            mid_size_order == "other",
-                                                            !is.na(x = mass_pre_obs) & 
-                                                              !is.na(x = nest_iqr_temp) &
-                                                              !is.na(x = mid_size_order)))
-
-summary(mass_iqr_temp_mid_size_big_adj_noout_lmer)
-confint(mass_iqr_temp_mid_size_big_adj_noout_lmer) 
-
 
 
 ########################## LATE SIZE #######################################
@@ -1301,62 +941,6 @@ mass_max_temp_size_big_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
 summary(mass_max_temp_size_big_adj_lmer)
 confint(mass_max_temp_size_big_adj_lmer)
 
-
-mass_outliers_removed <- late_nestling_parent_care[-c(44), ]
-
-
-### Mass adjusted outliers removed
-mass_max_temp_size_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                      size_order + scale(nestling_number) +
-                                      scale(days_summer) + (1|fsite) +
-                                      (1|fnest_id), 
-                                    data = subset(mass_outliers_removed,
-                                                  !is.na(x = mass_pre_obs) & 
-                                                    !is.na(x = nest_max_temp) &
-                                                    !is.na(x = size_order)))
-
-## Check diagnostics for the full model
-plot(mass_max_temp_size_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_temp_size_adj_noout_lmer))
-  qqline(resid(mass_max_temp_size_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_temp_size_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_max_temp_size_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_temp_size_adj_noout_lmer, vars=c("Studentized"))
-
-summary(mass_max_temp_size_adj_noout_lmer)
-confint(mass_max_temp_size_adj_noout_lmer) 
-
-# SMALL nestlings
-mass_max_temp_size_small_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
-                                            scale(nestling_number) + scale(days_summer) +
-                                            (1|fsite), 
-                                          data = subset(mass_outliers_removed,
-                                                        size_order == "min",
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_max_temp) &
-                                                          !is.na(x = size_order)))
-
-summary(mass_max_temp_size_small_adj_noout_lmer)
-confint(mass_max_temp_size_small_adj_noout_lmer)
-
-# BIG nestlings
-mass_max_temp_size_big_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
-                                          scale(nestling_number) + scale(days_summer) +
-                                          (1|fsite) +
-                                          (1|fnest_id), 
-                                        data = subset(mass_outliers_removed,
-                                                      size_order == "other",
-                                                      !is.na(x = mass_pre_obs) & 
-                                                        !is.na(x = nest_max_temp) &
-                                                        !is.na(x = size_order)))
-
-summary(mass_max_temp_size_big_adj_noout_lmer)
-confint(mass_max_temp_size_big_adj_noout_lmer)
-
-
 #### IQR temp
 ### Mass unadjusted
 mass_iqr_temp_size_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
@@ -1460,63 +1044,9 @@ mass_iqr_temp_size_big_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
 summary(mass_iqr_temp_size_big_adj_lmer)
 confint(mass_iqr_temp_size_big_adj_lmer) 
 
-### Mass adjusted outliers removed
-mass_iqr_temp_size_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                      size_order + scale(nestling_number) + 
-                                      scale(days_summer) + (1|fsite) +
-                                      (1|fnest_id), 
-                                    data = subset(mass_outliers_removed,
-                                                  !is.na(x = mass_pre_obs) & 
-                                                    !is.na(x = nest_iqr_temp) &
-                                                    !is.na(x = size_order)))
-
-## Check diagnostics for the full model
-plot(mass_iqr_temp_size_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_iqr_temp_size_adj_noout_lmer))
-  qqline(resid(mass_iqr_temp_size_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_iqr_temp_size_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_iqr_temp_size_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_temp_size_adj_noout_lmer, vars=c("Studentized"))
-
-summary(mass_iqr_temp_size_adj_noout_lmer)
-confint(mass_iqr_temp_size_adj_noout_lmer) 
-
-# SMALL nestlings
-mass_iqr_temp_size_small_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
-                                            scale(nestling_number) + 
-                                            scale(days_summer) +
-                                            (1|fsite), 
-                                          data = subset(mass_outliers_removed,
-                                                        size_order == "min",
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_iqr_temp) &
-                                                          !is.na(x = size_order)))
-
-summary(mass_iqr_temp_size_small_adj_noout_lmer)
-confint(mass_iqr_temp_size_small_adj_noout_lmer) 
-
-# BIG nestlings
-mass_iqr_temp_size_big_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
-                                          scale(nestling_number) + 
-                                          scale(days_summer) +
-                                          (1|fsite) +
-                                          (1|fnest_id), 
-                                        data = subset(mass_outliers_removed,
-                                                      size_order == "other",
-                                                      !is.na(x = mass_pre_obs) & 
-                                                        !is.na(x = nest_iqr_temp) &
-                                                        !is.na(x = size_order)))
-
-summary(mass_iqr_temp_size_big_adj_noout_lmer)
-confint(mass_iqr_temp_size_big_adj_noout_lmer) 
-
-
 
 ###############################################################################
-##############      3. Sensitive development periods      ##############
+##############           Sensitive development periods           ##############
 ###############################################################################
 
 ######################## 6 days cut off #######################################
@@ -1566,10 +1096,12 @@ summary(mass_min_before_thermo_adj_lmer)
 confint(mass_min_before_thermo_adj_lmer)
 
 ### Before thermo adjusted no outliers
+before_thermo_outliers_removed <- late_nestling_parent_care[-c(4, 39, 40), ]
+
 mass_min_before_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + scale(nestling_number) +
                                           scale(days_summer) + (1|fsite) +
                                           (1|fnest_id), 
-                                        data = subset(mass_outliers_removed,
+                                        data = subset(before_thermo_outliers_removed,
                                                       !is.na(x = thermo_bef_min_temp)&
                                                         !is.na(x = mass_pre_obs)))
 
@@ -1635,7 +1167,7 @@ confint(mass_min_after_thermo_adj_lmer)
 mass_min_after_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) + scale(nestling_number) +
                                                scale(days_summer) + (1|fsite) +
                                                (1|fnest_id), 
-                                             data = subset(mass_outliers_removed,
+                                             data = subset(before_thermo_outliers_removed,
                                                            !is.na(x = thermo_aft_min_temp)&
                                                              !is.na(x = mass_pre_obs)))
 
@@ -1704,12 +1236,11 @@ confint(mass_min_both_thermo_adj_lmer)
 vif(mass_min_both_thermo_adj_lmer)
 
 ### Before and after thermo outliers removed
-thermo_outliers_removed <- late_nestling_parent_care[-c(43, 44), ]
 mass_min_both_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + 
                                         scale(thermo_aft_min_temp) + scale(nestling_number) +
                                         scale(days_summer) + (1|fsite) +
                                         (1|fnest_id), 
-                                      data = subset(thermo_outliers_removed,
+                                      data = subset(before_thermo_outliers_removed,
                                                     !is.na(x = thermo_bef_min_temp) &
                                                       !is.na(x = thermo_aft_min_temp)&
                                                       !is.na(x = mass_pre_obs)))
@@ -1777,7 +1308,7 @@ confint(mass_max_before_thermo_adj_lmer)
 mass_max_before_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + scale(nestling_number) +
                                           scale(days_summer) + (1|fsite) +
                                           (1|fnest_id), 
-                                        data = subset(mass_outliers_removed,
+                                        data = subset(before_thermo_outliers_removed,
                                                       !is.na(x = thermo_bef_max_temp)&
                                                         !is.na(x = mass_pre_obs)))
 
@@ -1842,7 +1373,7 @@ confint(mass_max_after_thermo_adj_lmer)
 mass_max_after_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) + scale(nestling_number) +
                                          scale(days_summer) + (1|fsite) +
                                          (1|fnest_id), 
-                                       data = subset(thermo_outliers_removed,
+                                       data = subset(before_thermo_outliers_removed,
                                                      !is.na(x = thermo_aft_max_temp)&
                                                        !is.na(x = mass_pre_obs)))
 
