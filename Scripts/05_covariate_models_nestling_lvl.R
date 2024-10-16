@@ -2,7 +2,7 @@
 ####### nest microclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 1/16/2023
-####### Last modified: 10/8/2024
+####### Last modified: 10/11/2024
 
 # Code Blocks
 # 1: Configure work space
@@ -102,6 +102,20 @@ infIndexPlot(mass_hatch_lmer, vars=c("Studentized"))
 summary(mass_hatch_lmer)
 confint(mass_hatch_lmer)
 
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_hatch_lmer <- bootMer(x = mass_hatch_lmer,
+                                      FUN = fixef, nsim = 2000,
+                                      seed = 632760,
+                                      use.u = F, type = 'parametric')
+tidy(boot_mass_hatch_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_mass_hatch_lmer <- boot.ci(boot_mass_hatch_lmer,
+                                       type = c('perc', 'norm', 'basic'),
+                                       index = 2) # CI for 1st betas
+print(bt_ci_mass_hatch_lmer)
+
+
 ## Mass and colony size -- not significant 
 mass_colony_lmer <- lmer(mass_pre_obs ~ scale(num_pairs) + (1|fsite) +
                           (1|fnest_id), 
@@ -122,6 +136,20 @@ infIndexPlot(mass_colony_lmer, vars=c("Studentized"))
 
 summary(mass_colony_lmer)
 confint(mass_colony_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_colony_lmer <- bootMer(x = mass_colony_lmer,
+                                FUN = fixef, nsim = 2000,
+                                seed = 632760,
+                                use.u = F, type = 'parametric')
+tidy(boot_mass_colony_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_mass_colony_lmer <- boot.ci(boot_mass_colony_lmer,
+                                 type = c('perc', 'norm', 'basic'),
+                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_colony_lmer)
+
 
 ## Mass and brood size -- not significant, but marginal
 mass_brood_lmer <- lmer(mass_pre_obs ~ scale(nestling_number) + (1|fsite) +
@@ -144,6 +172,19 @@ infIndexPlot(mass_brood_lmer, vars=c("Studentized"))
 summary(mass_brood_lmer)
 confint(mass_brood_lmer)
 
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_brood_lmer <- bootMer(x = mass_brood_lmer,
+                                 FUN = fixef, nsim = 2000,
+                                 seed = 632760,
+                                 use.u = F, type = 'parametric')
+tidy(boot_mass_brood_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_mass_brood_lmer <- boot.ci(boot_mass_brood_lmer,
+                                  type = c('perc', 'norm', 'basic'),
+                                  index = 2) # CI for 1st betas
+print(bt_ci_mass_brood_lmer)
+
 ## Mass and nestling age -- not significant 
 mass_age_lmer <- lmer(mass_pre_obs ~ scale(nestling_age) + (1|fsite) +
                           (1|fnest_id), 
@@ -165,93 +206,18 @@ infIndexPlot(mass_age_lmer, vars=c("Studentized"))
 summary(mass_age_lmer)
 confint(mass_age_lmer)
 
-
-### Wing chord
-
-## wing and hatch date -- not significant, but marginal  
-wing_hatch_lmer <- lmer(rt_wing_length ~ scale(days_summer) + (1|fsite) +
-                          (1|fnest_id), 
-                        data = subset(late_nestling_parent_care,
-                                      !is.na(x = rt_wing_length) & 
-                                        !is.na(x = days_summer)))
-
-## Check diagnostics for the full model
-plot(wing_hatch_lmer)
-# Normal QQplot
-{qqnorm(resid(wing_hatch_lmer))
-  qqline(resid(wing_hatch_lmer))}
-# Histogram of residuals
-hist(resid(wing_hatch_lmer))
-# Checking for influential outliers
-infIndexPlot(wing_hatch_lmer, vars=c("Cook"))
-infIndexPlot(wing_hatch_lmer, vars=c("Studentized"))
-
-summary(wing_hatch_lmer)
-confint(wing_hatch_lmer)
-
-## wing and colony size -- not significant 
-wing_colony_lmer <- lmer(rt_wing_length ~ scale(num_pairs) + (1|fsite) +
-                           (1|fnest_id), 
-                         data = subset(late_nestling_parent_care,
-                                       !is.na(x = rt_wing_length) & 
-                                         !is.na(x = num_pairs)))
-
-## Check diagnostics for the full model
-plot(wing_colony_lmer)
-# Normal QQplot
-{qqnorm(resid(wing_colony_lmer))
-  qqline(resid(wing_colony_lmer))}
-# Histogram of residuals
-hist(resid(wing_colony_lmer))
-# Checking for influential outliers
-infIndexPlot(wing_colony_lmer, vars=c("Cook"))
-infIndexPlot(wing_colony_lmer, vars=c("Studentized"))
-
-summary(wing_colony_lmer)
-confint(wing_colony_lmer)
-
-## wing and brood size -- significant negative relationship
-wing_brood_lmer <- lmer(rt_wing_length ~ scale(nestling_number) + (1|fsite) +
-                          (1|fnest_id), 
-                        data = subset(late_nestling_parent_care,
-                                      !is.na(x = rt_wing_length) & 
-                                        !is.na(x = nestling_number)))
-
-## Check diagnostics for the full model
-plot(wing_brood_lmer)
-# Normal QQplot
-{qqnorm(resid(wing_brood_lmer))
-  qqline(resid(wing_brood_lmer))}
-# Histogram of residuals
-hist(resid(wing_brood_lmer))
-# Checking for influential outliers
-infIndexPlot(wing_brood_lmer, vars=c("Cook"))
-infIndexPlot(wing_brood_lmer, vars=c("Studentized"))
-
-summary(wing_brood_lmer)
-confint(wing_brood_lmer)
-
-## wing and nestling age -- significant positive relationship
-wing_age_lmer <- lmer(rt_wing_length ~ scale(nestling_age) + (1|fsite) +
-                        (1|fnest_id), 
-                      data = subset(late_nestling_parent_care,
-                                    !is.na(x = rt_wing_length) & 
-                                      !is.na(x = nestling_age)))
-
-## Check diagnostics for the full model
-plot(wing_age_lmer)
-# Normal QQplot
-{qqnorm(resid(wing_age_lmer))
-  qqline(resid(wing_age_lmer))}
-# Histogram of residuals
-hist(resid(wing_age_lmer))
-# Checking for influential outliers
-infIndexPlot(wing_age_lmer, vars=c("Cook"))
-infIndexPlot(wing_age_lmer, vars=c("Studentized"))
-
-summary(wing_age_lmer)
-confint(wing_age_lmer)
-
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_age_lmer <- bootMer(x = mass_age_lmer,
+                                FUN = fixef, nsim = 2000,
+                                seed = 632760,
+                                use.u = F, type = 'parametric')
+tidy(boot_mass_age_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_mass_age_lmer <- boot.ci(boot_mass_age_lmer,
+                                 type = c('perc', 'norm', 'basic'),
+                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_age_lmer)
 
 
 ###############################################################################
@@ -281,6 +247,19 @@ infIndexPlot(max_temp_hatch_lmer, vars=c("Studentized"))
 summary(max_temp_hatch_lmer)
 confint(max_temp_hatch_lmer)
 
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_max_temp_hatch_lmer <- bootMer(x = max_temp_hatch_lmer,
+                                FUN = fixef, nsim = 2000,
+                                seed = 632760,
+                                use.u = F, type = 'parametric')
+tidy(boot_max_temp_hatch_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_max_temp_hatch_lmer <- boot.ci(boot_max_temp_hatch_lmer,
+                                 type = c('perc', 'norm', 'basic'),
+                                 index = 2) # CI for 1st betas
+print(bt_ci_max_temp_hatch_lmer)
+
 
 ## min_temp and hatch date -- significant positive relationship 
 min_temp_hatch_lmer <- lmer(nest_min_temp ~ scale(days_summer) + (1|fsite), 
@@ -302,6 +281,19 @@ infIndexPlot(min_temp_hatch_lmer, vars=c("Studentized"))
 summary(min_temp_hatch_lmer)
 confint(min_temp_hatch_lmer)
 
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_min_temp_hatch_lmer <- bootMer(x = min_temp_hatch_lmer,
+                                    FUN = fixef, nsim = 2000,
+                                    seed = 632760,
+                                    use.u = F, type = 'parametric')
+tidy(boot_min_temp_hatch_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_min_temp_hatch_lmer <- boot.ci(boot_min_temp_hatch_lmer,
+                                     type = c('perc', 'norm', 'basic'),
+                                     index = 2) # CI for 1st betas
+print(bt_ci_min_temp_hatch_lmer)
+
 
 ## iqr_temp and hatch date -- significant negative relationship
 iqr_temp_hatch_lmer <- lmer(nest_iqr_temp ~ scale(days_summer) + (1|fsite), 
@@ -322,6 +314,20 @@ infIndexPlot(iqr_temp_hatch_lmer, vars=c("Studentized"))
 
 summary(iqr_temp_hatch_lmer)
 confint(iqr_temp_hatch_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_iqr_temp_hatch_lmer <- bootMer(x = iqr_temp_hatch_lmer,
+                                    FUN = fixef, nsim = 2000,
+                                    seed = 632760,
+                                    use.u = F, type = 'parametric')
+tidy(boot_iqr_temp_hatch_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_iqr_temp_hatch_lmer <- boot.ci(boot_iqr_temp_hatch_lmer,
+                                     type = c('perc', 'norm', 'basic'),
+                                     index = 2) # CI for 1st betas
+print(bt_ci_iqr_temp_hatch_lmer)
+
 
 ###############################################################################
 ##############         Parental care  vs. covariates             ##############

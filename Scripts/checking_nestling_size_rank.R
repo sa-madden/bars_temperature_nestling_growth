@@ -16,30 +16,6 @@ library("dplyr")
 
 ## Graph Plotting and Visualization Packages
 library ('ggplot2')
-library('hrbrthemes')
-library('viridis')
-library ('gridExtra')
-library ('dotwhisker')
-
-## Modelling Packages
-library('lme4')
-library ('emmeans')
-library('MuMIn')
-library('car')
-
-# load pbkrtest and lmertest (emmeans dependency)
-library('pbkrtest')
-library('lmerTest')
-# prevent lmerTest from masking the lme4 function for lmer
-lmer <- lme4::lmer
-
-## Broom packages
-library('broom')
-library('broom.mixed')
-
-## Model checking packages
-library('DHARMa')
-
 
 ### 1.3 Get Version and Session Info
 R.Version()
@@ -51,7 +27,7 @@ sessionInfo()
 
 ### 2.1 Load RData
 ## Load RData tidy barn swallow data
-load('Data/tidy_parent_nestl_weather_data_with_pci_size.RData')
+load('Data/Tidy/tidy_parent_nestl_weather_data_10-4_with_BLUPs.RData')
 
 # Make site a factor
 late_nestling_parent_care$fsite <- as.factor(late_nestling_parent_care$site)
@@ -99,3 +75,19 @@ late_nestling_parent_care_sub <- filter(late_nestling_parent_care, is.na(mid_siz
 sum(late_nestling_parent_care_sub$size_order == late_nestling_parent_care_sub$mid_size_order)/length(late_nestling_parent_care_sub$female_band)
 
 
+## Minimum size on day 8 vs. 12
+late_nestling_parent_care_sub <- filter(late_nestling_parent_care, is.na(mid_size_order) == FALSE &
+                                          is.na(size_order) == FALSE)
+
+sum(late_nestling_parent_care_sub$size_order == late_nestling_parent_care_sub$mid_size_order)/length(late_nestling_parent_care_sub$female_band)
+
+
+
+## relative size
+mid_size_sub <- filter(late_nestling_parent_care, mid_size_order == "min")
+late_size_sub <- filter(late_nestling_parent_care, size_order == "min")
+
+relative_size_joined <- left_join(mid_size_sub, late_size_sub, by = "nest_id")
+
+relative_size_joined_band <- left_join(mid_size_sub, late_size_sub, by = c("nest_id", "nestling_band"))
+relative_size_joined_band <- filter(relative_size_joined_band, size_order.x == "min")

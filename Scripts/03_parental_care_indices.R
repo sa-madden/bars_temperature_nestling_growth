@@ -3,7 +3,7 @@
 ####### growth dataset at nestling level
 ####### By: Sage Madden
 ####### Created: 12/16/2022
-####### Last modified: 10/7/2024
+####### Last modified: 10/11/2024
 
 # Code Blocks
 # 1: Configure work space
@@ -33,10 +33,14 @@ library ('ggplot2')
 library('hrbrthemes')
 library('viridis')
 library ('gridExtra')
+library('broom')
 
 ## Modelling Packages
 library('lme4')
 library('DHARMa')
+
+## boot packages
+library ('boot')
 
 
 ### 1.3 Get Version and Session Info
@@ -122,9 +126,40 @@ feeding_blups_glmm_nb <- glmer.nb(total_feeding_visits ~ scale(nestling_age) +
 simulation_output <- simulateResiduals(fittedModel = feeding_blups_glmm_nb, 
                                        plot = T)
 # Looks pretty good
-summary(feeding_blups_glmm_nb)
 
 
+
+
+## b) Parameter estimates
+summary(feeding_blups_glmm_nb) # model parameter estimates
+# confint(feeding_blups_glmm_nb)  # 95% CIs
+# confint gives an error
+
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_feeding_blups_glmm_nb <- bootMer(x = feeding_blups_glmm_nb,
+                                      FUN = fixef, nsim = 2000,
+                                      seed = 632760,
+                                      use.u = F, type = 'parametric')
+tidy(boot_feeding_blups_glmm_nb) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_feeding_blups_glmm_nb <- boot.ci(boot_feeding_blups_glmm_nb,
+                            type = c('perc', 'norm', 'basic'),
+                            index = 2) # CI for 1st betas
+print(bt_ci_feeding_blups_glmm_nb)
+
+# use 'boot' package to generate 95% CI
+bt_ci_feeding_blups_glmm_nb_2 <- boot.ci(boot_feeding_blups_glmm_nb,
+                                       type = c('perc', 'norm', 'basic'),
+                                       index = 3) # CI for 2nd betas
+print(bt_ci_feeding_blups_glmm_nb_2)
+
+# use 'boot' package to generate 95% CI
+bt_ci_feeding_blups_glmm_nb_3 <- boot.ci(boot_feeding_blups_glmm_nb,
+                                         type = c('perc', 'norm', 'basic'),
+                                         index = 4) # CI for 3rd betas
+print(bt_ci_feeding_blups_glmm_nb_3)
 
 
 # Calucate the BLUPs, individual variation in feeding visits

@@ -1741,14 +1741,14 @@ combined_temp_date <-
   ggarrange(daily_min_temps_site_scatter, daily_max_temps_site_scatter,
             daily_iqr_temps_site_scatter,
             labels = c("A", "B", "C"),
-            ncol = 1, nrow = 3)
+            ncol = 1, nrow = 3, common.legend = TRUE)
 
 print(combined_temp_date)
 
 ggsave('combined_temp_date.png', plot = combined_temp_date, 
        device = NULL, 
        path = 'Output/', scale = 1, width = 6, 
-       height = 17, 
+       height = 18.5, 
        units = c('in'), dpi = 300, limitsize = TRUE) 
-  
+
 
