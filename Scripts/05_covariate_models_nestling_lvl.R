@@ -2,7 +2,7 @@
 ####### nest microclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 1/16/2023
-####### Last modified: 10/11/2024
+####### Last modified: 10/21/2024
 
 # Code Blocks
 # 1: Configure work space
@@ -43,6 +43,7 @@ library('lme4')
 library ('emmeans')
 library('MuMIn')
 library('car')
+library('boot')
 
 # load pbkrtest and lmertest (emmeans dependency)
 library('pbkrtest')
@@ -352,6 +353,20 @@ infIndexPlot(feeding_blups_hatch_lmer, vars=c("Studentized"))
 summary(feeding_blups_hatch_lmer)
 confint(feeding_blups_hatch_lmer)
 
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_feeding_blups_hatch_lmer <- bootMer(x = feeding_blups_hatch_lmer,
+                                FUN = fixef, nsim = 2000,
+                                seed = 632760,
+                                use.u = F, type = 'parametric')
+tidy(boot_feeding_blups_hatch_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_feeding_blups_hatch_lmer <- boot.ci(boot_feeding_blups_hatch_lmer,
+                                 type = c('perc', 'norm', 'basic'),
+                                 index = 2) # CI for 1st betas
+print(bt_ci_feeding_blups_hatch_lmer)
+
+
 ## feeding_blups and colony size -- not significant 
 feeding_blups_colony_lmer <- lmer(feeding_expontd_blups ~ scale(num_pairs) + (1|fsite), 
                          data = subset(one_measure,
@@ -372,46 +387,19 @@ infIndexPlot(feeding_blups_colony_lmer, vars=c("Studentized"))
 summary(feeding_blups_colony_lmer)
 confint(feeding_blups_colony_lmer)
 
-## feeding_blups and brood size -- not significant
-feeding_blups_brood_lmer <- lmer(feeding_expontd_blups ~ scale(nestling_number) + (1|fsite), 
-                        data = subset(one_measure,
-                                      !is.na(x = feeding_expontd_blups) & 
-                                        !is.na(x = nestling_number)))
 
-## Check diagnostics for the full model
-plot(feeding_blups_brood_lmer)
-# Normal QQplot
-{qqnorm(resid(feeding_blups_brood_lmer))
-  qqline(resid(feeding_blups_brood_lmer))}
-# Histogram of residuals
-hist(resid(feeding_blups_brood_lmer))
-# Checking for influential outliers
-infIndexPlot(feeding_blups_brood_lmer, vars=c("Cook"))
-infIndexPlot(feeding_blups_brood_lmer, vars=c("Studentized"))
-
-summary(feeding_blups_brood_lmer)
-confint(feeding_blups_brood_lmer)
-
-## feeding_blups and nestling age
-feeding_blups_age_lmer <- lmer(feeding_expontd_blups ~ scale(nestling_age) + (1|fsite), 
-                      data = subset(one_measure,
-                                    !is.na(x = feeding_expontd_blups) & 
-                                      !is.na(x = nestling_age)))
-
-## Check diagnostics for the full model
-plot(feeding_blups_age_lmer)
-# Normal QQplot
-{qqnorm(resid(feeding_blups_age_lmer))
-  qqline(resid(feeding_blups_age_lmer))}
-# Histogram of residuals
-hist(resid(feeding_blups_age_lmer))
-# Checking for influential outliers
-infIndexPlot(feeding_blups_age_lmer, vars=c("Cook"))
-infIndexPlot(feeding_blups_age_lmer, vars=c("Studentized"))
-
-summary(feeding_blups_age_lmer)
-confint(feeding_blups_age_lmer)
-
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_feeding_blups_hatch_lmer <- bootMer(x = feeding_blups_hatch_lmer,
+                                         FUN = fixef, nsim = 2000,
+                                         seed = 632760,
+                                         use.u = F, type = 'parametric')
+tidy(boot_feeding_blups_hatch_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI
+bt_ci_feeding_blups_hatch_lmer <- boot.ci(boot_feeding_blups_hatch_lmer,
+                                          type = c('perc', 'norm', 'basic'),
+                                          index = 2) # CI for 1st betas
+print(bt_ci_feeding_blups_hatch_lmer)
 
 
 ###############################################################################
