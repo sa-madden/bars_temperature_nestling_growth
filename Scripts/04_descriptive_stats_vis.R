@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset at nestling level
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 10/8/2024
+####### Last modified: 11/18/2024
 
 ##### Fill in code blocks + write down parental care stats
 
@@ -1718,7 +1718,7 @@ daily_iqr_temps_site_scatter <-
                 col = site, group = nest_ids), data = govee_split,
             size = 0.8) +
   labs(x ='Date', 
-       y ='Daily interquartile range of temperature (C)',
+       y ='Daily IQR of temperature (C)',
        col = "Site") +
   theme_classic() +
   scale_color_viridis(discrete = TRUE, alpha=0.8,
@@ -1740,15 +1740,53 @@ ggsave('daily_iqr_temps_site_scatter.png', plot = daily_iqr_temps_site_scatter,
 combined_temp_date <- 
   ggarrange(daily_min_temps_site_scatter, daily_max_temps_site_scatter,
             daily_iqr_temps_site_scatter,
-            labels = c("A", "B", "C"),
-            ncol = 1, nrow = 3, common.legend = TRUE)
+            labels = c("a", "b", "c"),
+            ncol = 1, nrow = 3, common.legend = TRUE, 
+            legend = "right")
 
 print(combined_temp_date)
 
 ggsave('combined_temp_date.png', plot = combined_temp_date, 
        device = NULL, 
-       path = 'Output/', scale = 1, width = 6, 
-       height = 18.5, 
+       path = 'Output/', scale = 1, width = 10, 
+       height = 14, 
        units = c('in'), dpi = 300, limitsize = TRUE) 
+
+
+### BLUPs by strata for statified analysis
+## Create three categories for BLUPs to allow stratification 
+late_nestling_parent_care <- late_nestling_parent_care %>%
+  mutate(feeding_expontd_blups_strat =  as.integer(Hmisc::cut2(feeding_expontd_blups, g=3)))
+
+late_nestling_parent_care$blups_factor <- as.factor(late_nestling_parent_care$feeding_expontd_blups_strat)
+
+levels(late_nestling_parent_care$blups_factor) <- c("Low", "Med", "High")
+
+cols <- c("#481567FF", "#20A387FF", "#95D840FF")
+
+
+
+blups_stratified_boxplot <- ggplot(data = late_nestling_parent_care, 
+                                   aes(x = blups_factor, y = feeding_expontd_blups, 
+                                       fill = blups_factor), col = "black") +
+  geom_jitter(aes(col = blups_factor), size = 1.5, alpha = 0.5, width = 0.2) +
+  geom_boxplot(alpha = 0.5, size = 1) +
+  theme_classic() +
+  labs(x = "Parent feeding level", y = "Feeding BLUPs (visits/hr)", fill = "Parent feeding level") +
+  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18)) +
+  theme(legend.position="none") +
+  scale_color_manual(values = cols) +
+  scale_fill_manual(values = cols)
+
+
+# Print
+print(blups_stratified_boxplot)
+
+# Save
+ggsave('blups_stratified_boxplot.png', plot = blups_stratified_boxplot, 
+       device = NULL, 
+       path = 'Output/', scale = 1, width = 6, 
+       height = 6, 
+       units = c('in'), dpi = 300, limitsize = TRUE)
 
 

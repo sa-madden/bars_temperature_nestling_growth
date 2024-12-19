@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 11/5/2024
+####### Last modified: 12/9/2024
 
 # Code Blocks
 # 1: Configure work space
@@ -341,6 +341,9 @@ hist(resid(mass_min_temp_blups_noout_lmer))
 summary(mass_min_temp_blups_noout_lmer)
 confint(mass_min_temp_blups_noout_lmer)  
 
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_blups_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_temp_blups_noout_lmer <- bootMer(x = mass_min_temp_blups_noout_lmer,
@@ -389,6 +392,9 @@ infIndexPlot(mass_min_temp_blups_adj_noout_lmer, vars=c("Studentized"))
 
 summary(mass_min_temp_blups_adj_noout_lmer)
 confint(mass_min_temp_blups_adj_noout_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_blups_adj_noout_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -546,6 +552,9 @@ infIndexPlot(mass_max_temp_blups_lmer, vars=c("Studentized"))
 summary(mass_max_temp_blups_lmer)
 confint(mass_max_temp_blups_lmer)  
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_blups_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_temp_blups_lmer <- bootMer(x = mass_max_temp_blups_lmer,
@@ -595,7 +604,10 @@ infIndexPlot(mass_max_temp_blups_adj_lmer, vars=c("Cook"))
 infIndexPlot(mass_max_temp_blups_adj_lmer, vars=c("Studentized"))
 
 summary(mass_max_temp_blups_adj_lmer)
-confint(mass_max_temp_blups_adj_lmer)  
+confint(mass_max_temp_blups_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_blups_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -754,7 +766,11 @@ plot(mass_max_temp_blups_noout_lmer)
 hist(resid(mass_max_temp_blups_noout_lmer))
 
 summary(mass_max_temp_blups_noout_lmer)
-confint(mass_max_temp_blups_noout_lmer)  
+confint(mass_max_temp_blups_noout_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_blups_noout_lmer)
+
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -782,7 +798,6 @@ bt_ci_mass_max_temp_blups_noout_lmer_3 <- boot.ci(boot_mass_max_temp_blups_noout
 print(bt_ci_mass_max_temp_blups_noout_lmer_3)
 
 
-
 ### Mass adjusted -- outliers removed
 mass_max_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
                                        scale(feeding_expontd_blups) + 
@@ -807,6 +822,9 @@ infIndexPlot(mass_max_temp_blups_adj_noout_lmer, vars=c("Studentized"))
 
 summary(mass_max_temp_blups_adj_noout_lmer)
 confint(mass_max_temp_blups_adj_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_blups_adj_noout_lmer)
 
 
 ## Bootstrap parameter estimates
@@ -970,7 +988,10 @@ infIndexPlot(mass_iqr_temp_blups_lmer, vars=c("Cook"))
 infIndexPlot(mass_iqr_temp_blups_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_temp_blups_lmer)
-confint(mass_iqr_temp_blups_lmer)  
+confint(mass_iqr_temp_blups_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_blups_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -1023,6 +1044,9 @@ infIndexPlot(mass_iqr_temp_blups_adj_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_temp_blups_adj_lmer)
 confint(mass_iqr_temp_blups_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_blups_adj_lmer)
 
 
 ## Bootstrap parameter estimates
@@ -1185,6 +1209,9 @@ hist(resid(mass_iqr_temp_blups_noout_lmer))
 summary(mass_iqr_temp_blups_noout_lmer)
 confint(mass_iqr_temp_blups_noout_lmer)  
 
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_blups_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_temp_blups_noout_lmer <- bootMer(x = mass_iqr_temp_blups_noout_lmer,
@@ -1235,6 +1262,8 @@ infIndexPlot(mass_iqr_temp_blups_adj_noout_lmer, vars=c("Studentized"))
 summary(mass_iqr_temp_blups_adj_noout_lmer)
 confint(mass_iqr_temp_blups_adj_noout_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_blups_adj_noout_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -1403,6 +1432,9 @@ infIndexPlot(mass_min_temp_mid_size_lmer, vars=c("Studentized"))
 summary(mass_min_temp_mid_size_lmer)
 confint(mass_min_temp_mid_size_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_mid_size_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_temp_mid_size_lmer <- bootMer(x = mass_min_temp_mid_size_lmer,
@@ -1452,6 +1484,9 @@ infIndexPlot(mass_min_temp_mid_size_adj_lmer, vars=c("Studentized"))
 
 summary(mass_min_temp_mid_size_adj_lmer)
 confint(mass_min_temp_mid_size_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_mid_size_adj_lmer)
 
 
 ## Bootstrap parameter estimates
@@ -1576,6 +1611,9 @@ infIndexPlot(mass_max_temp_mid_size_lmer, vars=c("Studentized"))
 summary(mass_max_temp_mid_size_lmer)
 confint(mass_max_temp_mid_size_lmer) 
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_mid_size_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_temp_mid_size_lmer<- bootMer(x = mass_max_temp_mid_size_lmer,
@@ -1625,6 +1663,9 @@ infIndexPlot(mass_max_temp_mid_size_adj_lmer, vars=c("Studentized"))
 
 summary(mass_max_temp_mid_size_adj_lmer)
 confint(mass_max_temp_mid_size_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_mid_size_adj_lmer)
 
 
 ## Bootstrap parameter estimates
@@ -1750,6 +1791,9 @@ infIndexPlot(mass_iqr_temp_mid_size_lmer, vars=c("Studentized"))
 summary(mass_iqr_temp_mid_size_lmer)
 confint(mass_iqr_temp_mid_size_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_mid_size_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_temp_mid_size_lmer <- bootMer(x = mass_iqr_temp_mid_size_lmer,
@@ -1798,7 +1842,10 @@ infIndexPlot(mass_iqr_temp_mid_size_adj_lmer, vars=c("Cook"))
 infIndexPlot(mass_iqr_temp_mid_size_adj_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_temp_mid_size_adj_lmer)
-confint(mass_iqr_temp_mid_size_adj_lmer) 
+confint(mass_iqr_temp_mid_size_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_mid_size_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -1899,11 +1946,6 @@ bt_ci_mass_iqr_temp_mid_size_big_adj_lmer <- boot.ci(boot_mass_iqr_temp_mid_size
                                                        index = 2) # CI for 1st betas
 print(bt_ci_mass_iqr_temp_mid_size_big_adj_lmer)
 
-## Outliers removed
-
-## Mass unadjusted, outliers removed
-
-## Mass adjusted, outliers removed
 
 
 ########################## LATE SIZE #######################################
@@ -1931,6 +1973,9 @@ infIndexPlot(mass_min_temp_size_lmer, vars=c("Studentized"))
 
 summary(mass_min_temp_size_lmer)
 confint(mass_min_temp_size_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_size_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -1981,6 +2026,9 @@ infIndexPlot(mass_min_temp_size_adj_lmer, vars=c("Studentized"))
 
 summary(mass_min_temp_size_adj_lmer)
 confint(mass_min_temp_size_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_size_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2106,6 +2154,9 @@ infIndexPlot(mass_max_temp_size_lmer, vars=c("Studentized"))
 summary(mass_max_temp_size_lmer)
 confint(mass_max_temp_size_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_size_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_temp_size_lmer <- bootMer(x = mass_max_temp_size_lmer,
@@ -2155,6 +2206,9 @@ infIndexPlot(mass_max_temp_size_adj_lmer, vars=c("Studentized"))
 
 summary(mass_max_temp_size_adj_lmer)
 confint(mass_max_temp_size_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_size_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2279,6 +2333,10 @@ infIndexPlot(mass_iqr_temp_size_lmer, vars=c("Studentized"))
 summary(mass_iqr_temp_size_lmer)
 confint(mass_iqr_temp_size_lmer) 
 
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_size_lmer)
+
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_temp_size_lmer <- bootMer(x = mass_iqr_temp_size_lmer,
@@ -2328,6 +2386,10 @@ infIndexPlot(mass_iqr_temp_size_adj_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_temp_size_adj_lmer)
 confint(mass_iqr_temp_size_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_size_adj_lmer)
+
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2456,6 +2518,9 @@ infIndexPlot(mass_min_before_thermo_lmer, vars=c("Studentized"))
 summary(mass_min_before_thermo_lmer)
 confint(mass_min_before_thermo_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_min_before_thermo_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_before_thermo_lmer <- bootMer(x = mass_min_before_thermo_lmer,
@@ -2490,6 +2555,9 @@ infIndexPlot(mass_min_before_thermo_adj_lmer, vars=c("Studentized"))
 
 summary(mass_min_before_thermo_adj_lmer)
 confint(mass_min_before_thermo_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_before_thermo_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2528,6 +2596,9 @@ infIndexPlot(mass_min_before_thermo_noout_lmer, vars=c("Studentized"))
 summary(mass_min_before_thermo_noout_lmer)
 confint(mass_min_before_thermo_noout_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_min_before_thermo_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_before_thermo_noout_lmer <- bootMer(x = mass_min_before_thermo_noout_lmer,
@@ -2564,6 +2635,9 @@ infIndexPlot(mass_min_before_thermo_adj_noout_lmer, vars=c("Studentized"))
 summary(mass_min_before_thermo_adj_noout_lmer)
 confint(mass_min_before_thermo_adj_noout_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_min_before_thermo_adj_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_before_thermo_adj_noout_lmer <- bootMer(x = mass_min_before_thermo_adj_noout_lmer,
@@ -2598,6 +2672,9 @@ infIndexPlot(mass_min_after_thermo_lmer, vars=c("Studentized"))
 
 summary(mass_min_after_thermo_lmer)
 confint(mass_min_after_thermo_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_after_thermo_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2635,6 +2712,9 @@ infIndexPlot(mass_min_after_thermo_adj_lmer, vars=c("Studentized"))
 summary(mass_min_after_thermo_adj_lmer)
 confint(mass_min_after_thermo_adj_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_min_after_thermo_adj_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_after_thermo_adj_lmer <- bootMer(x = mass_min_after_thermo_adj_lmer,
@@ -2669,6 +2749,9 @@ infIndexPlot(mass_min_after_thermo_noout_lmer, vars=c("Studentized"))
 
 summary(mass_min_after_thermo_noout_lmer)
 confint(mass_min_after_thermo_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_after_thermo_noout_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2706,6 +2789,9 @@ infIndexPlot(mass_min_after_thermo_adj_noout_lmer, vars=c("Studentized"))
 summary(mass_min_after_thermo_adj_noout_lmer)
 confint(mass_min_after_thermo_adj_noout_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_min_after_thermo_adj_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_after_thermo_adj_noout_lmer <- bootMer(x = mass_min_after_thermo_adj_noout_lmer,
@@ -2742,6 +2828,11 @@ infIndexPlot(mass_min_both_thermo_lmer, vars=c("Studentized"))
 
 summary(mass_min_both_thermo_lmer)
 confint(mass_min_both_thermo_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_both_thermo_lmer)
+
+# Calculate VIF
 vif(mass_min_both_thermo_lmer)
 
 ## Bootstrap parameter estimates
@@ -2787,6 +2878,11 @@ infIndexPlot(mass_min_both_thermo_adj_lmer, vars=c("Studentized"))
 
 summary(mass_min_both_thermo_adj_lmer)
 confint(mass_min_both_thermo_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_both_thermo_adj_lmer)
+
+# Calculate VIF
 vif(mass_min_both_thermo_adj_lmer)
 
 ## Bootstrap parameter estimates
@@ -2832,6 +2928,11 @@ infIndexPlot(mass_min_both_thermo_noout_lmer, vars=c("Studentized"))
 
 summary(mass_min_both_thermo_noout_lmer)
 confint(mass_min_both_thermo_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_both_thermo_noout_lmer)
+
+# Calculate VIF
 vif(mass_min_both_thermo_noout_lmer)
 
 ## Bootstrap parameter estimates
@@ -2877,6 +2978,11 @@ infIndexPlot(mass_min_both_thermo_adj_noout_lmer, vars=c("Studentized"))
 
 summary(mass_min_both_thermo_adj_noout_lmer)
 confint(mass_min_both_thermo_adj_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_both_thermo_adj_noout_lmer)
+
+# Calculate VIF
 vif(mass_min_both_thermo_adj_noout_lmer)
 
 ## Bootstrap parameter estimates
@@ -2920,6 +3026,9 @@ infIndexPlot(mass_max_before_thermo_lmer, vars=c("Studentized"))
 summary(mass_max_before_thermo_lmer)
 confint(mass_max_before_thermo_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_before_thermo_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_before_thermo_lmer <- bootMer(x = mass_max_before_thermo_lmer,
@@ -2955,6 +3064,9 @@ infIndexPlot(mass_max_before_thermo_adj_lmer, vars=c("Studentized"))
 
 summary(mass_max_before_thermo_adj_lmer)
 confint(mass_max_before_thermo_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_before_thermo_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2992,6 +3104,9 @@ infIndexPlot(mass_max_before_thermo_noout_lmer, vars=c("Studentized"))
 summary(mass_max_before_thermo_noout_lmer)
 confint(mass_max_before_thermo_noout_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_before_thermo_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_before_thermo_noout_lmer <- bootMer(x = mass_max_before_thermo_noout_lmer,
@@ -3028,6 +3143,9 @@ infIndexPlot(mass_max_before_thermo_adj_noout_lmer, vars=c("Studentized"))
 summary(mass_max_before_thermo_adj_noout_lmer)
 confint(mass_max_before_thermo_adj_noout_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_before_thermo_adj_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_before_thermo_adj_noout_lmer <- bootMer(x = mass_max_before_thermo_adj_noout_lmer,
@@ -3062,6 +3180,9 @@ infIndexPlot(mass_max_after_thermo_lmer, vars=c("Studentized"))
 
 summary(mass_max_after_thermo_lmer)
 confint(mass_max_after_thermo_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_after_thermo_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3099,6 +3220,9 @@ infIndexPlot(mass_max_after_thermo_adj_lmer, vars=c("Studentized"))
 summary(mass_max_after_thermo_adj_lmer)
 confint(mass_max_after_thermo_adj_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_after_thermo_adj_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_after_thermo_adj_lmer <- bootMer(x = mass_max_after_thermo_adj_lmer,
@@ -3135,6 +3259,9 @@ infIndexPlot(mass_max_after_thermo_noout_lmer, vars=c("Studentized"))
 summary(mass_max_after_thermo_noout_lmer)
 confint(mass_max_after_thermo_noout_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_after_thermo_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_after_thermo_noout_lmer <- bootMer(x = mass_max_after_thermo_noout_lmer,
@@ -3169,6 +3296,9 @@ infIndexPlot(mass_max_after_thermo_adj_noout_lmer, vars=c("Studentized"))
 
 summary(mass_max_after_thermo_adj_noout_lmer)
 confint(mass_max_after_thermo_adj_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_after_thermo_adj_noout_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3206,6 +3336,11 @@ infIndexPlot(mass_max_both_thermo_lmer, vars=c("Studentized"))
 
 summary(mass_max_both_thermo_lmer)
 confint(mass_max_both_thermo_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_both_thermo_lmer)
+
+# Calcilate VIF
 vif(mass_max_both_thermo_lmer)
 
 ## Bootstrap parameter estimates
@@ -3253,6 +3388,12 @@ summary(mass_max_both_thermo_adj_lmer)
 confint(mass_max_both_thermo_adj_lmer)
 vif(mass_max_both_thermo_adj_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_both_thermo_adj_lmer)
+
+# Calcilate VIF
+vif(mass_max_both_thermo_adj_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_both_thermo_adj_lmer <- bootMer(x = mass_max_both_thermo_adj_lmer,
@@ -3295,6 +3436,11 @@ infIndexPlot(mass_max_both_thermo_noout_lmer, vars=c("Studentized"))
 
 summary(mass_max_both_thermo_noout_lmer)
 confint(mass_max_both_thermo_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_both_thermo_noout_lmer)
+
+# Calcilate VIF
 vif(mass_max_both_thermo_noout_lmer)
 
 ## Bootstrap parameter estimates
@@ -3339,6 +3485,11 @@ infIndexPlot(mass_max_both_thermo_adj_noout_lmer, vars=c("Studentized"))
 
 summary(mass_max_both_thermo_adj_noout_lmer)
 confint(mass_max_both_thermo_adj_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_both_thermo_adj_noout_lmer)
+
+# Calcilate VIF
 vif(mass_max_both_thermo_adj_noout_lmer)
 
 ## Bootstrap parameter estimates
@@ -3384,6 +3535,9 @@ infIndexPlot(mass_iqr_before_thermo_lmer, vars=c("Studentized"))
 summary(mass_iqr_before_thermo_lmer)
 confint(mass_iqr_before_thermo_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_before_thermo_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_before_thermo_lmer <- bootMer(x = mass_iqr_before_thermo_lmer,
@@ -3420,6 +3574,9 @@ infIndexPlot(mass_iqr_before_thermo_adj_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_before_thermo_adj_lmer)
 confint(mass_iqr_before_thermo_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_before_thermo_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3458,6 +3615,9 @@ infIndexPlot(mass_iqr_before_thermo_noout_lmer, vars=c("Studentized"))
 summary(mass_iqr_before_thermo_noout_lmer)
 confint(mass_iqr_before_thermo_noout_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_before_thermo_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_before_thermo_noout_lmer <- bootMer(x = mass_iqr_before_thermo_noout_lmer,
@@ -3494,6 +3654,9 @@ infIndexPlot(mass_iqr_before_thermo_adj_noout_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_before_thermo_adj_noout_lmer)
 confint(mass_iqr_before_thermo_adj_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_before_thermo_adj_noout_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3532,6 +3695,9 @@ infIndexPlot(mass_iqr_after_thermo_lmer, vars=c("Studentized"))
 summary(mass_iqr_after_thermo_lmer)
 confint(mass_iqr_after_thermo_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_after_thermo_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_after_thermo_lmer <- bootMer(x = mass_iqr_after_thermo_lmer,
@@ -3569,6 +3735,9 @@ infIndexPlot(mass_iqr_after_thermo_adj_lmer, vars=c("Studentized"))
 summary(mass_iqr_after_thermo_adj_lmer)
 confint(mass_iqr_after_thermo_adj_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_after_thermo_adj_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_after_thermo_adj_lmer <- bootMer(x = mass_iqr_after_thermo_adj_lmer,
@@ -3604,6 +3773,9 @@ infIndexPlot(mass_iqr_after_thermo_noout_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_after_thermo_noout_lmer)
 confint(mass_iqr_after_thermo_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_after_thermo_noout_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3642,6 +3814,9 @@ infIndexPlot(mass_iqr_after_thermo_adj_noout_lmer, vars=c("Studentized"))
 summary(mass_iqr_after_thermo_adj_noout_lmer)
 confint(mass_iqr_after_thermo_adj_noout_lmer)
 
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_after_thermo_adj_noout_lmer)
+
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_after_thermo_adj_noout_lmer <- bootMer(x = mass_iqr_after_thermo_adj_noout_lmer,
@@ -3678,6 +3853,11 @@ infIndexPlot(mass_iqr_both_thermo_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_both_thermo_lmer)
 confint(mass_iqr_both_thermo_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_both_thermo_lmer)
+
+# Calculate VIF
 vif(mass_iqr_both_thermo_lmer)
 
 ## Bootstrap parameter estimates
@@ -3723,6 +3903,11 @@ infIndexPlot(mass_iqr_both_thermo_adj_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_both_thermo_adj_lmer)
 confint(mass_iqr_both_thermo_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_both_thermo_adj_lmer)
+
+# Calculate VIF
 vif(mass_iqr_both_thermo_adj_lmer)
 
 ## Bootstrap parameter estimates
@@ -3768,6 +3953,11 @@ infIndexPlot(mass_iqr_both_thermo_noout_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_both_thermo_noout_lmer)
 confint(mass_iqr_both_thermo_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_both_thermo_noout_lmer)
+
+# Calculate VIF
 vif(mass_iqr_both_thermo_noout_lmer)
 
 ## Bootstrap parameter estimates
@@ -3813,6 +4003,11 @@ infIndexPlot(mass_iqr_both_thermo_adj_noout_lmer, vars=c("Studentized"))
 
 summary(mass_iqr_both_thermo_adj_noout_lmer)
 confint(mass_iqr_both_thermo_adj_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_both_thermo_adj_noout_lmer)
+
+# Calculate VIF
 vif(mass_iqr_both_thermo_adj_noout_lmer)
 
 ## Bootstrap parameter estimates
@@ -3846,597 +4041,1529 @@ mass_min_before_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_5
                                                     !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_min_before_thermo_lmer)
+plot(mass_min_before_thermo_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_min_before_thermo_lmer))
-  qqline(resid(mass_min_before_thermo_lmer))}
+{qqnorm(resid(mass_min_before_thermo_lmer_5))
+  qqline(resid(mass_min_before_thermo_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_min_before_thermo_lmer))
+hist(resid(mass_min_before_thermo_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_min_before_thermo_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_before_thermo_lmer, vars=c("Studentized"))
+infIndexPlot(mass_min_before_thermo_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_min_before_thermo_lmer_5, vars=c("Studentized"))
 
-summary(mass_min_before_thermo_lmer)
-confint(mass_min_before_thermo_lmer)
+summary(mass_min_before_thermo_lmer_5)
+confint(mass_min_before_thermo_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_before_thermo_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_before_thermo_lmer_5 <- bootMer(x = mass_min_before_thermo_lmer_5,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_min_before_thermo_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_before_thermo_lmer_5 <- boot.ci(boot_mass_min_before_thermo_lmer_5,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_min_before_thermo_lmer_5)
+
 
 ### Before thermo adjusted
-mass_min_before_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + scale(nestling_number) +
+mass_min_before_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_5) + scale(nestling_number) +
                                           scale(days_summer) + (1|fsite) +
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
-                                                      !is.na(x = thermo_bef_min_temp)&
+                                                      !is.na(x = thermo_bef_min_temp_5)&
                                                         !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_min_before_thermo_adj_lmer)
+plot(mass_min_before_thermo_adj_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_min_before_thermo_adj_lmer))
-  qqline(resid(mass_min_before_thermo_adj_lmer))}
+{qqnorm(resid(mass_min_before_thermo_adj_lmer_5))
+  qqline(resid(mass_min_before_thermo_adj_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_min_before_thermo_adj_lmer))
+hist(resid(mass_min_before_thermo_adj_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_min_before_thermo_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_before_thermo_adj_lmer, vars=c("Studentized"))
+infIndexPlot(mass_min_before_thermo_adj_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_min_before_thermo_adj_lmer_5, vars=c("Studentized"))
 
-summary(mass_min_before_thermo_adj_lmer)
-confint(mass_min_before_thermo_adj_lmer)
+summary(mass_min_before_thermo_adj_lmer_5)
+confint(mass_min_before_thermo_adj_lmer_5)
 
-### Before thermo adjusted no outliers
-mass_min_before_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + scale(nestling_number) +
-                                                scale(days_summer) + (1|fsite) +
-                                                (1|fnest_id), 
-                                              data = subset(mass_outliers_removed,
-                                                            !is.na(x = thermo_bef_min_temp)&
-                                                              !is.na(x = mass_pre_obs)))
+# Calculate R squared 
+r.squaredGLMM(mass_min_before_thermo_adj_lmer_5)
 
-## Check diagnostics for the full model
-plot(mass_min_before_thermo_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_before_thermo_adj_noout_lmer))
-  qqline(resid(mass_min_before_thermo_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_before_thermo_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_min_before_thermo_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_before_thermo_adj_noout_lmer, vars=c("Studentized"))
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_before_thermo_adj_lmer_5 <- bootMer(x = mass_min_before_thermo_adj_lmer_5,
+                                              FUN = fixef, nsim = 2000,
+                                              seed = 632760,
+                                              use.u = F, type = 'parametric')
+tidy(boot_mass_min_before_thermo_adj_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_before_thermo_adj_lmer_5 <- boot.ci(boot_mass_min_before_thermo_adj_lmer_5,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 2) # CI for 1st betas
+print(bt_ci_mass_min_before_thermo_adj_lmer_5)
 
-summary(mass_min_before_thermo_adj_noout_lmer)
-confint(mass_min_before_thermo_adj_noout_lmer)
 
 ### After thermo
-mass_min_after_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) + (1|fsite) +
+mass_min_after_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_5) + (1|fsite) +
                                      (1|fnest_id), 
                                    data = subset(late_nestling_parent_care,
-                                                 !is.na(x = thermo_aft_min_temp)&
+                                                 !is.na(x = thermo_aft_min_temp_5)&
                                                    !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_min_after_thermo_lmer)
+plot(mass_min_after_thermo_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_min_after_thermo_lmer))
-  qqline(resid(mass_min_after_thermo_lmer))}
+{qqnorm(resid(mass_min_after_thermo_lmer_5))
+  qqline(resid(mass_min_after_thermo_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_min_after_thermo_lmer))
+hist(resid(mass_min_after_thermo_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_min_after_thermo_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_after_thermo_lmer, vars=c("Studentized"))
+infIndexPlot(mass_min_after_thermo_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_min_after_thermo_lmer_5, vars=c("Studentized"))
 
-summary(mass_min_after_thermo_lmer)
-confint(mass_min_after_thermo_lmer)
+summary(mass_min_after_thermo_lmer_5)
+confint(mass_min_after_thermo_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_after_thermo_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_after_thermo_lmer_5 <- bootMer(x = mass_min_after_thermo_lmer_5,
+                                                  FUN = fixef, nsim = 2000,
+                                                  seed = 632760,
+                                                  use.u = F, type = 'parametric')
+tidy(boot_mass_min_after_thermo_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_after_thermo_lmer_5 <- boot.ci(boot_mass_min_after_thermo_lmer_5,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 2) # CI for 1st betas
+print(bt_ci_mass_min_after_thermo_lmer_5)
+
 
 ### After thermo adjusted
-mass_min_after_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) + scale(nestling_number) +
+mass_min_after_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_5) + scale(nestling_number) +
                                          scale(days_summer) + (1|fsite) +
                                          (1|fnest_id), 
                                        data = subset(late_nestling_parent_care,
-                                                     !is.na(x = thermo_aft_min_temp)&
+                                                     !is.na(x = thermo_aft_min_temp_5)&
                                                        !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_min_after_thermo_adj_lmer)
+plot(mass_min_after_thermo_adj_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_min_after_thermo_adj_lmer))
-  qqline(resid(mass_min_after_thermo_adj_lmer))}
+{qqnorm(resid(mass_min_after_thermo_adj_lmer_5))
+  qqline(resid(mass_min_after_thermo_adj_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_min_after_thermo_adj_lmer))
+hist(resid(mass_min_after_thermo_adj_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_min_after_thermo_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_after_thermo_adj_lmer, vars=c("Studentized"))
+infIndexPlot(mass_min_after_thermo_adj_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_min_after_thermo_adj_lmer_5, vars=c("Studentized"))
 
-summary(mass_min_after_thermo_adj_lmer)
-confint(mass_min_after_thermo_adj_lmer)
+summary(mass_min_after_thermo_adj_lmer_5)
+confint(mass_min_after_thermo_adj_lmer_5)
 
+# Calculate R squared 
+r.squaredGLMM(mass_min_after_thermo_adj_lmer_5)
 
-### After thermo adjusted outliers removed
-mass_min_after_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) + scale(nestling_number) +
-                                               scale(days_summer) + (1|fsite) +
-                                               (1|fnest_id), 
-                                             data = subset(mass_outliers_removed,
-                                                           !is.na(x = thermo_aft_min_temp)&
-                                                             !is.na(x = mass_pre_obs)))
-
-## Check diagnostics for the full model
-plot(mass_min_after_thermo_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_after_thermo_adj_noout_lmer))
-  qqline(resid(mass_min_after_thermo_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_after_thermo_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_min_after_thermo_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_after_thermo_adj_noout_lmer, vars=c("Studentized"))
-
-summary(mass_min_after_thermo_adj_noout_lmer)
-confint(mass_min_after_thermo_adj_noout_lmer)
-
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_after_thermo_adj_lmer_5 <- bootMer(x = mass_min_after_thermo_adj_lmer_5,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_min_after_thermo_adj_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_after_thermo_adj_lmer_5 <- boot.ci(boot_mass_min_after_thermo_adj_lmer_5,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_min_after_thermo_adj_lmer_5)
 
 ### Before and after thermo
-mass_min_both_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + 
-                                    scale(thermo_aft_min_temp) + (1|fsite) +
+mass_min_both_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_5) + 
+                                    scale(thermo_aft_min_temp_5) + (1|fsite) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
-                                                !is.na(x = thermo_bef_min_temp) &
-                                                  !is.na(x = thermo_aft_min_temp)&
+                                                !is.na(x = thermo_bef_min_temp_5) &
+                                                  !is.na(x = thermo_aft_min_temp_5)&
                                                   !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_min_both_thermo_lmer)
+plot(mass_min_both_thermo_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_min_both_thermo_lmer))
-  qqline(resid(mass_min_both_thermo_lmer))}
+{qqnorm(resid(mass_min_both_thermo_lmer_5))
+  qqline(resid(mass_min_both_thermo_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_min_both_thermo_lmer))
+hist(resid(mass_min_both_thermo_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_min_both_thermo_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_both_thermo_lmer, vars=c("Studentized"))
+infIndexPlot(mass_min_both_thermo_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_min_both_thermo_lmer_5, vars=c("Studentized"))
 
-summary(mass_min_both_thermo_lmer)
-confint(mass_min_both_thermo_lmer)
-vif(mass_min_both_thermo_lmer)
+summary(mass_min_both_thermo_lmer_5)
+confint(mass_min_both_thermo_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_both_thermo_lmer_5)
+
+# Calculate VIF
+vif(mass_min_both_thermo_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_both_thermo_lmer_5 <- bootMer(x = mass_min_both_thermo_lmer_5,
+                                                    FUN = fixef, nsim = 2000,
+                                                    seed = 632760,
+                                                    use.u = F, type = 'parametric')
+tidy(boot_mass_min_both_thermo_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_both_thermo_lmer_5 <- boot.ci(boot_mass_min_both_thermo_lmer_5,
+                                                     type = c('perc', 'norm', 'basic'),
+                                                     index = 2) # CI for 1st betas
+print(bt_ci_mass_min_both_thermo_lmer_5)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_both_thermo_lmer_5_2 <- boot.ci(boot_mass_min_both_thermo_lmer_5,
+                                                       type = c('perc', 'norm', 'basic'),
+                                                       index = 3) # CI for 2nd beta
+print(bt_ci_mass_min_both_thermo_lmer_5_2)
+
 
 ### Before and after thermo adjusted
-mass_min_both_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + 
-                                        scale(thermo_aft_min_temp) + scale(nestling_number) +
+mass_min_both_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_5) + 
+                                        scale(thermo_aft_min_temp_5) + scale(nestling_number) +
                                         scale(days_summer) + (1|fsite) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
-                                                    !is.na(x = thermo_bef_min_temp) &
-                                                      !is.na(x = thermo_aft_min_temp)&
+                                                    !is.na(x = thermo_bef_min_temp_5) &
+                                                      !is.na(x = thermo_aft_min_temp_5)&
                                                       !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_min_both_thermo_adj_lmer)
+plot(mass_min_both_thermo_adj_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_min_both_thermo_adj_lmer))
-  qqline(resid(mass_min_both_thermo_adj_lmer))}
+{qqnorm(resid(mass_min_both_thermo_adj_lmer_5))
+  qqline(resid(mass_min_both_thermo_adj_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_min_both_thermo_adj_lmer))
+hist(resid(mass_min_both_thermo_adj_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_min_both_thermo_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_both_thermo_adj_lmer, vars=c("Studentized"))
+infIndexPlot(mass_min_both_thermo_adj_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_min_both_thermo_adj_lmer_5, vars=c("Studentized"))
 
-summary(mass_min_both_thermo_adj_lmer)
-confint(mass_min_both_thermo_adj_lmer)
-vif(mass_min_both_thermo_adj_lmer)
+summary(mass_min_both_thermo_adj_lmer_5)
+confint(mass_min_both_thermo_adj_lmer_5)
 
-### Before and after thermo outliers removed
-thermo_outliers_removed <- late_nestling_parent_care[-c(43, 44), ]
-mass_min_both_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + 
-                                              scale(thermo_aft_min_temp) + scale(nestling_number) +
-                                              scale(days_summer) + (1|fsite) +
-                                              (1|fnest_id), 
-                                            data = subset(thermo_outliers_removed,
-                                                          !is.na(x = thermo_bef_min_temp) &
-                                                            !is.na(x = thermo_aft_min_temp)&
-                                                            !is.na(x = mass_pre_obs)))
+# Calculate R squared 
+r.squaredGLMM(mass_min_both_thermo_adj_lmer_5)
 
-## Check diagnostics for the full model
-plot(mass_min_both_thermo_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_both_thermo_adj_noout_lmer))
-  qqline(resid(mass_min_both_thermo_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_both_thermo_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_min_both_thermo_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_both_thermo_adj_noout_lmer, vars=c("Studentized"))
+# Calculate VIF
+vif(mass_min_both_thermo_adj_lmer_5)
 
-summary(mass_min_both_thermo_adj_noout_lmer)
-confint(mass_min_both_thermo_adj_noout_lmer)
-vif(mass_min_both_thermo_adj_noout_lmer)
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_both_thermo_adj_lmer_5 <- bootMer(x = mass_min_both_thermo_adj_lmer_5,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_min_both_thermo_adj_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_both_thermo_adj_lmer_5 <- boot.ci(boot_mass_min_both_thermo_adj_lmer_5,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_min_both_thermo_adj_lmer_5)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_both_thermo_adj_lmer_5_2 <- boot.ci(boot_mass_min_both_thermo_adj_lmer_5,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd beta
+print(bt_ci_mass_min_both_thermo_adj_lmer_5_2)
+
 
 #### Maximum temp
 ### Before thermo
-mass_max_before_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + (1|fsite) +
+mass_max_before_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_5) + (1|fsite) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
-                                                  !is.na(x = thermo_bef_max_temp)&
+                                                  !is.na(x = thermo_bef_max_temp_5)&
                                                     !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_max_before_thermo_lmer)
+plot(mass_max_before_thermo_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_max_before_thermo_lmer))
-  qqline(resid(mass_max_before_thermo_lmer))}
+{qqnorm(resid(mass_max_before_thermo_lmer_5))
+  qqline(resid(mass_max_before_thermo_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_max_before_thermo_lmer))
+hist(resid(mass_max_before_thermo_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_max_before_thermo_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_before_thermo_lmer, vars=c("Studentized"))
+infIndexPlot(mass_max_before_thermo_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_max_before_thermo_lmer_5, vars=c("Studentized"))
 
-summary(mass_max_before_thermo_lmer)
-confint(mass_max_before_thermo_lmer)
+summary(mass_max_before_thermo_lmer_5)
+confint(mass_max_before_thermo_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_before_thermo_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_before_thermo_lmer_5 <- bootMer(x = mass_max_before_thermo_lmer_5,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_max_before_thermo_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_before_thermo_lmer_5 <- boot.ci(boot_mass_max_before_thermo_lmer_5,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_max_before_thermo_lmer_5)
 
 ### Before thermo adjusted
-mass_max_before_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + scale(nestling_number) +
+mass_max_before_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_5) + scale(nestling_number) +
                                           scale(days_summer) + (1|fsite) +
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
-                                                      !is.na(x = thermo_bef_max_temp)&
+                                                      !is.na(x = thermo_bef_max_temp_5)&
                                                         !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_max_before_thermo_adj_lmer)
+plot(mass_max_before_thermo_adj_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_max_before_thermo_adj_lmer))
-  qqline(resid(mass_max_before_thermo_adj_lmer))}
+{qqnorm(resid(mass_max_before_thermo_adj_lmer_5))
+  qqline(resid(mass_max_before_thermo_adj_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_max_before_thermo_adj_lmer))
+hist(resid(mass_max_before_thermo_adj_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_max_before_thermo_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_before_thermo_adj_lmer, vars=c("Studentized"))
+infIndexPlot(mass_max_before_thermo_adj_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_max_before_thermo_adj_lmer_5, vars=c("Studentized"))
 
-summary(mass_max_before_thermo_adj_lmer)
-confint(mass_max_before_thermo_adj_lmer)
+summary(mass_max_before_thermo_adj_lmer_5)
+confint(mass_max_before_thermo_adj_lmer_5)
 
-### Before thermo adjusted no outliers
-mass_max_before_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + scale(nestling_number) +
-                                                scale(days_summer) + (1|fsite) +
-                                                (1|fnest_id), 
-                                              data = subset(mass_outliers_removed,
-                                                            !is.na(x = thermo_bef_max_temp)&
-                                                              !is.na(x = mass_pre_obs)))
+# Calculate R squared 
+r.squaredGLMM(mass_max_before_thermo_adj_lmer_5)
 
-## Check diagnostics for the full model
-plot(mass_max_before_thermo_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_before_thermo_adj_noout_lmer))
-  qqline(resid(mass_max_before_thermo_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_before_thermo_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_max_before_thermo_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_before_thermo_adj_noout_lmer, vars=c("Studentized"))
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_before_thermo_adj_lmer_5 <- bootMer(x = mass_max_before_thermo_adj_lmer_5,
+                                              FUN = fixef, nsim = 2000,
+                                              seed = 632760,
+                                              use.u = F, type = 'parametric')
+tidy(boot_mass_max_before_thermo_adj_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_before_thermo_adj_lmer_5 <- boot.ci(boot_mass_max_before_thermo_adj_lmer_5,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 2) # CI for 1st betas
+print(bt_ci_mass_max_before_thermo_adj_lmer_5)
 
-summary(mass_max_before_thermo_adj_noout_lmer)
-confint(mass_max_before_thermo_adj_noout_lmer)
 
 ### After thermo
-mass_max_after_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) + (1|fsite) +
+mass_max_after_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_5) + (1|fsite) +
                                      (1|fnest_id), 
                                    data = subset(late_nestling_parent_care,
-                                                 !is.na(x = thermo_aft_max_temp)&
+                                                 !is.na(x = thermo_aft_max_temp_5)&
                                                    !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_max_after_thermo_lmer)
+plot(mass_max_after_thermo_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_max_after_thermo_lmer))
-  qqline(resid(mass_max_after_thermo_lmer))}
+{qqnorm(resid(mass_max_after_thermo_lmer_5))
+  qqline(resid(mass_max_after_thermo_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_max_after_thermo_lmer))
+hist(resid(mass_max_after_thermo_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_max_after_thermo_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_after_thermo_lmer, vars=c("Studentized"))
+infIndexPlot(mass_max_after_thermo_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_max_after_thermo_lmer_5, vars=c("Studentized"))
 
-summary(mass_max_after_thermo_lmer)
-confint(mass_max_after_thermo_lmer)
+summary(mass_max_after_thermo_lmer_5)
+confint(mass_max_after_thermo_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_after_thermo_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_after_thermo_lmer_5 <- bootMer(x = mass_max_after_thermo_lmer_5,
+                                                  FUN = fixef, nsim = 2000,
+                                                  seed = 632760,
+                                                  use.u = F, type = 'parametric')
+tidy(boot_mass_max_after_thermo_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_after_thermo_lmer_5 <- boot.ci(boot_mass_max_after_thermo_lmer_5,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 2) # CI for 1st betas
+print(bt_ci_mass_max_after_thermo_lmer_5)
+
 
 ### After thermo adjusted
-mass_max_after_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) + scale(nestling_number) +
+mass_max_after_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_5) + scale(nestling_number) +
                                          scale(days_summer) + (1|fsite) +
                                          (1|fnest_id), 
                                        data = subset(late_nestling_parent_care,
-                                                     !is.na(x = thermo_aft_max_temp)&
+                                                     !is.na(x = thermo_aft_max_temp_5)&
                                                        !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_max_after_thermo_adj_lmer)
+plot(mass_max_after_thermo_adj_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_max_after_thermo_adj_lmer))
-  qqline(resid(mass_max_after_thermo_adj_lmer))}
+{qqnorm(resid(mass_max_after_thermo_adj_lmer_5))
+  qqline(resid(mass_max_after_thermo_adj_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_max_after_thermo_adj_lmer))
+hist(resid(mass_max_after_thermo_adj_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_max_after_thermo_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_after_thermo_adj_lmer, vars=c("Studentized"))
+infIndexPlot(mass_max_after_thermo_adj_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_max_after_thermo_adj_lmer_5, vars=c("Studentized"))
 
-summary(mass_max_after_thermo_adj_lmer)
-confint(mass_max_after_thermo_adj_lmer)
+summary(mass_max_after_thermo_adj_lmer_5)
+confint(mass_max_after_thermo_adj_lmer_5)
 
-### After thermo adjusted outliers removed
-mass_max_after_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) + scale(nestling_number) +
-                                               scale(days_summer) + (1|fsite) +
-                                               (1|fnest_id), 
-                                             data = subset(thermo_outliers_removed,
-                                                           !is.na(x = thermo_aft_max_temp)&
-                                                             !is.na(x = mass_pre_obs)))
+# Calculate R squared 
+r.squaredGLMM(mass_max_after_thermo_adj_lmer_5)
 
-## Check diagnostics for the full model
-plot(mass_max_after_thermo_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_after_thermo_adj_noout_lmer))
-  qqline(resid(mass_max_after_thermo_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_after_thermo_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_max_after_thermo_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_after_thermo_adj_noout_lmer, vars=c("Studentized"))
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_after_thermo_adj_lmer_5 <- bootMer(x = mass_max_after_thermo_adj_lmer_5,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_max_after_thermo_adj_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_after_thermo_adj_lmer_5 <- boot.ci(boot_mass_max_after_thermo_adj_lmer_5,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_max_after_thermo_adj_lmer_5)
 
-summary(mass_max_after_thermo_adj_noout_lmer)
-confint(mass_max_after_thermo_adj_noout_lmer)
 
 ### Before and after thermo
-mass_max_both_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + 
-                                    scale(thermo_aft_max_temp) + (1|fsite) +
+mass_max_both_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_5) + 
+                                    scale(thermo_aft_max_temp_5) + (1|fsite) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
-                                                !is.na(x = thermo_bef_max_temp) &
-                                                  !is.na(x = thermo_aft_max_temp)&
+                                                !is.na(x = thermo_bef_max_temp_5) &
+                                                  !is.na(x = thermo_aft_max_temp_5)&
                                                   !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_max_both_thermo_lmer)
+plot(mass_max_both_thermo_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_max_both_thermo_lmer))
-  qqline(resid(mass_max_both_thermo_lmer))}
+{qqnorm(resid(mass_max_both_thermo_lmer_5))
+  qqline(resid(mass_max_both_thermo_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_max_both_thermo_lmer))
+hist(resid(mass_max_both_thermo_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_max_both_thermo_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_both_thermo_lmer, vars=c("Studentized"))
+infIndexPlot(mass_max_both_thermo_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_max_both_thermo_lmer_5, vars=c("Studentized"))
 
-summary(mass_max_both_thermo_lmer)
-confint(mass_max_both_thermo_lmer)
-vif(mass_max_both_thermo_lmer)
+summary(mass_max_both_thermo_lmer_5)
+confint(mass_max_both_thermo_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_both_thermo_lmer_5)
+
+# Calculate VIF
+vif(mass_max_both_thermo_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_both_thermo_lmer_5 <- bootMer(x = mass_max_both_thermo_lmer_5,
+                                                FUN = fixef, nsim = 2000,
+                                                seed = 632760,
+                                                use.u = F, type = 'parametric')
+tidy(boot_mass_max_both_thermo_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_both_thermo_lmer_5 <- boot.ci(boot_mass_max_both_thermo_lmer_5,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_max_both_thermo_lmer_5)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_both_thermo_lmer_5_2 <- boot.ci(boot_mass_max_both_thermo_lmer_5,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 3) # CI for 2nd beta
+print(bt_ci_mass_max_both_thermo_lmer_5_2)
+
 
 ### Before and after thermo adjusted
-mass_max_both_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + 
-                                        scale(thermo_aft_max_temp) + scale(nestling_number) +
+mass_max_both_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_5) + 
+                                        scale(thermo_aft_max_temp_5) + scale(nestling_number) +
                                         scale(days_summer) +  (1|fsite) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
-                                                    !is.na(x = thermo_bef_max_temp) &
-                                                      !is.na(x = thermo_aft_max_temp)&
+                                                    !is.na(x = thermo_bef_max_temp_5) &
+                                                      !is.na(x = thermo_aft_max_temp_5)&
                                                       !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_max_both_thermo_adj_lmer)
+plot(mass_max_both_thermo_adj_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_max_both_thermo_adj_lmer))
-  qqline(resid(mass_max_both_thermo_adj_lmer))}
+{qqnorm(resid(mass_max_both_thermo_adj_lmer_5))
+  qqline(resid(mass_max_both_thermo_adj_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_max_both_thermo_adj_lmer))
+hist(resid(mass_max_both_thermo_adj_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_max_both_thermo_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_both_thermo_adj_lmer, vars=c("Studentized"))
+infIndexPlot(mass_max_both_thermo_adj_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_max_both_thermo_adj_lmer_5, vars=c("Studentized"))
 
-summary(mass_max_both_thermo_adj_lmer)
-confint(mass_max_both_thermo_adj_lmer)
+summary(mass_max_both_thermo_adj_lmer_5)
+confint(mass_max_both_thermo_adj_lmer_5)
 
+# Calculate R squared 
+r.squaredGLMM(mass_max_both_thermo_adj_lmer_5)
 
-### Before and after thermo adjusted no outliers
-mass_max_both_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + 
-                                              scale(thermo_aft_max_temp) + scale(nestling_number) +
-                                              scale(days_summer) +  (1|fsite) +
-                                              (1|fnest_id), 
-                                            data = subset(mass_outliers_removed,
-                                                          !is.na(x = thermo_bef_max_temp) &
-                                                            !is.na(x = thermo_aft_max_temp)&
-                                                            !is.na(x = mass_pre_obs)))
+# Calculate VIF
+vif(mass_max_both_thermo_adj_lmer_5)
 
-## Check diagnostics for the full model
-plot(mass_max_both_thermo_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_both_thermo_adj_noout_lmer))
-  qqline(resid(mass_max_both_thermo_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_both_thermo_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_max_both_thermo_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_max_both_thermo_adj_noout_lmer, vars=c("Studentized"))
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_both_thermo_adj_lmer_5 <- bootMer(x = mass_max_both_thermo_adj_lmer_5,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_max_both_thermo_adj_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_both_thermo_adj_lmer_5 <- boot.ci(boot_mass_max_both_thermo_adj_lmer_5,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_max_both_thermo_adj_lmer_5)
 
-summary(mass_max_both_thermo_adj_noout_lmer)
-confint(mass_max_both_thermo_adj_noout_lmer)
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_both_thermo_adj_lmer_5_2 <- boot.ci(boot_mass_max_both_thermo_adj_lmer_5,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd beta
+print(bt_ci_mass_max_both_thermo_adj_lmer_5_2)
+
 
 #### IQR of temp
 ### Before thermo
-mass_iqr_before_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
+mass_iqr_before_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_5) + 
                                       (1|fsite) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
-                                                  !is.na(x = thermo_bef_iqr_temp)&
+                                                  !is.na(x = thermo_bef_iqr_temp_5)&
                                                     !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_iqr_before_thermo_lmer)
+plot(mass_iqr_before_thermo_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_iqr_before_thermo_lmer))
-  qqline(resid(mass_max_before_thermo_lmer))}
+{qqnorm(resid(mass_iqr_before_thermo_lmer_5))
+  qqline(resid(mass_iqr_before_thermo_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_iqr_before_thermo_lmer))
+hist(resid(mass_iqr_before_thermo_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_iqr_before_thermo_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_before_thermo_lmer, vars=c("Studentized"))
+infIndexPlot(mass_iqr_before_thermo_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_iqr_before_thermo_lmer_5, vars=c("Studentized"))
 
-summary(mass_iqr_before_thermo_lmer)
-confint(mass_iqr_before_thermo_lmer)
+summary(mass_iqr_before_thermo_lmer_5)
+confint(mass_iqr_before_thermo_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_before_thermo_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_before_thermo_lmer_5 <- bootMer(x = mass_iqr_before_thermo_lmer_5,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_before_thermo_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_before_thermo_lmer_5 <- boot.ci(boot_mass_iqr_before_thermo_lmer_5,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_before_thermo_lmer_5)
+
 
 ### Before thermo adjusted
-mass_iqr_before_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + scale(nestling_number) +
+mass_iqr_before_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_5) + scale(nestling_number) +
                                           scale(days_summer) +  
                                           (1|fsite) +
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
-                                                      !is.na(x = thermo_bef_iqr_temp)&
+                                                      !is.na(x = thermo_bef_iqr_temp_5)&
                                                         !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_iqr_before_thermo_adj_lmer)
+plot(mass_iqr_before_thermo_adj_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_iqr_before_thermo_adj_lmer))
-  qqline(resid(mass_iqr_before_thermo_adj_lmer))}
+{qqnorm(resid(mass_iqr_before_thermo_adj_lmer_5))
+  qqline(resid(mass_iqr_before_thermo_adj_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_iqr_before_thermo_adj_lmer))
+hist(resid(mass_iqr_before_thermo_adj_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_iqr_before_thermo_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_before_thermo_adj_lmer, vars=c("Studentized"))
+infIndexPlot(mass_iqr_before_thermo_adj_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_iqr_before_thermo_adj_lmer_5, vars=c("Studentized"))
 
-summary(mass_iqr_before_thermo_adj_lmer)
-confint(mass_iqr_before_thermo_adj_lmer)
+summary(mass_iqr_before_thermo_adj_lmer_5)
+confint(mass_iqr_before_thermo_adj_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_before_thermo_adj_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_before_thermo_adj_lmer_5 <- bootMer(x = mass_iqr_before_thermo_adj_lmer_5,
+                                              FUN = fixef, nsim = 2000,
+                                              seed = 632760,
+                                              use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_before_thermo_adj_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_before_thermo_adj_lmer_5 <- boot.ci(boot_mass_iqr_before_thermo_adj_lmer_5,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_before_thermo_adj_lmer_5)
+
 
 
 ### After thermo
-mass_iqr_after_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp) + 
+mass_iqr_after_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp_5) + 
                                      (1|fsite) +
                                      (1|fnest_id), 
                                    data = subset(late_nestling_parent_care,
-                                                 !is.na(x = thermo_aft_iqr_temp)&
+                                                 !is.na(x = thermo_aft_iqr_temp_5)&
                                                    !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_iqr_after_thermo_lmer)
+plot(mass_iqr_after_thermo_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_iqr_after_thermo_lmer))
-  qqline(resid(mass_iqr_after_thermo_lmer))}
+{qqnorm(resid(mass_iqr_after_thermo_lmer_5))
+  qqline(resid(mass_iqr_after_thermo_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_iqr_after_thermo_lmer))
+hist(resid(mass_iqr_after_thermo_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_iqr_after_thermo_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_after_thermo_lmer, vars=c("Studentized"))
+infIndexPlot(mass_iqr_after_thermo_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_iqr_after_thermo_lmer_5, vars=c("Studentized"))
 
-summary(mass_iqr_after_thermo_lmer)
-confint(mass_iqr_after_thermo_lmer)
+summary(mass_iqr_after_thermo_lmer_5)
+confint(mass_iqr_after_thermo_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_after_thermo_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_after_thermo_lmer_5 <- bootMer(x = mass_iqr_after_thermo_lmer_5,
+                                                  FUN = fixef, nsim = 2000,
+                                                  seed = 632760,
+                                                  use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_after_thermo_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_after_thermo_lmer_5 <- boot.ci(boot_mass_iqr_after_thermo_lmer_5,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_after_thermo_lmer_5)
+
 
 ### After thermo adjusted
-mass_iqr_after_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp) + scale(nestling_number) +
+mass_iqr_after_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp_5) + scale(nestling_number) +
                                          scale(days_summer) + 
                                          (1|fsite) +
                                          (1|fnest_id), 
                                        data = subset(late_nestling_parent_care,
-                                                     !is.na(x = thermo_aft_iqr_temp)&
+                                                     !is.na(x = thermo_aft_iqr_temp_5)&
                                                        !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_iqr_after_thermo_adj_lmer)
+plot(mass_iqr_after_thermo_adj_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_iqr_after_thermo_adj_lmer))
-  qqline(resid(mass_iqr_after_thermo_adj_lmer))}
+{qqnorm(resid(mass_iqr_after_thermo_adj_lmer_5))
+  qqline(resid(mass_iqr_after_thermo_adj_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_iqr_after_thermo_adj_lmer))
+hist(resid(mass_iqr_after_thermo_adj_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_iqr_after_thermo_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_after_thermo_adj_lmer, vars=c("Studentized"))
+infIndexPlot(mass_iqr_after_thermo_adj_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_iqr_after_thermo_adj_lmer_5, vars=c("Studentized"))
 
-summary(mass_iqr_after_thermo_adj_lmer)
-confint(mass_iqr_after_thermo_adj_lmer)
+summary(mass_iqr_after_thermo_adj_lmer_5)
+confint(mass_iqr_after_thermo_adj_lmer_5)
 
-### After thermo adjusted no outliers
-mass_iqr_after_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp) + scale(nestling_number) +
-                                               scale(days_summer) + 
-                                               (1|fsite) +
-                                               (1|fnest_id), 
-                                             data = subset(mass_outliers_removed,
-                                                           !is.na(x = thermo_aft_iqr_temp)&
-                                                             !is.na(x = mass_pre_obs)))
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_after_thermo_adj_lmer_5)
 
-## Check diagnostics for the full model
-plot(mass_iqr_after_thermo_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_iqr_after_thermo_adj_noout_lmer))
-  qqline(resid(mass_iqr_after_thermo_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_iqr_after_thermo_adj_noout_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_iqr_after_thermo_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_after_thermo_adj_noout_lmer, vars=c("Studentized"))
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_after_thermo_adj_lmer_5 <- bootMer(x = mass_iqr_after_thermo_adj_lmer_5,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_after_thermo_adj_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_after_thermo_adj_lmer_5 <- boot.ci(boot_mass_iqr_after_thermo_adj_lmer_5,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_after_thermo_adj_lmer_5)
 
-summary(mass_iqr_after_thermo_adj_noout_lmer)
-confint(mass_iqr_after_thermo_adj_noout_lmer)
 
 ### Before and after thermo
-mass_iqr_both_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
-                                    scale(thermo_aft_iqr_temp) + (1|fsite) +
+mass_iqr_both_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_5) + 
+                                    scale(thermo_aft_iqr_temp_5) + (1|fsite) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
-                                                !is.na(x = thermo_bef_iqr_temp) &
-                                                  !is.na(x = thermo_aft_iqr_temp)&
+                                                !is.na(x = thermo_bef_iqr_temp_5) &
+                                                  !is.na(x = thermo_aft_iqr_temp_5)&
                                                   !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_iqr_both_thermo_lmer)
+plot(mass_iqr_both_thermo_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_iqr_both_thermo_lmer))
-  qqline(resid(mass_iqr_both_thermo_lmer))}
+{qqnorm(resid(mass_iqr_both_thermo_lmer_5))
+  qqline(resid(mass_iqr_both_thermo_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_iqr_both_thermo_lmer))
+hist(resid(mass_iqr_both_thermo_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_iqr_both_thermo_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_both_thermo_lmer, vars=c("Studentized"))
+infIndexPlot(mass_iqr_both_thermo_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_iqr_both_thermo_lmer_5, vars=c("Studentized"))
 
-summary(mass_iqr_both_thermo_lmer)
-confint(mass_iqr_both_thermo_lmer)
-vif(mass_iqr_both_thermo_lmer)
+summary(mass_iqr_both_thermo_lmer_5)
+confint(mass_iqr_both_thermo_lmer_5)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_both_thermo_lmer_5)
+
+# Calculate VIF
+vif(mass_iqr_both_thermo_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_both_thermo_lmer_5 <- bootMer(x = mass_iqr_both_thermo_lmer_5,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_both_thermo_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_both_thermo_lmer_5 <- boot.ci(boot_mass_iqr_both_thermo_lmer_5,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_both_thermo_lmer_5)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_both_thermo_lmer_5_2 <- boot.ci(boot_mass_iqr_both_thermo_lmer_5,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd beta
+print(bt_ci_mass_iqr_both_thermo_lmer_5_2)
+
+
 
 ### Before and after thermo adjusted
-mass_iqr_both_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
-                                        scale(thermo_aft_iqr_temp) + scale(nestling_number) +
+mass_iqr_both_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_5) + 
+                                        scale(thermo_aft_iqr_temp_5) + scale(nestling_number) +
                                         scale(days_summer) +  (1|fsite) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
-                                                    !is.na(x = thermo_bef_iqr_temp) &
-                                                      !is.na(x = thermo_aft_iqr_temp)&
+                                                    !is.na(x = thermo_bef_iqr_temp_5) &
+                                                      !is.na(x = thermo_aft_iqr_temp_5)&
                                                       !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_iqr_both_thermo_adj_lmer)
+plot(mass_iqr_both_thermo_adj_lmer_5)
 # Normal QQplot
-{qqnorm(resid(mass_iqr_both_thermo_adj_lmer))
-  qqline(resid(mass_iqr_both_thermo_adj_lmer))}
+{qqnorm(resid(mass_iqr_both_thermo_adj_lmer_5))
+  qqline(resid(mass_iqr_both_thermo_adj_lmer_5))}
 # Histogram of residuals
-hist(resid(mass_iqr_both_thermo_adj_lmer))
+hist(resid(mass_iqr_both_thermo_adj_lmer_5))
 # Checking for influential outliers
-infIndexPlot(mass_iqr_both_thermo_adj_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_both_thermo_adj_lmer, vars=c("Studentized"))
+infIndexPlot(mass_iqr_both_thermo_adj_lmer_5, vars=c("Cook"))
+infIndexPlot(mass_iqr_both_thermo_adj_lmer_5, vars=c("Studentized"))
 
-summary(mass_iqr_both_thermo_adj_lmer)
-confint(mass_iqr_both_thermo_adj_lmer)
-vif(mass_iqr_both_thermo_adj_lmer)
+summary(mass_iqr_both_thermo_adj_lmer_5)
+confint(mass_iqr_both_thermo_adj_lmer_5)
 
-### Before and after thermo adjusted
-mass_iqr_both_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
-                                              scale(thermo_aft_iqr_temp) + scale(nestling_number) +
-                                              scale(days_summer) +  (1|fsite) +
-                                              (1|fnest_id), 
-                                            data = subset(mass_outliers_removed,
-                                                          !is.na(x = thermo_bef_iqr_temp) &
-                                                            !is.na(x = thermo_aft_iqr_temp)&
-                                                            !is.na(x = mass_pre_obs)))
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_both_thermo_adj_lmer_5)
+
+# Calculate VIF
+vif(mass_iqr_both_thermo_adj_lmer_5)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_both_thermo_adj_lmer_5 <- bootMer(x = mass_iqr_both_thermo_adj_lmer_5,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_both_thermo_adj_lmer_5) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_both_thermo_adj_lmer_5 <- boot.ci(boot_mass_iqr_both_thermo_adj_lmer_5,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_both_thermo_adj_lmer_5)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_both_thermo_adj_lmer_5_2 <- boot.ci(boot_mass_iqr_both_thermo_adj_lmer_5,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd beta
+print(bt_ci_mass_iqr_both_thermo_adj_lmer_5_2)
+
+
+############################ 7 days cut off ###################################
+#### Minimum temp
+### Before thermo
+mass_min_before_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_7) + (1|fsite) +
+                                        (1|fnest_id), 
+                                      data = subset(late_nestling_parent_care,
+                                                    !is.na(x = thermo_bef_min_temp_7)&
+                                                      !is.na(x = mass_pre_obs)))
 
 ## Check diagnostics for the full model
-plot(mass_iqr_both_thermo_adj_noout_lmer)
+plot(mass_min_before_thermo_lmer_7)
 # Normal QQplot
-{qqnorm(resid(mass_iqr_both_thermo_adj_noout_lmer))
-  qqline(resid(mass_iqr_both_thermo_adj_noout_lmer))}
+{qqnorm(resid(mass_min_before_thermo_lmer_7))
+  qqline(resid(mass_min_before_thermo_lmer_7))}
 # Histogram of residuals
-hist(resid(mass_iqr_both_thermo_adj_noout_lmer))
+hist(resid(mass_min_before_thermo_lmer_7))
 # Checking for influential outliers
-infIndexPlot(mass_iqr_both_thermo_adj_noout_lmer, vars=c("Cook"))
-infIndexPlot(mass_iqr_both_thermo_adj_noout_lmer, vars=c("Studentized"))
+infIndexPlot(mass_min_before_thermo_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_min_before_thermo_lmer_7, vars=c("Studentized"))
 
-summary(mass_iqr_both_thermo_adj_noout_lmer)
-confint(mass_iqr_both_thermo_adj_noout_lmer)
-vif(mass_iqr_both_thermo_adj_noout_lmer)
+summary(mass_min_before_thermo_lmer_7)
+confint(mass_min_before_thermo_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_before_thermo_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_before_thermo_lmer_7 <- bootMer(x = mass_min_before_thermo_lmer_7,
+                                              FUN = fixef, nsim = 2000,
+                                              seed = 632760,
+                                              use.u = F, type = 'parametric')
+tidy(boot_mass_min_before_thermo_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_before_thermo_lmer_7 <- boot.ci(boot_mass_min_before_thermo_lmer_7,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 2) # CI for 1st betas
+print(bt_ci_mass_min_before_thermo_lmer_7)
+
+
+### Before thermo adjusted
+mass_min_before_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_7) + scale(nestling_number) +
+                                            scale(days_summer) + (1|fsite) +
+                                            (1|fnest_id), 
+                                          data = subset(late_nestling_parent_care,
+                                                        !is.na(x = thermo_bef_min_temp_7)&
+                                                          !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_min_before_thermo_adj_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_min_before_thermo_adj_lmer_7))
+  qqline(resid(mass_min_before_thermo_adj_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_min_before_thermo_adj_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_min_before_thermo_adj_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_min_before_thermo_adj_lmer_7, vars=c("Studentized"))
+
+summary(mass_min_before_thermo_adj_lmer_7)
+confint(mass_min_before_thermo_adj_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_before_thermo_adj_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_before_thermo_adj_lmer_7 <- bootMer(x = mass_min_before_thermo_adj_lmer_7,
+                                                  FUN = fixef, nsim = 2000,
+                                                  seed = 632760,
+                                                  use.u = F, type = 'parametric')
+tidy(boot_mass_min_before_thermo_adj_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_before_thermo_adj_lmer_7 <- boot.ci(boot_mass_min_before_thermo_adj_lmer_7,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 2) # CI for 1st betas
+print(bt_ci_mass_min_before_thermo_adj_lmer_7)
+
+
+### After thermo
+mass_min_after_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_7) + (1|fsite) +
+                                       (1|fnest_id), 
+                                     data = subset(late_nestling_parent_care,
+                                                   !is.na(x = thermo_aft_min_temp_7)&
+                                                     !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_min_after_thermo_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_min_after_thermo_lmer_7))
+  qqline(resid(mass_min_after_thermo_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_min_after_thermo_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_min_after_thermo_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_min_after_thermo_lmer_7, vars=c("Studentized"))
+
+summary(mass_min_after_thermo_lmer_7)
+confint(mass_min_after_thermo_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_after_thermo_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_after_thermo_lmer_7 <- bootMer(x = mass_min_after_thermo_lmer_7,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_min_after_thermo_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_after_thermo_lmer_7 <- boot.ci(boot_mass_min_after_thermo_lmer_7,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_min_after_thermo_lmer_7)
+
+
+### After thermo adjusted
+mass_min_after_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_7) + scale(nestling_number) +
+                                           scale(days_summer) + (1|fsite) +
+                                           (1|fnest_id), 
+                                         data = subset(late_nestling_parent_care,
+                                                       !is.na(x = thermo_aft_min_temp_7)&
+                                                         !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_min_after_thermo_adj_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_min_after_thermo_adj_lmer_7))
+  qqline(resid(mass_min_after_thermo_adj_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_min_after_thermo_adj_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_min_after_thermo_adj_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_min_after_thermo_adj_lmer_7, vars=c("Studentized"))
+
+summary(mass_min_after_thermo_adj_lmer_7)
+confint(mass_min_after_thermo_adj_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_after_thermo_adj_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_after_thermo_adj_lmer_7 <- bootMer(x = mass_min_after_thermo_adj_lmer_7,
+                                                 FUN = fixef, nsim = 2000,
+                                                 seed = 632760,
+                                                 use.u = F, type = 'parametric')
+tidy(boot_mass_min_after_thermo_adj_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_after_thermo_adj_lmer_7 <- boot.ci(boot_mass_min_after_thermo_adj_lmer_7,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 2) # CI for 1st betas
+print(bt_ci_mass_min_after_thermo_adj_lmer_7)
+
+### Before and after thermo
+mass_min_both_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_7) + 
+                                      scale(thermo_aft_min_temp_7) + (1|fsite) +
+                                      (1|fnest_id), 
+                                    data = subset(late_nestling_parent_care,
+                                                  !is.na(x = thermo_bef_min_temp_7) &
+                                                    !is.na(x = thermo_aft_min_temp_7)&
+                                                    !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_min_both_thermo_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_min_both_thermo_lmer_7))
+  qqline(resid(mass_min_both_thermo_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_min_both_thermo_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_min_both_thermo_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_min_both_thermo_lmer_7, vars=c("Studentized"))
+
+summary(mass_min_both_thermo_lmer_7)
+confint(mass_min_both_thermo_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_both_thermo_lmer_7)
+
+# Calculate VIF
+vif(mass_min_both_thermo_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_both_thermo_lmer_7 <- bootMer(x = mass_min_both_thermo_lmer_7,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_min_both_thermo_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_both_thermo_lmer_7 <- boot.ci(boot_mass_min_both_thermo_lmer_7,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_min_both_thermo_lmer_7)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_both_thermo_lmer_7_2 <- boot.ci(boot_mass_min_both_thermo_lmer_7,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd beta
+print(bt_ci_mass_min_both_thermo_lmer_7_2)
+
+
+### Before and after thermo adjusted
+mass_min_both_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_7) + 
+                                          scale(thermo_aft_min_temp_7) + scale(nestling_number) +
+                                          scale(days_summer) + (1|fsite) +
+                                          (1|fnest_id), 
+                                        data = subset(late_nestling_parent_care,
+                                                      !is.na(x = thermo_bef_min_temp_7) &
+                                                        !is.na(x = thermo_aft_min_temp_7)&
+                                                        !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_min_both_thermo_adj_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_min_both_thermo_adj_lmer_7))
+  qqline(resid(mass_min_both_thermo_adj_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_min_both_thermo_adj_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_min_both_thermo_adj_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_min_both_thermo_adj_lmer_7, vars=c("Studentized"))
+
+summary(mass_min_both_thermo_adj_lmer_7)
+confint(mass_min_both_thermo_adj_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_both_thermo_adj_lmer_7)
+
+# Calculate VIF
+vif(mass_min_both_thermo_adj_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_both_thermo_adj_lmer_7 <- bootMer(x = mass_min_both_thermo_adj_lmer_7,
+                                                FUN = fixef, nsim = 2000,
+                                                seed = 632760,
+                                                use.u = F, type = 'parametric')
+tidy(boot_mass_min_both_thermo_adj_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_both_thermo_adj_lmer_7 <- boot.ci(boot_mass_min_both_thermo_adj_lmer_7,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_min_both_thermo_adj_lmer_7)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_both_thermo_adj_lmer_7_2 <- boot.ci(boot_mass_min_both_thermo_adj_lmer_7,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 3) # CI for 2nd beta
+print(bt_ci_mass_min_both_thermo_adj_lmer_7_2)
+
+
+#### Maximum temp
+### Before thermo
+mass_max_before_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_7) + (1|fsite) +
+                                        (1|fnest_id), 
+                                      data = subset(late_nestling_parent_care,
+                                                    !is.na(x = thermo_bef_max_temp_7)&
+                                                      !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_max_before_thermo_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_max_before_thermo_lmer_7))
+  qqline(resid(mass_max_before_thermo_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_max_before_thermo_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_max_before_thermo_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_max_before_thermo_lmer_7, vars=c("Studentized"))
+
+summary(mass_max_before_thermo_lmer_7)
+confint(mass_max_before_thermo_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_before_thermo_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_before_thermo_lmer_7 <- bootMer(x = mass_max_before_thermo_lmer_7,
+                                              FUN = fixef, nsim = 2000,
+                                              seed = 632760,
+                                              use.u = F, type = 'parametric')
+tidy(boot_mass_max_before_thermo_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_before_thermo_lmer_7 <- boot.ci(boot_mass_max_before_thermo_lmer_7,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 2) # CI for 1st betas
+print(bt_ci_mass_max_before_thermo_lmer_7)
+
+### Before thermo adjusted
+mass_max_before_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_7) + scale(nestling_number) +
+                                            scale(days_summer) + (1|fsite) +
+                                            (1|fnest_id), 
+                                          data = subset(late_nestling_parent_care,
+                                                        !is.na(x = thermo_bef_max_temp_7)&
+                                                          !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_max_before_thermo_adj_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_max_before_thermo_adj_lmer_7))
+  qqline(resid(mass_max_before_thermo_adj_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_max_before_thermo_adj_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_max_before_thermo_adj_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_max_before_thermo_adj_lmer_7, vars=c("Studentized"))
+
+summary(mass_max_before_thermo_adj_lmer_7)
+confint(mass_max_before_thermo_adj_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_before_thermo_adj_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_before_thermo_adj_lmer_7 <- bootMer(x = mass_max_before_thermo_adj_lmer_7,
+                                                  FUN = fixef, nsim = 2000,
+                                                  seed = 632760,
+                                                  use.u = F, type = 'parametric')
+tidy(boot_mass_max_before_thermo_adj_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_before_thermo_adj_lmer_7 <- boot.ci(boot_mass_max_before_thermo_adj_lmer_7,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 2) # CI for 1st betas
+print(bt_ci_mass_max_before_thermo_adj_lmer_7)
+
+
+### After thermo
+mass_max_after_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_7) + (1|fsite) +
+                                       (1|fnest_id), 
+                                     data = subset(late_nestling_parent_care,
+                                                   !is.na(x = thermo_aft_max_temp_7)&
+                                                     !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_max_after_thermo_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_max_after_thermo_lmer_7))
+  qqline(resid(mass_max_after_thermo_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_max_after_thermo_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_max_after_thermo_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_max_after_thermo_lmer_7, vars=c("Studentized"))
+
+summary(mass_max_after_thermo_lmer_7)
+confint(mass_max_after_thermo_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_after_thermo_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_after_thermo_lmer_7 <- bootMer(x = mass_max_after_thermo_lmer_7,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_max_after_thermo_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_after_thermo_lmer_7 <- boot.ci(boot_mass_max_after_thermo_lmer_7,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_max_after_thermo_lmer_7)
+
+
+### After thermo adjusted
+mass_max_after_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_7) + scale(nestling_number) +
+                                           scale(days_summer) + (1|fsite) +
+                                           (1|fnest_id), 
+                                         data = subset(late_nestling_parent_care,
+                                                       !is.na(x = thermo_aft_max_temp_7)&
+                                                         !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_max_after_thermo_adj_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_max_after_thermo_adj_lmer_7))
+  qqline(resid(mass_max_after_thermo_adj_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_max_after_thermo_adj_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_max_after_thermo_adj_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_max_after_thermo_adj_lmer_7, vars=c("Studentized"))
+
+summary(mass_max_after_thermo_adj_lmer_7)
+confint(mass_max_after_thermo_adj_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_after_thermo_adj_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_after_thermo_adj_lmer_7 <- bootMer(x = mass_max_after_thermo_adj_lmer_7,
+                                                 FUN = fixef, nsim = 2000,
+                                                 seed = 632760,
+                                                 use.u = F, type = 'parametric')
+tidy(boot_mass_max_after_thermo_adj_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_after_thermo_adj_lmer_7 <- boot.ci(boot_mass_max_after_thermo_adj_lmer_7,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 2) # CI for 1st betas
+print(bt_ci_mass_max_after_thermo_adj_lmer_7)
+
+
+### Before and after thermo
+mass_max_both_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_7) + 
+                                      scale(thermo_aft_max_temp_7) + (1|fsite) +
+                                      (1|fnest_id), 
+                                    data = subset(late_nestling_parent_care,
+                                                  !is.na(x = thermo_bef_max_temp_7) &
+                                                    !is.na(x = thermo_aft_max_temp_7)&
+                                                    !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_max_both_thermo_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_max_both_thermo_lmer_7))
+  qqline(resid(mass_max_both_thermo_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_max_both_thermo_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_max_both_thermo_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_max_both_thermo_lmer_7, vars=c("Studentized"))
+
+summary(mass_max_both_thermo_lmer_7)
+confint(mass_max_both_thermo_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_both_thermo_lmer_7)
+
+# Calculate VIF
+vif(mass_max_both_thermo_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_both_thermo_lmer_7 <- bootMer(x = mass_max_both_thermo_lmer_7,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_max_both_thermo_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_both_thermo_lmer_7 <- boot.ci(boot_mass_max_both_thermo_lmer_7,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_max_both_thermo_lmer_7)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_both_thermo_lmer_7_2 <- boot.ci(boot_mass_max_both_thermo_lmer_7,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd beta
+print(bt_ci_mass_max_both_thermo_lmer_7_2)
+
+
+### Before and after thermo adjusted
+mass_max_both_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_7) + 
+                                          scale(thermo_aft_max_temp_7) + scale(nestling_number) +
+                                          scale(days_summer) +  (1|fsite) +
+                                          (1|fnest_id), 
+                                        data = subset(late_nestling_parent_care,
+                                                      !is.na(x = thermo_bef_max_temp_7) &
+                                                        !is.na(x = thermo_aft_max_temp_7)&
+                                                        !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_max_both_thermo_adj_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_max_both_thermo_adj_lmer_7))
+  qqline(resid(mass_max_both_thermo_adj_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_max_both_thermo_adj_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_max_both_thermo_adj_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_max_both_thermo_adj_lmer_7, vars=c("Studentized"))
+
+summary(mass_max_both_thermo_adj_lmer_7)
+confint(mass_max_both_thermo_adj_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_both_thermo_adj_lmer_7)
+
+# Calculate VIF
+vif(mass_max_both_thermo_adj_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_both_thermo_adj_lmer_7 <- bootMer(x = mass_max_both_thermo_adj_lmer_7,
+                                                FUN = fixef, nsim = 2000,
+                                                seed = 632760,
+                                                use.u = F, type = 'parametric')
+tidy(boot_mass_max_both_thermo_adj_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_both_thermo_adj_lmer_7 <- boot.ci(boot_mass_max_both_thermo_adj_lmer_7,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_max_both_thermo_adj_lmer_7)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_both_thermo_adj_lmer_7_2 <- boot.ci(boot_mass_max_both_thermo_adj_lmer_7,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 3) # CI for 2nd beta
+print(bt_ci_mass_max_both_thermo_adj_lmer_7_2)
+
+
+#### IQR of temp
+### Before thermo
+mass_iqr_before_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_7) + 
+                                        (1|fsite) +
+                                        (1|fnest_id), 
+                                      data = subset(late_nestling_parent_care,
+                                                    !is.na(x = thermo_bef_iqr_temp_7)&
+                                                      !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_before_thermo_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_before_thermo_lmer_7))
+  qqline(resid(mass_iqr_before_thermo_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_iqr_before_thermo_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_before_thermo_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_iqr_before_thermo_lmer_7, vars=c("Studentized"))
+
+summary(mass_iqr_before_thermo_lmer_7)
+confint(mass_iqr_before_thermo_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_before_thermo_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_before_thermo_lmer_7 <- bootMer(x = mass_iqr_before_thermo_lmer_7,
+                                              FUN = fixef, nsim = 2000,
+                                              seed = 632760,
+                                              use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_before_thermo_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_before_thermo_lmer_7 <- boot.ci(boot_mass_iqr_before_thermo_lmer_7,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_before_thermo_lmer_7)
+
+
+### Before thermo adjusted
+mass_iqr_before_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_7) + scale(nestling_number) +
+                                            scale(days_summer) +  
+                                            (1|fsite) +
+                                            (1|fnest_id), 
+                                          data = subset(late_nestling_parent_care,
+                                                        !is.na(x = thermo_bef_iqr_temp_7)&
+                                                          !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_before_thermo_adj_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_before_thermo_adj_lmer_7))
+  qqline(resid(mass_iqr_before_thermo_adj_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_iqr_before_thermo_adj_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_before_thermo_adj_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_iqr_before_thermo_adj_lmer_7, vars=c("Studentized"))
+
+summary(mass_iqr_before_thermo_adj_lmer_7)
+confint(mass_iqr_before_thermo_adj_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_before_thermo_adj_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_before_thermo_adj_lmer_7 <- bootMer(x = mass_iqr_before_thermo_adj_lmer_7,
+                                                  FUN = fixef, nsim = 2000,
+                                                  seed = 632760,
+                                                  use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_before_thermo_adj_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_before_thermo_adj_lmer_7 <- boot.ci(boot_mass_iqr_before_thermo_adj_lmer_7,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_before_thermo_adj_lmer_7)
+
+
+
+### After thermo
+mass_iqr_after_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp_7) + 
+                                       (1|fsite) +
+                                       (1|fnest_id), 
+                                     data = subset(late_nestling_parent_care,
+                                                   !is.na(x = thermo_aft_iqr_temp_7)&
+                                                     !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_after_thermo_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_after_thermo_lmer_7))
+  qqline(resid(mass_iqr_after_thermo_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_iqr_after_thermo_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_after_thermo_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_iqr_after_thermo_lmer_7, vars=c("Studentized"))
+
+summary(mass_iqr_after_thermo_lmer_7)
+confint(mass_iqr_after_thermo_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_after_thermo_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_after_thermo_lmer_7 <- bootMer(x = mass_iqr_after_thermo_lmer_7,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_after_thermo_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_after_thermo_lmer_7 <- boot.ci(boot_mass_iqr_after_thermo_lmer_7,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_after_thermo_lmer_7)
+
+
+### After thermo adjusted
+mass_iqr_after_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp_7) + scale(nestling_number) +
+                                           scale(days_summer) + 
+                                           (1|fsite) +
+                                           (1|fnest_id), 
+                                         data = subset(late_nestling_parent_care,
+                                                       !is.na(x = thermo_aft_iqr_temp_7)&
+                                                         !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_after_thermo_adj_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_after_thermo_adj_lmer_7))
+  qqline(resid(mass_iqr_after_thermo_adj_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_iqr_after_thermo_adj_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_after_thermo_adj_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_iqr_after_thermo_adj_lmer_7, vars=c("Studentized"))
+
+summary(mass_iqr_after_thermo_adj_lmer_7)
+confint(mass_iqr_after_thermo_adj_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_after_thermo_adj_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_after_thermo_adj_lmer_7 <- bootMer(x = mass_iqr_after_thermo_adj_lmer_7,
+                                                 FUN = fixef, nsim = 2000,
+                                                 seed = 632760,
+                                                 use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_after_thermo_adj_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_after_thermo_adj_lmer_7 <- boot.ci(boot_mass_iqr_after_thermo_adj_lmer_7,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_after_thermo_adj_lmer_7)
+
+
+### Before and after thermo
+mass_iqr_both_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_7) + 
+                                      scale(thermo_aft_iqr_temp_7) + (1|fsite) +
+                                      (1|fnest_id), 
+                                    data = subset(late_nestling_parent_care,
+                                                  !is.na(x = thermo_bef_iqr_temp_7) &
+                                                    !is.na(x = thermo_aft_iqr_temp_7)&
+                                                    !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_both_thermo_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_both_thermo_lmer_7))
+  qqline(resid(mass_iqr_both_thermo_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_iqr_both_thermo_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_both_thermo_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_iqr_both_thermo_lmer_7, vars=c("Studentized"))
+
+summary(mass_iqr_both_thermo_lmer_7)
+confint(mass_iqr_both_thermo_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_both_thermo_lmer_7)
+
+# Calculate VIF
+vif(mass_iqr_both_thermo_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_both_thermo_lmer_7 <- bootMer(x = mass_iqr_both_thermo_lmer_7,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_both_thermo_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_both_thermo_lmer_7 <- boot.ci(boot_mass_iqr_both_thermo_lmer_7,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_both_thermo_lmer_7)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_both_thermo_lmer_7_2 <- boot.ci(boot_mass_iqr_both_thermo_lmer_7,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd beta
+print(bt_ci_mass_iqr_both_thermo_lmer_7_2)
+
+
+
+### Before and after thermo adjusted
+mass_iqr_both_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_7) + 
+                                          scale(thermo_aft_iqr_temp_7) + scale(nestling_number) +
+                                          scale(days_summer) +  (1|fsite) +
+                                          (1|fnest_id), 
+                                        data = subset(late_nestling_parent_care,
+                                                      !is.na(x = thermo_bef_iqr_temp_7) &
+                                                        !is.na(x = thermo_aft_iqr_temp_7)&
+                                                        !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_both_thermo_adj_lmer_7)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_both_thermo_adj_lmer_7))
+  qqline(resid(mass_iqr_both_thermo_adj_lmer_7))}
+# Histogram of residuals
+hist(resid(mass_iqr_both_thermo_adj_lmer_7))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_both_thermo_adj_lmer_7, vars=c("Cook"))
+infIndexPlot(mass_iqr_both_thermo_adj_lmer_7, vars=c("Studentized"))
+
+summary(mass_iqr_both_thermo_adj_lmer_7)
+confint(mass_iqr_both_thermo_adj_lmer_7)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_both_thermo_adj_lmer_7)
+
+# Calculate VIF
+vif(mass_iqr_both_thermo_adj_lmer_7)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_both_thermo_adj_lmer_7 <- bootMer(x = mass_iqr_both_thermo_adj_lmer_7,
+                                                FUN = fixef, nsim = 2000,
+                                                seed = 632760,
+                                                use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_both_thermo_adj_lmer_7) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_both_thermo_adj_lmer_7 <- boot.ci(boot_mass_iqr_both_thermo_adj_lmer_7,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_both_thermo_adj_lmer_7)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_both_thermo_adj_lmer_7_2 <- boot.ci(boot_mass_iqr_both_thermo_adj_lmer_7,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 3) # CI for 2nd beta
+print(bt_ci_mass_iqr_both_thermo_adj_lmer_7_2)
+
 
 
 ###############################################################################
@@ -4476,7 +5603,7 @@ cols <- c("#481567FF", "#20A387FF", "#95D840FF")
 lines <- c(4, 5, 1)
 
 temp_min_feeding_blups_predicted <- ggplot() +
-  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding, linetype = feeding), size = 2) +
+  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding), size = 2) +
   # geom_ribbon(data = pred_feeding, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = feeding), 
   # alpha = .1, col = NA) +
@@ -4484,15 +5611,12 @@ temp_min_feeding_blups_predicted <- ggplot() +
                              col = as.character(feeding_expontd_blups_strat)), 
              show.legend = FALSE, size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Minimum temperature during nestling period (C)", y = "Mass at last measure (g)",
-       colour = "Parent feeding level", fill = "Parent feeding level", linetype = "Parent feeding level") +
+  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
+       colour = "Parent feeding level", fill = "Parent feeding level") +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
   scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
-                     aesthetics = c("colour", "fill")) +
-  scale_linetype_manual(values = lines, labels=c("Low", "Med", "High"),
-                        aesthetics = c("linetype"))
-
+                     aesthetics = c("colour", "fill"))
 
 # Print
 print(temp_min_feeding_blups_predicted)
@@ -4526,7 +5650,7 @@ sub <- subset(late_nestling_parent_care,
                 !is.na(x = feeding_expontd_blups))
 
 temp_max_feeding_blups_predicted <- ggplot() +
-  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding, linetype = feeding), size = 2) +
+  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding), size = 2) +
   # geom_ribbon(data = pred_feeding, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = feeding), 
   # alpha = .1, col = NA) +
@@ -4534,14 +5658,12 @@ temp_max_feeding_blups_predicted <- ggplot() +
                              col = as.character(feeding_expontd_blups_strat)), 
              show.legend = FALSE, size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Maximum temperature during nestling period (C)", y = "Mass at last measure (g)",
-       colour = "Parent feeding level", fill = "Parent feeding level", linetype = "Parent feeding level") +
+  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
+       colour = "Parent feeding level", fill = "Parent feeding level") +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
   scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
-                     aesthetics = c("colour", "fill")) +
-  scale_linetype_manual(values = lines, labels=c("Low", "Med", "High"),
-                        aesthetics = c("linetype"))
+                     aesthetics = c("colour", "fill")) 
 
 
 # Print
@@ -4577,7 +5699,7 @@ sub <- subset(late_nestling_parent_care,
 
 
 temp_iqr_feeding_blups_predicted <- ggplot() +
-  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding, linetype = feeding), size = 2) +
+  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding), size = 2) +
   # geom_ribbon(data = pred_feeding, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = feeding), 
   # alpha = .1, col = NA) +
@@ -4585,14 +5707,12 @@ temp_iqr_feeding_blups_predicted <- ggplot() +
                              col = as.character(feeding_expontd_blups_strat)), 
              show.legend = FALSE, size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "IQR of temperature during nestling period (C)", y = "Mass at last measure (g)",
-       colour = "Parent feeding level", fill = "Parent feeding level", linetype = "Parent feeding level") +
+  labs(x = "IQR of temperature (C)", y = "Nestling mass (g)",
+       colour = "Parent feeding level", fill = "Parent feeding level") +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
   scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
-                     aesthetics = c("colour", "fill")) +
-  scale_linetype_manual(values = lines, labels=c("Low", "Med", "High"),
-                        aesthetics = c("linetype"))
+                     aesthetics = c("colour", "fill"))
 
 # Print
 print(temp_iqr_feeding_blups_predicted)
@@ -4602,13 +5722,14 @@ print(temp_iqr_feeding_blups_predicted)
 combined_temp_feeding_predictions <- 
   ggarrange(temp_min_feeding_blups_predicted, temp_max_feeding_blups_predicted,
             temp_iqr_feeding_blups_predicted,
-            ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom")
+            ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom",
+            labels = c("a", "b", "c"), font.label = list(size = 18))
 
 # Print
 print(combined_temp_feeding_predictions)
 
 # Save
-ggsave('combined_temp_feeding_predictions.png', plot = combined_temp_feeding_predictions, 
+ggsave('combined_temp_feeding_predictions_solid.png', plot = combined_temp_feeding_predictions, 
        device = NULL, 
        path = 'Output/', scale = 1, width = 6.5, 
        height = 12, 
@@ -4642,7 +5763,7 @@ cols <- c("#481567FF","#95D840FF")
 lines <- c(4, 1)
 
 temp_min_size_predicted <- ggplot() +
-  geom_line(data = pred_size, aes(x = x, y = predicted, col = size, linetype = size), size = 2) +
+  geom_line(data = pred_size, aes(x = x, y = predicted, col = size), size = 2) +
   # geom_ribbon(data = pred_size, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = size), 
   # alpha = .1, col = NA) +
@@ -4650,14 +5771,12 @@ temp_min_size_predicted <- ggplot() +
                              col = as.character(mid_size_order)), 
              show.legend = FALSE, size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Minimum temperature during nestling period (C)", y = "Mass at last measure (g)",
-       colour = "Relative nestling size", fill = "Relative nestling size", linetype = "Relative nestling size") +
+  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
+       colour = "Relative nestling size", fill = "Relative nestling size") +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
   scale_color_manual(values = cols, labels=c("Smallest", "Other"),
-                     aesthetics = c("colour", "fill")) +
-  scale_linetype_manual(values = lines, labels=c("Smallest", "Other"),
-                        aesthetics = c("linetype"))
+                     aesthetics = c("colour", "fill")) 
 
 
 # Print
@@ -4689,7 +5808,7 @@ cols <- c("#481567FF","#95D840FF")
 lines <- c(4, 1)
 
 temp_max_size_predicted <- ggplot() +
-  geom_line(data = pred_size, aes(x = x, y = predicted, col = size, linetype = size), size = 2) +
+  geom_line(data = pred_size, aes(x = x, y = predicted, col = size), size = 2) +
   # geom_ribbon(data = pred_size, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = size), 
   # alpha = .1, col = NA) +
@@ -4697,14 +5816,12 @@ temp_max_size_predicted <- ggplot() +
                              col = as.character(mid_size_order)), 
              show.legend = FALSE, size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Maximum temperature during nestling period (C)", y = "Mass at last measure (g)",
-       colour = "Relative nestling size", fill = "Relative nestling size", linetype = "Relative nestling size") +
+  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
+       colour = "Relative nestling size", fill = "Relative nestling size") +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
   scale_color_manual(values = cols, labels=c("Smallest", "Other"),
-                     aesthetics = c("colour", "fill")) +
-  scale_linetype_manual(values = lines, labels=c("Smallest", "Other"),
-                        aesthetics = c("linetype"))
+                     aesthetics = c("colour", "fill"))
 
 
 # Print
@@ -4734,7 +5851,7 @@ sub <- subset(late_nestling_parent_care,
 
 
 temp_iqr_size_predicted <- ggplot() +
-  geom_line(data = pred_size, aes(x = x, y = predicted, col = size, linetype = size), size = 2) +
+  geom_line(data = pred_size, aes(x = x, y = predicted, col = size), size = 2) +
   # geom_ribbon(data = pred_size, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = size), 
   # alpha = .1, col = NA) +
@@ -4742,14 +5859,12 @@ temp_iqr_size_predicted <- ggplot() +
                              col = as.character(mid_size_order)), 
              show.legend = FALSE, size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "IQR of temperature during nestling period (C)", y = "Mass at last measure (g)",
-       colour = "Relative nestling size", fill = "Relative nestling size", linetype = "Relative nestling size") +
+  labs(x = "IQR of temperature (C)", y = "Nestling mass (g)",
+       colour = "Relative nestling size", fill = "Relative nestling size") +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
   scale_color_manual(values = cols, labels=c("Smallest", "Other"),
-                     aesthetics = c("colour", "fill")) +
-  scale_linetype_manual(values = lines, labels=c("Smallest", "Other"),
-                        aesthetics = c("linetype"))
+                     aesthetics = c("colour", "fill")) 
 
 
 # Print
@@ -4759,13 +5874,14 @@ print(temp_iqr_size_predicted)
 combined_temp_size_predictions <- 
   ggarrange(temp_min_size_predicted, temp_max_size_predicted,
             temp_iqr_size_predicted,
-            ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom")
+            ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom",
+            labels = c("a", "b", "c"), font.label = list(size = 18))
 
 # Print
 print(combined_temp_size_predictions)
 
 # Save
-ggsave('combined_temp_size_predictions.png', plot = combined_temp_size_predictions, 
+ggsave('combined_temp_size_predictions_solid.png', plot = combined_temp_size_predictions, 
        device = NULL, 
        path = 'Output/', scale = 1, width = 6.5, 
        height = 12, 
@@ -4773,7 +5889,6 @@ ggsave('combined_temp_size_predictions.png', plot = combined_temp_size_predictio
 
 
 ################## Developmental stages model ################################
-
 
 ########### Dot and whisker plots
 ## Min temp before model: extract estimates and tidy the data frame
@@ -4787,7 +5902,7 @@ mass_min_before_thermo_adj_lmer_est['term'][mass_min_before_thermo_adj_lmer_est[
 
 
 ## Min temp before model: Label the estimates in data frame
-mass_min_before_thermo_adj_lmer_est$model <- c('Before day 6 model')
+mass_min_before_thermo_adj_lmer_est$model <- c('Before model')
 
 ## Min temp after model: extract estimates and tidy the data frame
 mass_min_after_thermo_adj_lmer_est <- tidy(mass_min_after_thermo_adj_lmer,
@@ -4801,7 +5916,7 @@ mass_min_after_thermo_adj_lmer_est['term'][mass_min_after_thermo_adj_lmer_est['t
 
 
 ## Min temp before model: Label the estimates in data frame
-mass_min_after_thermo_adj_lmer_est$model <- c('After day 6 model')
+mass_min_after_thermo_adj_lmer_est$model <- c('After model')
 
 
 ## Min temp both model: extract estimates and tidy the data frame
@@ -4820,7 +5935,7 @@ mass_min_both_thermo_adj_lmer_est['term'][mass_min_both_thermo_adj_lmer_est['ter
 
 
 ## Min temp before model: Label the estimates in data frame
-mass_min_both_thermo_adj_lmer_est$model <- c('Both time periods model')
+mass_min_both_thermo_adj_lmer_est$model <- c('Both model')
 
 ## Combine regression estimates into a tidy table
 mass_min_both_thermo_adj_lmer_tbl <- bind_rows(mass_min_before_thermo_adj_lmer_est,
@@ -4832,9 +5947,9 @@ mass_min_both_thermo_adj_lmer_tbl <- bind_rows(mass_min_before_thermo_adj_lmer_e
 mass_min_both_thermo_adj_lmer_tbl <-
   transform(mass_min_both_thermo_adj_lmer_tbl,
             model = factor(model,
-                           levels = c('Before day 6 model',
-                                      'After day 6 model',
-                                      'Both time periods model')))
+                           levels = c('Before model',
+                                      'After model',
+                                      'Both model')))
 
 mass_min_both_thermo_adj_lmer_tbl <-
   transform(mass_min_both_thermo_adj_lmer_tbl,
@@ -4845,7 +5960,7 @@ mass_min_both_thermo_adj_lmer_tbl <-
 ## Graph of estimates 
 mass_min_both_thermo_adj_lmer_plot <-
   ggplot(mass_min_both_thermo_adj_lmer_tbl, aes(x = term, y = estimate,
-                                                color = term)) +
+                                                color = model)) +
   theme_classic() + 
   geom_hline(yintercept = 0, color = 'red',
              linetype = 2) + # line at null behind coefs
@@ -4854,7 +5969,7 @@ mass_min_both_thermo_adj_lmer_plot <-
   geom_errorbar(aes(ymin=(conf.low),
                     ymax=(conf.high)), width=.1,
                 position=position_dodge(0.0), size = 1) +
-  scale_color_manual(values=c('#481567FF', '#95D840FF','#481567FF','#95D840FF')) +
+  scale_color_manual(values=c('#481567FF', '#95D840FF','#20A387FF')) +
   facet_grid(cols = vars(model), scales = 'free', space = 'free') +
   theme(strip.background =element_rect(fill= 'white'))+
   theme(strip.text = element_text(colour = 'black')) +
@@ -4898,7 +6013,7 @@ mass_max_before_thermo_adj_lmer_est['term'][mass_max_before_thermo_adj_lmer_est[
 
 
 ## Max temp before model: Label the estimates in data frame
-mass_max_before_thermo_adj_lmer_est$model <- c('Before day 6 model')
+mass_max_before_thermo_adj_lmer_est$model <- c('Before model')
 
 ## Max temp after model: extract estimates and tidy the data frame
 mass_max_after_thermo_adj_lmer_est <- tidy(mass_max_after_thermo_adj_lmer,
@@ -4912,7 +6027,7 @@ mass_max_after_thermo_adj_lmer_est['term'][mass_max_after_thermo_adj_lmer_est['t
 
 
 ## Max temp before model: Label the estimates in data frame
-mass_max_after_thermo_adj_lmer_est$model <- c('After day 6 model')
+mass_max_after_thermo_adj_lmer_est$model <- c('After model')
 
 
 ## Max temp both model: extract estimates and tidy the data frame
@@ -4931,7 +6046,7 @@ mass_max_both_thermo_adj_lmer_est['term'][mass_max_both_thermo_adj_lmer_est['ter
 
 
 ## Max temp before model: Label the estimates in data frame
-mass_max_both_thermo_adj_lmer_est$model <- c('Both time periods model')
+mass_max_both_thermo_adj_lmer_est$model <- c('Both model')
 
 ## Combine regression estimates into a tidy table
 mass_max_both_thermo_adj_lmer_tbl <- bind_rows(mass_max_before_thermo_adj_lmer_est,
@@ -4943,9 +6058,9 @@ mass_max_both_thermo_adj_lmer_tbl <- bind_rows(mass_max_before_thermo_adj_lmer_e
 mass_max_both_thermo_adj_lmer_tbl <-
   transform(mass_max_both_thermo_adj_lmer_tbl,
             model = factor(model,
-                           levels = c('Before day 6 model',
-                                      'After day 6 model',
-                                      'Both time periods model')))
+                           levels = c('Before model',
+                                      'After model',
+                                      'Both model')))
 
 mass_max_both_thermo_adj_lmer_tbl <-
   transform(mass_max_both_thermo_adj_lmer_tbl,
@@ -4956,7 +6071,7 @@ mass_max_both_thermo_adj_lmer_tbl <-
 ## Graph of estimates
 mass_max_both_thermo_adj_lmer_plot <-
   ggplot(mass_max_both_thermo_adj_lmer_tbl, aes(x = term, y = estimate,
-                                                color = term)) +
+                                                color = model)) +
   theme_classic() + 
   geom_hline(yintercept = 0, color = 'red',
              linetype = 2) + # line at null behind coefs
@@ -4965,7 +6080,7 @@ mass_max_both_thermo_adj_lmer_plot <-
   geom_errorbar(aes(ymin=(conf.low),
                     ymax=(conf.high)), width=.1,
                 position=position_dodge(0.0), size = 1) +
-  scale_color_manual(values=c('#481567FF', '#95D840FF','#481567FF','#95D840FF')) +
+  scale_color_manual(values=c('#481567FF', '#95D840FF','#20A387FF')) +
   facet_grid(cols = vars(model), scales = 'free', space = 'free') +
   theme(strip.background =element_rect(fill= 'white'))+
   theme(strip.text = element_text(colour = 'black')) +
@@ -5009,7 +6124,7 @@ mass_iqr_before_thermo_adj_lmer_est['term'][mass_iqr_before_thermo_adj_lmer_est[
 
 
 ## Min temp before model: Label the estimates in data frame
-mass_iqr_before_thermo_adj_lmer_est$model <- c('Before day 6 model')
+mass_iqr_before_thermo_adj_lmer_est$model <- c('Before model')
 
 ## Min temp after model: extract estimates and tidy the data frame
 mass_iqr_after_thermo_adj_lmer_est <- tidy(mass_iqr_after_thermo_adj_lmer,
@@ -5023,7 +6138,7 @@ mass_iqr_after_thermo_adj_lmer_est['term'][mass_iqr_after_thermo_adj_lmer_est['t
 
 
 ## IQR temp before model: Label the estimates in data frame
-mass_iqr_after_thermo_adj_lmer_est$model <- c('After day 6 model')
+mass_iqr_after_thermo_adj_lmer_est$model <- c('After model')
 
 
 ## IQR temp both model: extract estimates and tidy the data frame
@@ -5042,7 +6157,7 @@ mass_iqr_both_thermo_adj_lmer_est['term'][mass_iqr_both_thermo_adj_lmer_est['ter
 
 
 ## IQR temp before model: Label the estimates in data frame
-mass_iqr_both_thermo_adj_lmer_est$model <- c('Both time periods model')
+mass_iqr_both_thermo_adj_lmer_est$model <- c('Both model')
 
 ## Combine regression estimates into a tidy table
 mass_iqr_both_thermo_adj_lmer_tbl <- bind_rows(mass_iqr_before_thermo_adj_lmer_est,
@@ -5054,9 +6169,9 @@ mass_iqr_both_thermo_adj_lmer_tbl <- bind_rows(mass_iqr_before_thermo_adj_lmer_e
 mass_iqr_both_thermo_adj_lmer_tbl <-
   transform(mass_iqr_both_thermo_adj_lmer_tbl,
             model = factor(model,
-                           levels = c('Before day 6 model',
-                                      'After day 6 model',
-                                      'Both time periods model')))
+                           levels = c('Before model',
+                                      'After model',
+                                      'Both model')))
 
 mass_iqr_both_thermo_adj_lmer_tbl <-
   transform(mass_iqr_both_thermo_adj_lmer_tbl,
@@ -5067,7 +6182,7 @@ mass_iqr_both_thermo_adj_lmer_tbl <-
 ## Graph of estimates 
 mass_iqr_both_thermo_adj_lmer_plot <-
   ggplot(mass_iqr_both_thermo_adj_lmer_tbl, aes(x = term, y = estimate,
-                                                color = term)) +
+                                                color = model)) +
   theme_classic() + 
   geom_hline(yintercept = 0, color = 'red',
              linetype = 2) + # line at null behind coefs
@@ -5076,7 +6191,7 @@ mass_iqr_both_thermo_adj_lmer_plot <-
   geom_errorbar(aes(ymin=(conf.low),
                     ymax=(conf.high)), width=.1,
                 position=position_dodge(0.0), size = 1) +
-  scale_color_manual(values=c('#440154', '#7ad151','#440154','#7ad151')) +
+  scale_color_manual(values=c('#440154', '#7ad151','#20A387FF')) +
   facet_grid(cols = vars(model), scales = 'free', space = 'free') +
   theme(strip.background =element_rect(fill= 'white'))+
   theme(strip.text = element_text(colour = 'black')) +
@@ -5112,11 +6227,11 @@ print(mass_iqr_both_thermo_adj_lmer_plot)
 
 ## Make plots of temp effects before and after thermoreg
 ## Both thermo min temp
-pred_bef <- ggpredict(mass_min_both_thermo_adj_lmer, c("thermo_bef_min_temp"))
+pred_bef <- ggpredict(mass_min_before_thermo_adj_lmer, c("thermo_bef_min_temp"))
 
 plot(pred_bef) 
 
-pred_aft <- ggpredict(mass_min_both_thermo_adj_lmer, c("thermo_aft_min_temp"))
+pred_aft <- ggpredict(mass_min_after_thermo_adj_lmer, c("thermo_aft_min_temp"))
 
 plot(pred_aft) 
 
@@ -5133,32 +6248,30 @@ temp_thermo_both_min_predicted <- ggplot() +
   theme_classic() +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
-  geom_line(data= pred_bef, size = 2, aes(x = x, y = predicted, col = "Before day 6", linetype = "Before day 6")) +
+  geom_line(data= pred_bef, size = 2, aes(x = x, y = predicted, col = "Before day 6")) +
   # geom_ribbon(data = pred, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high,
   #                              fill = "Before day 6"), alpha = .1, col = NA) +
-  geom_line(data= pred_aft, size = 2, aes(x = x, y = predicted, col = "After day 6", linetype = "After day 6")) +
+  geom_line(data= pred_aft, size = 2, aes(x = x, y = predicted, col = "After day 6")) +
   # geom_ribbon(data = pred_aft, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high, 
   #                                  fill = "After day 6"),  alpha = .1, col = NA) +
   geom_point(data = sub, aes(x = thermo_bef_min_temp, y = mass_pre_obs, col = "Before day 6"), 
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
   geom_point(data = sub, aes(x = thermo_aft_min_temp, y = mass_pre_obs, col = "After day 6"), 
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  labs(x = "Minimum temperature during nestling period (C)", y = "Mass at last measure (g)", 
-       color = "Before vs. after day 6", fill = "Before vs. after day 6", linetype = "Before vs. after day 6") +
+  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)", 
+       color = "Before vs. after day 6", fill = "Before vs. after day 6") +
   scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
-                     aesthetics = c("color", "fill")) +
-   scale_linetype_manual(values = lines, breaks = c("Before day 6", "After day 6"))
-
+                     aesthetics = c("color", "fill"))
 # Print
 print(temp_thermo_both_min_predicted)
 
 
 ## Both thermo max temp
-pred_bef <- ggpredict(mass_max_both_thermo_adj_lmer, c("thermo_bef_max_temp"))
+pred_bef <- ggpredict(mass_max_before_thermo_adj_lmer, c("thermo_bef_max_temp"))
 
 plot(pred_bef) 
 
-pred_aft <- ggpredict(mass_max_both_thermo_adj_lmer, c("thermo_aft_max_temp"))
+pred_aft <- ggpredict(mass_max_after_thermo_adj_lmer, c("thermo_aft_max_temp"))
 
 plot(pred_aft) 
 
@@ -5172,21 +6285,20 @@ temp_thermo_both_max_predicted <- ggplot() +
   theme_classic() +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
-  geom_line(data= pred_bef, size = 2, aes(x = x, y = predicted, col = "Before day 6", linetype = "Before day 6")) +
+  geom_line(data= pred_bef, size = 2, aes(x = x, y = predicted, col = "Before day 6")) +
   # geom_ribbon(data = pred, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high,
   #                              fill = "Before day 6"), alpha = .1, col = NA) +
-  geom_line(data= pred_aft, size = 2, aes(x = x, y = predicted, col = "After day 6", linetype = "After day 6")) +
+  geom_line(data= pred_aft, size = 2, aes(x = x, y = predicted, col = "After day 6")) +
   # geom_ribbon(data = pred_aft, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high, 
   #                                  fill = "After day 6"),  alpha = .1, col = NA) +
   geom_point(data = sub, aes(x = thermo_bef_max_temp, y = mass_pre_obs, col = "Before day 6"), 
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
   geom_point(data = sub, aes(x = thermo_aft_max_temp, y = mass_pre_obs, col = "After day 6"), 
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  labs(x = "Maximum temperature during nestling period (C)", y = "Mass at last measure (g)", 
-       color = "Before vs. after day 6", fill = "Before vs. after day 6", linetype = "Before vs. after day 6") +
+  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)", 
+       color = "Before vs. after day 6", fill = "Before vs. after day 6") +
   scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
-                     aesthetics = c("color", "fill")) +
-  scale_linetype_manual(values = lines, breaks = c("Before day 6", "After day 6"))
+                     aesthetics = c("color", "fill"))
 
 # Print
 print(temp_thermo_both_max_predicted)
@@ -5194,11 +6306,11 @@ print(temp_thermo_both_max_predicted)
 
 
 ## Both thermo IQR temp
-pred_bef <- ggpredict(mass_iqr_both_thermo_adj_lmer, c("thermo_bef_iqr_temp"))
+pred_bef <- ggpredict(mass_iqr_before_thermo_adj_lmer, c("thermo_bef_iqr_temp"))
 
 plot(pred_bef) 
 
-pred_aft <- ggpredict(mass_iqr_both_thermo_adj_lmer, c("thermo_aft_iqr_temp"))
+pred_aft <- ggpredict(mass_iqr_after_thermo_adj_lmer, c("thermo_aft_iqr_temp"))
 
 plot(pred_aft) 
 
@@ -5212,21 +6324,20 @@ temp_thermo_both_iqr_predicted <- ggplot() +
   theme_classic() +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
-  geom_line(data= pred_bef, size = 2, aes(x = x, y = predicted, col = "Before day 6", linetype = "Before day 6")) +
+  geom_line(data= pred_bef, size = 2, aes(x = x, y = predicted, col = "Before day 6")) +
   # geom_ribbon(data = pred, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high,
   #                              fill = "Before day 6"), alpha = .1, col = NA) +
-  geom_line(data= pred_aft, size = 2, aes(x = x, y = predicted, col = "After day 6", linetype = "After day 6")) +
+  geom_line(data= pred_aft, size = 2, aes(x = x, y = predicted, col = "After day 6")) +
   # geom_ribbon(data = pred_aft, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high, 
   #                                  fill = "After day 6"),  alpha = .1, col = NA) +
   geom_point(data = sub, aes(x = thermo_bef_iqr_temp, y = mass_pre_obs, col = "Before day 6"), 
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
   geom_point(data = sub, aes(x = thermo_aft_iqr_temp, y = mass_pre_obs, col = "After day 6"), 
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  labs(x = "IQR of temperature during nestling period (C)", y = "Mass at last measure (g)", 
-       color = "Before vs. after day 6", fill = "Before vs. after day 6", linetype = "Before vs. after day 6") +
+  labs(x = "IQR of temperature (C)", y = "Nestling mass (g)", 
+       color = "Before vs. after day 6", fill = "Before vs. after day 6") +
   scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
-                     aesthetics = c("color", "fill")) +
-  scale_linetype_manual(values = lines, breaks = c("Before day 6", "After day 6"))
+                     aesthetics = c("color", "fill"))
 
 # Print
 print(temp_thermo_both_iqr_predicted)
@@ -5237,11 +6348,11 @@ combined_thermo_both_dw <-
   ggarrange(mass_min_both_thermo_adj_lmer_plot, mass_max_both_thermo_adj_lmer_plot,
             mass_iqr_both_thermo_adj_lmer_plot,
             ncol = 3, nrow = 1, common.legend = TRUE,
-            legend = "bottom")
+            legend = "bottom", labels = c("a", "b", "c"), font.label = list(size = 18))
 
 ggsave('combined_thermo_both_dw.png', plot = combined_thermo_both_dw, 
        device = NULL, 
-       path = 'Output/', scale = 1, width = 26, 
+       path = 'Output/', scale = 1, width = 19, 
        height = 8, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
@@ -5249,13 +6360,13 @@ ggsave('combined_thermo_both_dw.png', plot = combined_thermo_both_dw,
 combined_thermo_both_predictions <- 
   ggarrange(temp_thermo_both_min_predicted, 
             temp_thermo_both_max_predicted, temp_thermo_both_iqr_predicted,
-            ncol = 3, nrow = 2, common.legend = TRUE,
-            legend = "top")
+            ncol = 3, nrow = 1, common.legend = TRUE,
+            legend = "bottom", labels = c("d", "e", "f"), font.label = list(size = 18))
 
 ggsave('combined_thermo_both_predictions.png', plot = combined_thermo_both_predictions, 
        device = NULL, 
-       path = 'Output/', scale = 1, width = 16, 
-       height = 8, 
+       path = 'Output/', scale = 1, width = 19, 
+       height = 12, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
 ## Combined plot with both types of plot
@@ -5271,6 +6382,7 @@ print(combined_thermo_both_types)
 # Save
 ggsave('combined_thermo_both_types.png', plot = combined_thermo_both_types, 
        device = NULL, 
-       path = 'Output/', scale = 1, width = 26, 
-       height = 20, 
+       path = 'Output/', scale = 1, width = 19, 
+       height = 12, 
        units = c('in'), dpi = 300, limitsize = TRUE)
+
