@@ -85,15 +85,15 @@ univar_feeding_blups <- late_nestling_parent_care %>%
 # Feeding rate
 univar_feeding_rate <- prim_merged %>%
   summarise (n = sum(!is.na(total_visits)),
-             avg = round (mean(total_visits/(obs_duration/3600), 
+             avg = round (mean(total_feeding_visits/(obs_duration/3600), 
                                na.rm = T),2),
-             stdev = round (sd(total_visits/(obs_duration/3600), 
+             stdev = round (sd(total_feeding_visits/(obs_duration/3600), 
                                na.rm = T), 2),
-             med = round(median(total_visits/(obs_duration/3600),
+             med = round(median(total_feeding_visits/(obs_duration/3600),
                                 na.rm = T), 2),
-             min = round(min(total_visits/(obs_duration/3600),
+             min = round(min(total_feeding_visits/(obs_duration/3600),
                              na.rm = T), 2),
-             max = round(max(total_visits/(obs_duration/3600),
+             max = round(max(total_feeding_visits/(obs_duration/3600),
                              na.rm = T), 2)
   )
 
@@ -113,6 +113,13 @@ univar_brooding_dur <- prim_merged %>%
                              na.rm = T)/60, 2)
   )
 
+# Check correlation of feeding and brooding
+prim_merged <- mutate(prim_merged, 
+                      brooding_prop = total_brooding_duration/(obs_duration/3600),
+                      feeding_rate = total_feeding_visits/(obs_duration/3600))
+
+
+cor.test(prim_merged$brooding_prop, prim_merged$feeding_rate, method = "spearman")
 
 # Bind the parental care stats together
 univar_parental_care <- rbind(univar_feeding_blups, univar_feeding_rate, univar_brooding_dur)
@@ -922,16 +929,16 @@ dev.off()
 bivar_feeding_devel <- prim_merged %>%
   group_by(obs_state) %>%
   filter(!is.na(obs_state)) %>%
-  summarise (n = sum(!is.na(total_visits)),
-             avg = round (mean(total_visits/(obs_duration/3600), 
+  summarise (n = sum(!is.na(total_feeding_visits)),
+             avg = round (mean(total_feeding_visits/(obs_duration/3600), 
                                na.rm = T),2),
-             stdev = round (sd(total_visits/(obs_duration/3600), 
+             stdev = round (sd(total_feeding_visits/(obs_duration/3600), 
                                na.rm = T), 2),
-             med = round(median(total_visits/(obs_duration/3600),
+             med = round(median(total_feeding_visits/(obs_duration/3600),
                                 na.rm = T), 2),
-             min = round(min(total_visits/(obs_duration/3600),
+             min = round(min(total_feeding_visits/(obs_duration/3600),
                              na.rm = T), 2),
-             max = round(max(total_visits/(obs_duration/3600),
+             max = round(max(total_feeding_visits/(obs_duration/3600),
                              na.rm = T), 2)
   )
 

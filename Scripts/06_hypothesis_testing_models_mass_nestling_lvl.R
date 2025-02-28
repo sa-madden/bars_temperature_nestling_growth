@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 12/9/2024
+####### Last modified: 2/28/2025
 
 # Code Blocks
 # 1: Configure work space
@@ -41,6 +41,7 @@ library ('dotwhisker')
 library('ggpubr')
 library('ggeffects')
 library('ggnewscale')
+library('gt')
 
 
 ## Modelling Packages
@@ -82,7 +83,6 @@ late_nestling_parent_care$fnest_id <- as.factor(late_nestling_parent_care$nest_i
 
 late_nestling_parent_care$num_pairs <- as.numeric(late_nestling_parent_care$num_pairs)
 
-
 ###############################################################################
 ##############             Growth, temp, and parental care       ##############
 ###############################################################################
@@ -90,7 +90,7 @@ late_nestling_parent_care$num_pairs <- as.numeric(late_nestling_parent_care$num_
 #### Minimum temp
 ### Mass unadjusted
 mass_min_temp_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                   scale(feeding_expontd_blups) + (1|fsite) +
+                                   scale(feeding_expontd_blups) +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = mass_pre_obs) & 
@@ -143,6 +143,112 @@ print(bt_ci_mass_min_temp_blups_lmer_3)
 late_nestling_parent_care <- late_nestling_parent_care %>%
   mutate(feeding_expontd_blups_strat =  as.integer(Hmisc::cut2(feeding_expontd_blups, g=3)))
 
+
+## LOW parental care model - unadjusted
+mass_min_temp_blups_low_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
+                                           (1|fnest_id), 
+                                         data = subset(late_nestling_parent_care,
+                                                       feeding_expontd_blups_strat == 1,
+                                                       !is.na(x = mass_pre_obs) & 
+                                                         !is.na(x = nest_min_temp) &
+                                                         !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_low_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_low_lmer))
+  qqline(resid(mass_min_temp_blups_low_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_low_lmer))
+
+
+summary(mass_min_temp_blups_low_lmer)
+confint(mass_min_temp_blups_low_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_low_lmer <- bootMer(x = mass_min_temp_blups_low_lmer,
+                                                 FUN = fixef, nsim = 2000,
+                                                 seed = 632760,
+                                                 use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_low_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_low_lmer <- boot.ci(boot_mass_min_temp_blups_low_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_low_lmer)
+
+
+## MED parental care - adjusted
+mass_min_temp_blups_med_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
+                                           (1|fnest_id), 
+                                         data = subset(late_nestling_parent_care,
+                                                       feeding_expontd_blups_strat == 2,
+                                                       !is.na(x = mass_pre_obs) & 
+                                                         !is.na(x = nest_min_temp) &
+                                                         !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_med_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_med_lmer))
+  qqline(resid(mass_min_temp_blups_med_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_med_lmer))
+
+
+summary(mass_min_temp_blups_med_lmer)
+confint(mass_min_temp_blups_med_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_med_lmer <- bootMer(x = mass_min_temp_blups_med_lmer,
+                                                 FUN = fixef, nsim = 2000,
+                                                 seed = 632760,
+                                                 use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_med_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_med_lmer <- boot.ci(boot_mass_min_temp_blups_med_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_med_lmer)
+
+
+## HIGH parental care - adjusted 
+mass_min_temp_blups_high_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
+                                            (1|fnest_id), 
+                                          data = subset(late_nestling_parent_care,
+                                                        feeding_expontd_blups_strat == 3,
+                                                        !is.na(x = mass_pre_obs) & 
+                                                          !is.na(x = nest_min_temp) &
+                                                          !is.na(x = feeding_expontd_blups)))
+
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_high_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_high_lmer))
+  qqline(resid(mass_min_temp_blups_high_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_high_lmer))
+
+
+summary(mass_min_temp_blups_high_lmer)
+confint(mass_min_temp_blups_high_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_high_lmer <- bootMer(x = mass_min_temp_blups_high_lmer,
+                                                  FUN = fixef, nsim = 2000,
+                                                  seed = 632760,
+                                                  use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_high_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_high_lmer <- boot.ci(boot_mass_min_temp_blups_high_lmer,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_high_lmer)
+
 # Hmisc alternative using cut and quantile   
 #    (cut(care.indx.cont.3, 
 #         quantile(care.indx.cont.3, probs=0:3/3,
@@ -155,7 +261,7 @@ late_nestling_parent_care <- late_nestling_parent_care %>%
 ### Mass adjusted
 mass_min_temp_blups_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
                                    scale(feeding_expontd_blups) + scale(nestling_number) + 
-                                     scale(days_summer) + (1|fsite) +
+                                     scale(days_summer) +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = mass_pre_obs) & 
@@ -208,7 +314,6 @@ print(bt_ci_mass_min_temp_blups_adj_lmer_5)
 ## LOW parental care model - adjusted
 mass_min_temp_blups_low_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(late_nestling_parent_care,
                                                        feeding_expontd_blups_strat == 1,
@@ -245,7 +350,6 @@ print(bt_ci_mass_min_temp_blups_low_adj_lmer)
 ## MED parental care - adjusted
 mass_min_temp_blups_med_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                         (1|fsite) +
                                        (1|fnest_id), 
                                      data = subset(late_nestling_parent_care,
                                                    feeding_expontd_blups_strat == 2,
@@ -282,7 +386,6 @@ print(bt_ci_mass_min_temp_blups_med_adj_lmer)
 ## HIGH parental care - adjusted 
 mass_min_temp_blups_high_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
                                             scale(nestling_number) + scale(days_summer) + 
-                                        (1|fsite) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     feeding_expontd_blups_strat == 3,
@@ -323,7 +426,7 @@ mass_outliers_removed <- late_nestling_parent_care[-c(4, 40), ]
 
 ### Mass unadjusted with outliers removed
 mass_min_temp_blups_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                   scale(feeding_expontd_blups) + (1|fsite) +
+                                   scale(feeding_expontd_blups) +
                                    (1|fnest_id), 
                                  data = subset(mass_outliers_removed,
                                                !is.na(x = mass_pre_obs) & 
@@ -372,7 +475,7 @@ print(bt_ci_mass_min_temp_blups_noout_lmer_3)
 ## Mass adjusted with outliers removed
 mass_min_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
                                        scale(feeding_expontd_blups) + scale(nestling_number) + 
-                                       scale(days_summer) + (1|fsite) +
+                                       scale(days_summer) +
                                        (1|fnest_id), 
                                      data = subset(mass_outliers_removed,
                                                    !is.na(x = mass_pre_obs) & 
@@ -424,7 +527,6 @@ print(bt_ci_mass_min_temp_blups_adj_noout_lmer_5)
 ## LOW parental care model - adjusted
 mass_min_temp_blups_low_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(mass_outliers_removed,
                                                        feeding_expontd_blups_strat == 1,
@@ -460,7 +562,6 @@ print(bt_ci_mass_min_temp_blups_low_adj_noout_lmer)
 ## MED parental care - adjusted
 mass_min_temp_blups_med_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(mass_outliers_removed,
                                                        feeding_expontd_blups_strat == 2,
@@ -495,7 +596,6 @@ print(bt_ci_mass_min_temp_blups_med_adj_noout_lmer)
 ## HIGH parental care - adjusted 
 mass_min_temp_blups_high_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
                                             scale(nestling_number) + scale(days_summer) + 
-                                            (1|fsite) +
                                             (1|fnest_id), 
                                           data = subset(mass_outliers_removed,
                                                         feeding_expontd_blups_strat == 3,
@@ -531,7 +631,7 @@ print(bt_ci_mass_min_temp_blups_high_adj_noout_lmer)
 #### Maximum temp
 ## Mass unadjusted
 mass_max_temp_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                   scale(feeding_expontd_blups) + (1|fsite) +
+                                   scale(feeding_expontd_blups) +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = mass_pre_obs) & 
@@ -581,11 +681,116 @@ bt_ci_mass_max_temp_blups_lmer_3 <- boot.ci(boot_mass_max_temp_blups_lmer,
 print(bt_ci_mass_max_temp_blups_lmer_3)
 
 
+## LOW parental care model - unadjusted
+mass_max_temp_blups_low_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
+                                       (1|fnest_id), 
+                                     data = subset(late_nestling_parent_care,
+                                                   feeding_expontd_blups_strat == 1,
+                                                   !is.na(x = mass_pre_obs) & 
+                                                     !is.na(x = nest_max_temp) &
+                                                     !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_low_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_low_lmer))
+  qqline(resid(mass_max_temp_blups_low_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_low_lmer))
+
+
+summary(mass_max_temp_blups_low_lmer)
+confint(mass_max_temp_blups_low_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_low_lmer <- bootMer(x = mass_max_temp_blups_low_lmer,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_low_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_low_lmer <- boot.ci(boot_mass_max_temp_blups_low_lmer,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_low_lmer)
+
+
+## MED parental care - adjusted
+mass_max_temp_blups_med_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
+                                       (1|fnest_id), 
+                                     data = subset(late_nestling_parent_care,
+                                                   feeding_expontd_blups_strat == 2,
+                                                   !is.na(x = mass_pre_obs) & 
+                                                     !is.na(x = nest_max_temp) &
+                                                     !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_med_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_med_lmer))
+  qqline(resid(mass_max_temp_blups_med_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_med_lmer))
+
+
+summary(mass_max_temp_blups_med_lmer)
+confint(mass_max_temp_blups_med_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_med_lmer <- bootMer(x = mass_max_temp_blups_med_lmer,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_med_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_med_lmer <- boot.ci(boot_mass_max_temp_blups_med_lmer,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_med_lmer)
+
+
+## HIGH parental care - adjusted 
+mass_max_temp_blups_high_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
+                                        (1|fnest_id), 
+                                      data = subset(late_nestling_parent_care,
+                                                    feeding_expontd_blups_strat == 3,
+                                                    !is.na(x = mass_pre_obs) & 
+                                                      !is.na(x = nest_max_temp) &
+                                                      !is.na(x = feeding_expontd_blups)))
+
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_high_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_high_lmer))
+  qqline(resid(mass_max_temp_blups_high_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_high_lmer))
+
+
+summary(mass_max_temp_blups_high_lmer)
+confint(mass_max_temp_blups_high_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_high_lmer <- bootMer(x = mass_max_temp_blups_high_lmer,
+                                              FUN = fixef, nsim = 2000,
+                                              seed = 632760,
+                                              use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_high_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_high_lmer <- boot.ci(boot_mass_max_temp_blups_high_lmer,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_high_lmer)
+
+
 ### Mass adjusted
 mass_max_temp_blups_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
                                    scale(feeding_expontd_blups) + 
                                      scale(nestling_number) + scale(days_summer) +
-                                     (1|fsite) +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = mass_pre_obs) & 
@@ -638,7 +843,6 @@ print(bt_ci_mass_max_temp_blups_adj_lmer_5)
 ## LOW parental care model - adjusted
 mass_max_temp_blups_low_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(late_nestling_parent_care,
                                                        feeding_expontd_blups_strat == 1,
@@ -675,7 +879,6 @@ print(bt_ci_mass_max_temp_blups_low_adj_lmer)
 ## MED parental care - adjusted
 mass_max_temp_blups_med_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(late_nestling_parent_care,
                                                        feeding_expontd_blups_strat == 2,
@@ -712,7 +915,6 @@ print(bt_ci_mass_max_temp_blups_med_adj_lmer)
 ## HIGH parental care - adjusted 
 mass_max_temp_blups_high_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
                                             scale(nestling_number) + scale(days_summer) + 
-                                            (1|fsite) +
                                             (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
                                                         feeding_expontd_blups_strat == 3,
@@ -745,12 +947,13 @@ bt_ci_mass_max_temp_blups_high_adj_lmer <- boot.ci(boot_mass_max_temp_blups_high
                                                    index = 2) # CI for 1st betas
 print(bt_ci_mass_max_temp_blups_high_adj_lmer)
 
+
 ### Outliers removed
 mass_max_outliers_removed <- late_nestling_parent_care[-c(4, 39, 40), ]
 
 ## Mass unadjusted, outliers removed
 mass_max_temp_blups_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                   scale(feeding_expontd_blups) + (1|fsite) +
+                                   scale(feeding_expontd_blups) +
                                    (1|fnest_id), 
                                  data = subset(mass_max_outliers_removed,
                                                !is.na(x = mass_pre_obs) & 
@@ -802,7 +1005,6 @@ print(bt_ci_mass_max_temp_blups_noout_lmer_3)
 mass_max_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
                                        scale(feeding_expontd_blups) + 
                                        scale(nestling_number) + scale(days_summer) +
-                                       (1|fsite) +
                                        (1|fnest_id), 
                                      data = subset(mass_max_outliers_removed,
                                                    !is.na(x = mass_pre_obs) & 
@@ -856,7 +1058,6 @@ print(bt_ci_mass_max_temp_blups_adj_noout_lmer_5)
 ## LOW parental care model - adjusted
 mass_max_temp_blups_low_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(mass_max_outliers_removed,
                                                        feeding_expontd_blups_strat == 1,
@@ -893,7 +1094,6 @@ print(bt_ci_mass_max_temp_blups_low_adj_noout_lmer)
 ## MED parental care - adjusted
 mass_max_temp_blups_med_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(mass_max_outliers_removed,
                                                        feeding_expontd_blups_strat == 2,
@@ -930,7 +1130,6 @@ print(bt_ci_mass_max_temp_blups_med_adj_noout_lmer)
 ## HIGH parental care - adjusted 
 mass_max_temp_blups_high_noout_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
                                             scale(nestling_number) + scale(days_summer) + 
-                                            (1|fsite) +
                                             (1|fnest_id), 
                                           data = subset(mass_max_outliers_removed,
                                                         feeding_expontd_blups_strat == 3,
@@ -969,7 +1168,7 @@ print(bt_ci_mass_max_temp_blups_high_noout_adj_lmer)
 #### IQR of temp
 ### Mass unadjusted
 mass_iqr_temp_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                   scale(feeding_expontd_blups) + (1|fsite) +
+                                   scale(feeding_expontd_blups) +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = mass_pre_obs) & 
@@ -1019,12 +1218,116 @@ bt_ci_mass_iqr_temp_blups_lmer_3 <- boot.ci(boot_mass_iqr_temp_blups_lmer,
 print(bt_ci_mass_iqr_temp_blups_lmer_3)
 
 
+## LOW parental care model - unadjusted
+mass_iqr_temp_blups_low_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
+                                       (1|fnest_id), 
+                                     data = subset(late_nestling_parent_care,
+                                                   feeding_expontd_blups_strat == 1,
+                                                   !is.na(x = mass_pre_obs) & 
+                                                     !is.na(x = nest_iqr_temp) &
+                                                     !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_low_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_low_lmer))
+  qqline(resid(mass_iqr_temp_blups_low_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_low_lmer))
+
+
+summary(mass_iqr_temp_blups_low_lmer)
+confint(mass_iqr_temp_blups_low_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_low_lmer <- bootMer(x = mass_iqr_temp_blups_low_lmer,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_low_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_low_lmer <- boot.ci(boot_mass_iqr_temp_blups_low_lmer,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_low_lmer)
+
+
+## MED parental care - adjusted
+mass_iqr_temp_blups_med_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
+                                       (1|fnest_id), 
+                                     data = subset(late_nestling_parent_care,
+                                                   feeding_expontd_blups_strat == 2,
+                                                   !is.na(x = mass_pre_obs) & 
+                                                     !is.na(x = nest_iqr_temp) &
+                                                     !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_med_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_med_lmer))
+  qqline(resid(mass_iqr_temp_blups_med_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_med_lmer))
+
+
+summary(mass_iqr_temp_blups_med_lmer)
+confint(mass_iqr_temp_blups_med_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_med_lmer <- bootMer(x = mass_iqr_temp_blups_med_lmer,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_med_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_med_lmer <- boot.ci(boot_mass_iqr_temp_blups_med_lmer,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_med_lmer)
+
+
+## HIGH parental care - adjusted 
+mass_iqr_temp_blups_high_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
+                                        (1|fnest_id), 
+                                      data = subset(late_nestling_parent_care,
+                                                    feeding_expontd_blups_strat == 3,
+                                                    !is.na(x = mass_pre_obs) & 
+                                                      !is.na(x = nest_iqr_temp) &
+                                                      !is.na(x = feeding_expontd_blups)))
+
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_high_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_high_lmer))
+  qqline(resid(mass_iqr_temp_blups_high_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_high_lmer))
+
+
+summary(mass_iqr_temp_blups_high_lmer)
+confint(mass_iqr_temp_blups_high_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_high_lmer <- bootMer(x = mass_iqr_temp_blups_high_lmer,
+                                              FUN = fixef, nsim = 2000,
+                                              seed = 632760,
+                                              use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_high_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_high_lmer <- boot.ci(boot_mass_iqr_temp_blups_high_lmer,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_high_lmer)
+
 
 ### Mass adjusted
 mass_iqr_temp_blups_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
                                    scale(feeding_expontd_blups) + 
                                      scale(nestling_number) + scale(days_summer) +
-                                     (1|fsite) +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = mass_pre_obs) & 
@@ -1078,7 +1381,6 @@ print(bt_ci_mass_iqr_temp_blups_adj_lmer_5)
 ## LOW parental care model - adjusted
 mass_iqr_temp_blups_low_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(late_nestling_parent_care,
                                                        feeding_expontd_blups_strat == 1,
@@ -1115,7 +1417,6 @@ print(bt_ci_mass_iqr_temp_blups_low_adj_lmer)
 ## MED parental care - adjusted
 mass_iqr_temp_blups_med_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(late_nestling_parent_care,
                                                        feeding_expontd_blups_strat == 2,
@@ -1152,7 +1453,6 @@ print(bt_ci_mass_iqr_temp_blups_med_adj_lmer)
 ## HIGH parental care - adjusted 
 mass_iqr_temp_blups_high_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
                                             scale(nestling_number) + scale(days_summer) + 
-                                            (1|fsite) +
                                             (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
                                                         feeding_expontd_blups_strat == 3,
@@ -1191,7 +1491,7 @@ print(bt_ci_mass_iqr_temp_blups_high_adj_lmer)
 
 ### Mass unadjusted -- outliers removed 
 mass_iqr_temp_blups_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                   scale(feeding_expontd_blups) + (1|fsite) +
+                                   scale(feeding_expontd_blups) +
                                    (1|fnest_id), 
                                  data = subset(mass_max_outliers_removed,
                                                !is.na(x = mass_pre_obs) & 
@@ -1241,7 +1541,6 @@ print(bt_ci_mass_iqr_temp_blups_noout_lmer_3)
 mass_iqr_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
                                        scale(feeding_expontd_blups) + 
                                        scale(nestling_number) + scale(days_summer) +
-                                       (1|fsite) +
                                        (1|fnest_id), 
                                      data = subset(mass_max_outliers_removed,
                                                    !is.na(x = mass_pre_obs) & 
@@ -1294,7 +1593,6 @@ print(bt_ci_mass_iqr_temp_blups_adj_noout_lmer_5)
 ## LOW parental care model - adjusted, no outliers
 mass_iqr_temp_blups_low_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(mass_max_outliers_removed,
                                                        feeding_expontd_blups_strat == 1,
@@ -1331,7 +1629,6 @@ print(bt_ci_mass_iqr_temp_blups_low_adj_noout_lmer)
 ## MED parental care - adjusted, outliers removed
 mass_iqr_temp_blups_med_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
                                            scale(nestling_number) + scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(mass_max_outliers_removed,
                                                        feeding_expontd_blups_strat == 2,
@@ -1368,7 +1665,6 @@ print(bt_ci_mass_iqr_temp_blups_med_adj_noout_lmer)
 ## HIGH parental care - adjusted, outliers removed
 mass_iqr_temp_blups_high_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
                                             scale(nestling_number) + scale(days_summer) + 
-                                            (1|fsite) +
                                             (1|fnest_id), 
                                           data = subset(mass_max_outliers_removed,
                                                         feeding_expontd_blups_strat == 3,
@@ -1401,6 +1697,77 @@ bt_ci_mass_iqr_temp_blups_high_adj_noout_lmer <- boot.ci(boot_mass_iqr_temp_blup
                                                    index = 2) # CI for 1st betas
 print(bt_ci_mass_iqr_temp_blups_high_adj_noout_lmer)
 
+## Create model results tables for parental care data
+bt_ci_mass_min_temp_blups_low_adj_lmer[[6]][4] # Lower CI 
+bt_ci_mass_min_temp_blups_low_adj_lmer[[6]][5] # Upper CI
+fixef(mass_min_temp_blups_low_adj_lmer)[2]
+paste(round(fixef(mass_min_temp_blups_low_adj_lmer)[2], 2), " (", 
+      round(bt_ci_mass_min_temp_blups_low_adj_lmer[[6]][4], 2), ", ", 
+      round(bt_ci_mass_min_temp_blups_low_adj_lmer[[6]][5], 2), ")",
+      sep = "")
+
+summary(mass_min_temp_blups_low_adj_lmer)
+nobs(mass_min_temp_blups_low_adj_lmer)
+
+# Extract number of observations for unadjusted models
+
+# Extract Betas for unadjusted models
+
+# Extract number of observations for adjusted models
+low_ad_n <- c(nobs(mass_min_temp_blups_low_adj_lmer), 
+              nobs(mass_max_temp_blups_low_adj_lmer),
+              nobs(mass_iqr_temp_blups_low_adj_lmer))
+
+med_ad_n <- c(nobs(mass_min_temp_blups_med_adj_lmer), 
+              nobs(mass_max_temp_blups_med_adj_lmer),
+              nobs(mass_iqr_temp_blups_med_adj_lmer))
+
+high_ad_n <- c(nobs(mass_min_temp_blups_high_adj_lmer), 
+              nobs(mass_max_temp_blups_high_adj_lmer),
+              nobs(mass_iqr_temp_blups_high_adj_lmer))
+
+# Extract Betas for adjusted models
+low_ad_b <- c(paste(round(fixef(mass_min_temp_blups_low_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_min_temp_blups_low_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_min_temp_blups_low_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_max_temp_blups_low_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_max_temp_blups_low_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_max_temp_blups_low_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_iqr_temp_blups_low_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_iqr_temp_blups_low_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_iqr_temp_blups_low_adj_lmer[[6]][5], 2), ")",
+                    sep = ""))
+
+med_ad_b <- c(paste(round(fixef(mass_min_temp_blups_med_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_min_temp_blups_med_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_min_temp_blups_med_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_max_temp_blups_med_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_max_temp_blups_med_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_max_temp_blups_med_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_iqr_temp_blups_med_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_iqr_temp_blups_med_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_iqr_temp_blups_med_adj_lmer[[6]][5], 2), ")",
+                    sep = ""))
+
+
+high_ad_b <- c(paste(round(fixef(mass_min_temp_blups_high_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_min_temp_blups_high_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_min_temp_blups_high_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_max_temp_blups_high_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_max_temp_blups_high_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_max_temp_blups_high_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_iqr_temp_blups_high_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_iqr_temp_blups_high_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_iqr_temp_blups_high_adj_lmer[[6]][5], 2), ")",
+                    sep = ""))
+
+
 
 ###############################################################################
 ##############          Growth, temp, and relative size          ##############
@@ -1411,7 +1778,7 @@ print(bt_ci_mass_iqr_temp_blups_high_adj_noout_lmer)
 #### Minimum temp
 ### Mass unadjusted
 mass_min_temp_mid_size_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                  mid_size_order + (1|fsite) +
+                                  mid_size_order +
                                   (1|fnest_id), 
                                 data = subset(late_nestling_parent_care,
                                               !is.na(x = mid_size_order) & 
@@ -1464,7 +1831,7 @@ print(bt_ci_mass_min_temp_mid_size_lmer_3)
 ### Mass adjusted
 mass_min_temp_mid_size_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
                                       mid_size_order + scale(nestling_number) +
-                                      scale(days_summer) + (1|fsite) +
+                                      scale(days_summer) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = mid_size_order) & 
@@ -1519,7 +1886,7 @@ print(bt_ci_mass_min_temp_mid_size_adj_lmer_5)
 # SMALL nestlings
 mass_min_temp_mid_size_small_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
                                                 scale(nestling_number) + scale(days_summer) +
-                                                (1|fsite), 
+                                                (1|fnest_id), 
                                               data = subset(late_nestling_parent_care,
                                                             mid_size_order == "min",
                                                             !is.na(x = mass_pre_obs) & 
@@ -1554,7 +1921,6 @@ print(bt_ci_mass_min_temp_mid_size_small_adj_lmer)
 # BIG nestlings
 mass_min_temp_mid_size_big_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
                                               scale(nestling_number) + scale(days_summer) +
-                                              (1|fsite) +
                                               (1|fnest_id), 
                                             data = subset(late_nestling_parent_care,
                                                           mid_size_order == "other",
@@ -1590,7 +1956,7 @@ print(bt_ci_mass_min_temp_mid_size_big_adj_lmer)
 #### Maximum temp
 ### Mass unadjusted
 mass_max_temp_mid_size_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                  mid_size_order + (1|fsite) +
+                                  mid_size_order +
                                   (1|fnest_id), 
                                 data = subset(late_nestling_parent_care,
                                               !is.na(x = mass_pre_obs) & 
@@ -1643,7 +2009,7 @@ print(bt_ci_mass_max_temp_mid_size_lmer_3)
 ### Mass adjusted
 mass_max_temp_mid_size_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
                                       mid_size_order + scale(nestling_number) +
-                                      scale(days_summer) + (1|fsite) +
+                                      scale(days_summer) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = mass_pre_obs) & 
@@ -1699,7 +2065,7 @@ print(bt_ci_mass_max_temp_mid_size_adj_lmer_5)
 # SMALL nestlings
 mass_max_temp_mid_size_small_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
                                             scale(nestling_number) + scale(days_summer) +
-                                            (1|fsite), 
+                                              (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
                                                         mid_size_order == "min",
                                                         !is.na(x = mass_pre_obs) & 
@@ -1734,7 +2100,6 @@ print(bt_ci_mass_max_temp_mid_size_small_adj_lmer)
 # BIG nestlings
 mass_max_temp_mid_size_big_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
                                           scale(nestling_number) + scale(days_summer) +
-                                          (1|fsite) +
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
                                                       mid_size_order == "other",
@@ -1770,7 +2135,7 @@ print(bt_ci_mass_max_temp_mid_size_big_adj_lmer)
 #### IQR temp
 ### Mass unadjusted
 mass_iqr_temp_mid_size_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                  mid_size_order + (1|fsite) +
+                                  mid_size_order +
                                   (1|fnest_id), 
                                 data = subset(late_nestling_parent_care,
                                               !is.na(x = mass_pre_obs) & 
@@ -1823,7 +2188,7 @@ print(bt_ci_mass_iqr_temp_mid_size_lmer_3)
 ### Mass adjusted
 mass_iqr_temp_mid_size_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
                                       mid_size_order + scale(nestling_number) + 
-                                      scale(days_summer) + (1|fsite) +
+                                      scale(days_summer) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = mass_pre_obs) & 
@@ -1877,7 +2242,7 @@ print(bt_ci_mass_iqr_temp_mid_size_adj_lmer_5)
 mass_iqr_temp_mid_size_small_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
                                             scale(nestling_number) + 
                                             scale(days_summer) +
-                                            (1|fsite), 
+                                              (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
                                                         mid_size_order == "min",
                                                         !is.na(x = mass_pre_obs) & 
@@ -1913,7 +2278,6 @@ print(bt_ci_mass_iqr_temp_mid_size_small_adj_lmer)
 mass_iqr_temp_mid_size_big_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
                                           scale(nestling_number) + 
                                           scale(days_summer) +
-                                          (1|fsite) +
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
                                                       mid_size_order == "other",
@@ -1953,7 +2317,7 @@ print(bt_ci_mass_iqr_temp_mid_size_big_adj_lmer)
 #### Minimum temp
 ### Mass unadjusted
 mass_min_temp_size_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                   size_order + (1|fsite) +
+                                   size_order +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = size_order) & 
@@ -2006,7 +2370,7 @@ print(bt_ci_mass_min_temp_size_lmer_3)
 ### Mass adjusted
 mass_min_temp_size_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
                                   size_order + scale(nestling_number) +
-                                    scale(days_summer) + (1|fsite) +
+                                    scale(days_summer) +
                                   (1|fnest_id), 
                                 data = subset(late_nestling_parent_care,
                                               !is.na(x = size_order) & 
@@ -2060,7 +2424,7 @@ print(bt_ci_mass_min_temp_size_adj_lmer_5)
 mass_min_temp_size_small_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
                                                 scale(nestling_number) + 
                                                 scale(days_summer) +
-                                                (1|fsite), 
+                                            (1|fnest_id), 
                                               data = subset(late_nestling_parent_care,
                                                             size_order == "min",
                                                             !is.na(x = mass_pre_obs) & 
@@ -2084,7 +2448,7 @@ boot_mass_min_temp_size_small_adj_lmer <- bootMer(x = mass_min_temp_size_small_a
                                                       FUN = fixef, nsim = 2000,
                                                       seed = 632760,
                                                       use.u = F, type = 'parametric')
-tidy(boot_mass_min_temp_size_small_adj_lmer_lmer) # beta estimates and SE
+tidy(boot_mass_min_temp_size_small_adj_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
 bt_ci_mass_min_temp_size_small_adj_lmer <- boot.ci(boot_mass_min_temp_size_small_adj_lmer,
                                                        type = c('perc', 'norm', 'basic'),
@@ -2096,7 +2460,6 @@ print(bt_ci_mass_min_temp_size_small_adj_lmer)
 mass_min_temp_size_big_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
                                               scale(nestling_number) + 
                                               scale(days_summer) +
-                                              (1|fsite) +
                                               (1|fnest_id), 
                                             data = subset(late_nestling_parent_care,
                                                           size_order == "other",
@@ -2133,7 +2496,7 @@ print(bt_ci_mass_min_temp_size_big_adj_lmer)
 #### Maximum temp
 ### Mass unadjusted
 mass_max_temp_size_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                  size_order + (1|fsite) +
+                                  size_order +
                                   (1|fnest_id), 
                                 data = subset(late_nestling_parent_care,
                                               !is.na(x = mass_pre_obs) & 
@@ -2186,7 +2549,7 @@ print(bt_ci_mass_max_temp_size_lmer_3)
 ### Mass adjusted
 mass_max_temp_size_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
                                   size_order + scale(nestling_number) +
-                                  scale(days_summer) + (1|fsite) +
+                                  scale(days_summer) +
                                   (1|fnest_id), 
                                 data = subset(late_nestling_parent_care,
                                               !is.na(x = mass_pre_obs) & 
@@ -2239,7 +2602,7 @@ print(bt_ci_mass_max_temp_size_adj_lmer_5)
 # SMALL nestlings
 mass_max_temp_size_small_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
                                         scale(nestling_number) + scale(days_summer) +
-                                          (1|fsite), 
+                                          (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     size_order == "min",
                                                     !is.na(x = mass_pre_obs) & 
@@ -2275,7 +2638,6 @@ print(bt_ci_mass_max_temp_size_small_adj_lmer)
 # BIG nestlings
 mass_max_temp_size_big_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
                                           scale(nestling_number) + scale(days_summer) +
-                                      (1|fsite) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   size_order == "other",
@@ -2312,7 +2674,7 @@ print(bt_ci_mass_max_temp_size_big_adj_lmer)
 #### IQR temp
 ### Mass unadjusted
 mass_iqr_temp_size_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                  size_order + (1|fsite) +
+                                  size_order +
                                   (1|fnest_id), 
                                 data = subset(late_nestling_parent_care,
                                               !is.na(x = mass_pre_obs) & 
@@ -2366,7 +2728,7 @@ print(bt_ci_mass_iqr_temp_size_lmer_3)
 ### Mass adjusted
 mass_iqr_temp_size_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
                                   size_order + scale(nestling_number) + 
-                                    scale(days_summer) + (1|fsite) +
+                                    scale(days_summer) +
                                   (1|fnest_id), 
                                 data = subset(late_nestling_parent_care,
                                               !is.na(x = mass_pre_obs) & 
@@ -2421,7 +2783,7 @@ print(bt_ci_mass_iqr_temp_size_adj_lmer_5)
 mass_iqr_temp_size_small_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
                                             scale(nestling_number) + 
                                             scale(days_summer) +
-                                        (1|fsite), 
+                                            (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     size_order == "min",
                                                     !is.na(x = mass_pre_obs) & 
@@ -2457,7 +2819,6 @@ print(bt_ci_mass_iqr_temp_size_small_adj_lmer)
 mass_iqr_temp_size_big_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
                                       scale(nestling_number) + 
                                       scale(days_summer) +
-                                      (1|fsite) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   size_order == "other",
@@ -2498,7 +2859,7 @@ print(bt_ci_mass_iqr_temp_size_big_adj_lmer)
 
 #### Minimum temp
 ### Before thermo
-mass_min_before_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + (1|fsite) +
+mass_min_before_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) +
                                   (1|fnest_id), 
                                 data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_min_temp)&
@@ -2536,7 +2897,7 @@ print(bt_ci_mass_min_before_thermo_lmer)
 
 ### Before thermo adjusted
 mass_min_before_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + scale(nestling_number) +
-                                      scale(days_summer) + (1|fsite) +
+                                      scale(days_summer) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_min_temp)&
@@ -2576,7 +2937,7 @@ print(bt_ci_mass_min_before_thermo_adj_lmer)
 before_thermo_outliers_removed <- late_nestling_parent_care[-c(4, 39, 40), ]
 
 ## Unadjusted
-mass_min_before_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + (1|fsite) +
+mass_min_before_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) +
                                       (1|fnest_id), 
                                     data = subset(before_thermo_outliers_removed,
                                                   !is.na(x = thermo_bef_min_temp)&
@@ -2615,7 +2976,7 @@ print(bt_ci_mass_min_before_thermo_noout_lmer)
 
 ## Adjusted
 mass_min_before_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + scale(nestling_number) +
-                                          scale(days_summer) + (1|fsite) +
+                                          scale(days_summer) +
                                           (1|fnest_id), 
                                         data = subset(before_thermo_outliers_removed,
                                                       !is.na(x = thermo_bef_min_temp)&
@@ -2653,7 +3014,7 @@ print(bt_ci_mass_min_before_thermo_adj_noout_lmer)
 
 
 ### After thermo
-mass_min_after_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) + (1|fsite) +
+mass_min_after_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_aft_min_temp)&
@@ -2692,7 +3053,7 @@ print(bt_ci_mass_min_after_thermo_lmer)
 
 ### After thermo adjusted
 mass_min_after_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) + scale(nestling_number) +
-                                         scale(days_summer) + (1|fsite) +
+                                         scale(days_summer) +
                                          (1|fnest_id), 
                                        data = subset(late_nestling_parent_care,
                                                      !is.na(x = thermo_aft_min_temp)&
@@ -2730,7 +3091,7 @@ print(bt_ci_mass_min_after_thermo_adj_lmer)
 
 
 ### After thermo unadjusted outliers removed
-mass_min_after_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) + (1|fsite) +
+mass_min_after_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) +
                                             (1|fnest_id), 
                                           data = subset(before_thermo_outliers_removed,
                                                         !is.na(x = thermo_aft_min_temp)&
@@ -2769,7 +3130,7 @@ print(bt_ci_mass_min_after_thermo_noout_lmer)
 
 ### After thermo adjusted outliers removed
 mass_min_after_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp) + scale(nestling_number) +
-                                               scale(days_summer) + (1|fsite) +
+                                               scale(days_summer) +
                                                (1|fnest_id), 
                                              data = subset(before_thermo_outliers_removed,
                                                            !is.na(x = thermo_aft_min_temp)&
@@ -2808,7 +3169,7 @@ print(bt_ci_mass_min_after_thermo_adj_noout_lmer)
 
 ### Before and after thermo
 mass_min_both_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + 
-                                    scale(thermo_aft_min_temp) + (1|fsite) +
+                                    scale(thermo_aft_min_temp) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_min_temp) &
@@ -2858,7 +3219,7 @@ print(bt_ci_mass_min_both_thermo_lmer_2)
 ### Before and after thermo adjusted
 mass_min_both_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + 
                                         scale(thermo_aft_min_temp) + scale(nestling_number) +
-                                        scale(days_summer) + (1|fsite) +
+                                        scale(days_summer) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     !is.na(x = thermo_bef_min_temp) &
@@ -2908,7 +3269,7 @@ print(bt_ci_mass_min_both_thermo_adj_lmer_2)
 ### Before and after thermo outliers removed
 ## Unadjusted
 mass_min_both_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + 
-                                    scale(thermo_aft_min_temp) + (1|fsite) +
+                                    scale(thermo_aft_min_temp) +
                                     (1|fnest_id), 
                                   data = subset(before_thermo_outliers_removed,
                                                 !is.na(x = thermo_bef_min_temp) &
@@ -2958,7 +3319,7 @@ print(bt_ci_mass_min_both_thermo_noout_lmer_2)
 ## Adjusted
 mass_min_both_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + 
                                         scale(thermo_aft_min_temp) + scale(nestling_number) +
-                                        scale(days_summer) + (1|fsite) +
+                                        scale(days_summer) +
                                         (1|fnest_id), 
                                       data = subset(before_thermo_outliers_removed,
                                                     !is.na(x = thermo_bef_min_temp) &
@@ -3006,7 +3367,7 @@ print(bt_ci_mass_min_both_thermo_adj_noout_lmer_2)
 
 #### Maximum temp
 ### Before thermo
-mass_max_before_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + (1|fsite) +
+mass_max_before_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_max_temp)&
@@ -3045,7 +3406,7 @@ print(bt_ci_mass_max_before_thermo_lmer)
 
 ### Before thermo adjusted
 mass_max_before_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + scale(nestling_number) +
-                                          scale(days_summer) + (1|fsite) +
+                                          scale(days_summer) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_max_temp)&
@@ -3084,7 +3445,7 @@ print(bt_ci_mass_max_before_thermo_adj_lmer)
 
 ### Before thermo no outliers
 ## Unadjusted
-mass_max_before_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + (1|fsite) +
+mass_max_before_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) +
                                       (1|fnest_id), 
                                     data = subset(before_thermo_outliers_removed,
                                                   !is.na(x = thermo_bef_max_temp)&
@@ -3123,7 +3484,7 @@ print(bt_ci_mass_max_before_thermo_noout_lmer)
 
 # Adjusted
 mass_max_before_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + scale(nestling_number) +
-                                          scale(days_summer) + (1|fsite) +
+                                          scale(days_summer) +
                                           (1|fnest_id), 
                                         data = subset(before_thermo_outliers_removed,
                                                       !is.na(x = thermo_bef_max_temp)&
@@ -3161,7 +3522,7 @@ print(bt_ci_mass_max_before_thermo_adj_noout_lmer)
 
 
 ### After thermo
-mass_max_after_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) + (1|fsite) +
+mass_max_after_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_aft_max_temp)&
@@ -3200,7 +3561,7 @@ print(bt_ci_mass_max_after_thermo_lmer)
 
 ### After thermo adjusted
 mass_max_after_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) + scale(nestling_number) +
-                                         scale(days_summer) + (1|fsite) +
+                                         scale(days_summer) +
                                      (1|fnest_id), 
                                    data = subset(late_nestling_parent_care,
                                                  !is.na(x = thermo_aft_max_temp)&
@@ -3239,7 +3600,7 @@ print(bt_ci_mass_max_after_thermo_adj_lmer)
 
 ### After thermo outliers removed
 ## Unadjusted
-mass_max_after_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) + (1|fsite) +
+mass_max_after_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) +
                                      (1|fnest_id), 
                                    data = subset(before_thermo_outliers_removed,
                                                  !is.na(x = thermo_aft_max_temp)&
@@ -3277,7 +3638,7 @@ print(bt_ci_mass_max_after_thermo_noout_lmer)
 
 # Adjusted
 mass_max_after_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp) + scale(nestling_number) +
-                                         scale(days_summer) + (1|fsite) +
+                                         scale(days_summer) +
                                          (1|fnest_id), 
                                        data = subset(before_thermo_outliers_removed,
                                                      !is.na(x = thermo_aft_max_temp)&
@@ -3316,7 +3677,7 @@ print(bt_ci_mass_max_after_thermo_adj_noout_lmer)
 
 ### Before and after thermo
 mass_max_both_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + 
-                                    scale(thermo_aft_max_temp) + (1|fsite) +
+                                    scale(thermo_aft_max_temp) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_max_temp) &
@@ -3366,7 +3727,7 @@ print(bt_ci_mass_max_both_thermo_lmer_2)
 ### Before and after thermo adjusted
 mass_max_both_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + 
                                     scale(thermo_aft_max_temp) + scale(nestling_number) +
-                                      scale(days_summer) +  (1|fsite) +
+                                      scale(days_summer) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_max_temp) &
@@ -3416,7 +3777,7 @@ print(bt_ci_mass_max_both_thermo_adj_lmer_2)
 ### Before and after thermo no outliers
 ## Unadjusted
 mass_max_both_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + 
-                                    scale(thermo_aft_max_temp) + (1|fsite) +
+                                    scale(thermo_aft_max_temp) +
                                     (1|fnest_id), 
                                   data = subset(mass_outliers_removed,
                                                 !is.na(x = thermo_bef_max_temp) &
@@ -3465,7 +3826,7 @@ print(bt_ci_mass_max_both_thermo_noout_lmer_2)
 ## Adjusted
 mass_max_both_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp) + 
                                         scale(thermo_aft_max_temp) + scale(nestling_number) +
-                                        scale(days_summer) +  (1|fsite) +
+                                        scale(days_summer) + 
                                         (1|fnest_id), 
                                       data = subset(mass_outliers_removed,
                                                     !is.na(x = thermo_bef_max_temp) &
@@ -3515,7 +3876,6 @@ print(bt_ci_mass_max_both_thermo_adj_noout_lmer_2)
 #### IQR of temp
 ### Before thermo
 mass_iqr_before_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
-                                      (1|fsite) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_iqr_temp)&
@@ -3554,8 +3914,7 @@ print(bt_ci_mass_iqr_before_thermo_lmer)
 
 ### Before thermo adjusted
 mass_iqr_before_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + scale(nestling_number) +
-                                          scale(days_summer) +  
-                                      (1|fsite) +
+                                          scale(days_summer) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_iqr_temp)&
@@ -3595,7 +3954,6 @@ print(bt_ci_mass_iqr_before_thermo_adj_lmer)
 ### Outliers removed
 ## Unadjusted model
 mass_iqr_before_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
-                                      (1|fsite) +
                                       (1|fnest_id), 
                                     data = subset(before_thermo_outliers_removed,
                                                   !is.na(x = thermo_bef_iqr_temp)&
@@ -3635,7 +3993,6 @@ print(bt_ci_mass_iqr_before_thermo_noout_lmer)
 ## Adjusted model
 mass_iqr_before_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + scale(nestling_number) +
                                           scale(days_summer) +  
-                                          (1|fsite) +
                                           (1|fnest_id), 
                                         data = subset(before_thermo_outliers_removed,
                                                       !is.na(x = thermo_bef_iqr_temp)&
@@ -3675,7 +4032,6 @@ print(bt_ci_mass_iqr_before_thermo_adj_noout_lmer)
 
 ### After thermo
 mass_iqr_after_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp) + 
-                                      (1|fsite) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_aft_iqr_temp)&
@@ -3715,7 +4071,6 @@ print(bt_ci_mass_iqr_after_thermo_lmer)
 ### After thermo adjusted
 mass_iqr_after_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp) + scale(nestling_number) +
                                          scale(days_summer) + 
-                                     (1|fsite) +
                                      (1|fnest_id), 
                                    data = subset(late_nestling_parent_care,
                                                  !is.na(x = thermo_aft_iqr_temp)&
@@ -3754,7 +4109,6 @@ print(bt_ci_mass_iqr_after_thermo_adj_lmer)
 ### Outliers removed
 ## Unadjusted
 mass_iqr_after_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp) + 
-                                     (1|fsite) +
                                      (1|fnest_id), 
                                    data = subset(before_thermo_outliers_removed,
                                                  !is.na(x = thermo_aft_iqr_temp)&
@@ -3794,7 +4148,6 @@ print(bt_ci_mass_iqr_after_thermo_noout_lmer)
 ### After thermo adjusted 
 mass_iqr_after_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp) + scale(nestling_number) +
                                          scale(days_summer) + 
-                                         (1|fsite) +
                                          (1|fnest_id), 
                                        data = subset(mass_outliers_removed,
                                                      !is.na(x = thermo_aft_iqr_temp)&
@@ -3833,7 +4186,7 @@ print(bt_ci_mass_iqr_after_thermo_adj_noout_lmer)
 
 ### Before and after thermo
 mass_iqr_both_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
-                                    scale(thermo_aft_iqr_temp) + (1|fsite) +
+                                    scale(thermo_aft_iqr_temp) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_iqr_temp) &
@@ -3883,7 +4236,7 @@ print(bt_ci_mass_iqr_both_thermo_lmer_2)
 ### Before and after thermo adjusted
 mass_iqr_both_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
                                     scale(thermo_aft_iqr_temp) + scale(nestling_number) +
-                                    scale(days_summer) +  (1|fsite) +
+                                    scale(days_summer) +  
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_iqr_temp) &
@@ -3933,7 +4286,7 @@ print(bt_ci_mass_iqr_both_thermo_adj_lmer_2)
 ### Outliers removed
 ## Unadjusted
 mass_iqr_both_thermo_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
-                                    scale(thermo_aft_iqr_temp) + (1|fsite) +
+                                    scale(thermo_aft_iqr_temp) +
                                     (1|fnest_id), 
                                   data = subset(before_thermo_outliers_removed,
                                                 !is.na(x = thermo_bef_iqr_temp) &
@@ -3983,7 +4336,7 @@ print(bt_ci_mass_iqr_both_thermo_noout_lmer_2)
 ## Before and after thermo adjusted
 mass_iqr_both_thermo_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp) + 
                                         scale(thermo_aft_iqr_temp) + scale(nestling_number) +
-                                        scale(days_summer) +  (1|fsite) +
+                                        scale(days_summer) + 
                                         (1|fnest_id), 
                                       data = subset(mass_outliers_removed,
                                                     !is.na(x = thermo_bef_iqr_temp) &
@@ -4034,7 +4387,7 @@ print(bt_ci_mass_iqr_both_thermo_adj_noout_lmer_2)
 ############################ 5 days cut off ###################################
 #### Minimum temp
 ### Before thermo
-mass_min_before_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_5) + (1|fsite) +
+mass_min_before_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_5) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_min_temp_5)&
@@ -4073,7 +4426,7 @@ print(bt_ci_mass_min_before_thermo_lmer_5)
 
 ### Before thermo adjusted
 mass_min_before_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_5) + scale(nestling_number) +
-                                          scale(days_summer) + (1|fsite) +
+                                          scale(days_summer) +
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
                                                       !is.na(x = thermo_bef_min_temp_5)&
@@ -4111,7 +4464,7 @@ print(bt_ci_mass_min_before_thermo_adj_lmer_5)
 
 
 ### After thermo
-mass_min_after_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_5) + (1|fsite) +
+mass_min_after_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_5) +
                                      (1|fnest_id), 
                                    data = subset(late_nestling_parent_care,
                                                  !is.na(x = thermo_aft_min_temp_5)&
@@ -4150,7 +4503,7 @@ print(bt_ci_mass_min_after_thermo_lmer_5)
 
 ### After thermo adjusted
 mass_min_after_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_5) + scale(nestling_number) +
-                                         scale(days_summer) + (1|fsite) +
+                                         scale(days_summer) +
                                          (1|fnest_id), 
                                        data = subset(late_nestling_parent_care,
                                                      !is.na(x = thermo_aft_min_temp_5)&
@@ -4188,7 +4541,7 @@ print(bt_ci_mass_min_after_thermo_adj_lmer_5)
 
 ### Before and after thermo
 mass_min_both_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_5) + 
-                                    scale(thermo_aft_min_temp_5) + (1|fsite) +
+                                    scale(thermo_aft_min_temp_5) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_min_temp_5) &
@@ -4238,7 +4591,7 @@ print(bt_ci_mass_min_both_thermo_lmer_5_2)
 ### Before and after thermo adjusted
 mass_min_both_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_5) + 
                                         scale(thermo_aft_min_temp_5) + scale(nestling_number) +
-                                        scale(days_summer) + (1|fsite) +
+                                        scale(days_summer) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     !is.na(x = thermo_bef_min_temp_5) &
@@ -4287,7 +4640,7 @@ print(bt_ci_mass_min_both_thermo_adj_lmer_5_2)
 
 #### Maximum temp
 ### Before thermo
-mass_max_before_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_5) + (1|fsite) +
+mass_max_before_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_5) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_max_temp_5)&
@@ -4325,7 +4678,7 @@ print(bt_ci_mass_max_before_thermo_lmer_5)
 
 ### Before thermo adjusted
 mass_max_before_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_5) + scale(nestling_number) +
-                                          scale(days_summer) + (1|fsite) +
+                                          scale(days_summer) +
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
                                                       !is.na(x = thermo_bef_max_temp_5)&
@@ -4363,7 +4716,7 @@ print(bt_ci_mass_max_before_thermo_adj_lmer_5)
 
 
 ### After thermo
-mass_max_after_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_5) + (1|fsite) +
+mass_max_after_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_5) +
                                      (1|fnest_id), 
                                    data = subset(late_nestling_parent_care,
                                                  !is.na(x = thermo_aft_max_temp_5)&
@@ -4402,7 +4755,7 @@ print(bt_ci_mass_max_after_thermo_lmer_5)
 
 ### After thermo adjusted
 mass_max_after_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_5) + scale(nestling_number) +
-                                         scale(days_summer) + (1|fsite) +
+                                         scale(days_summer) +
                                          (1|fnest_id), 
                                        data = subset(late_nestling_parent_care,
                                                      !is.na(x = thermo_aft_max_temp_5)&
@@ -4441,7 +4794,7 @@ print(bt_ci_mass_max_after_thermo_adj_lmer_5)
 
 ### Before and after thermo
 mass_max_both_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_5) + 
-                                    scale(thermo_aft_max_temp_5) + (1|fsite) +
+                                    scale(thermo_aft_max_temp_5) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_max_temp_5) &
@@ -4491,7 +4844,7 @@ print(bt_ci_mass_max_both_thermo_lmer_5_2)
 ### Before and after thermo adjusted
 mass_max_both_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_5) + 
                                         scale(thermo_aft_max_temp_5) + scale(nestling_number) +
-                                        scale(days_summer) +  (1|fsite) +
+                                        scale(days_summer) + 
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     !is.na(x = thermo_bef_max_temp_5) &
@@ -4541,7 +4894,6 @@ print(bt_ci_mass_max_both_thermo_adj_lmer_5_2)
 #### IQR of temp
 ### Before thermo
 mass_iqr_before_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_5) + 
-                                      (1|fsite) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_iqr_temp_5)&
@@ -4581,7 +4933,6 @@ print(bt_ci_mass_iqr_before_thermo_lmer_5)
 ### Before thermo adjusted
 mass_iqr_before_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_5) + scale(nestling_number) +
                                           scale(days_summer) +  
-                                          (1|fsite) +
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
                                                       !is.na(x = thermo_bef_iqr_temp_5)&
@@ -4621,7 +4972,6 @@ print(bt_ci_mass_iqr_before_thermo_adj_lmer_5)
 
 ### After thermo
 mass_iqr_after_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp_5) + 
-                                     (1|fsite) +
                                      (1|fnest_id), 
                                    data = subset(late_nestling_parent_care,
                                                  !is.na(x = thermo_aft_iqr_temp_5)&
@@ -4661,7 +5011,6 @@ print(bt_ci_mass_iqr_after_thermo_lmer_5)
 ### After thermo adjusted
 mass_iqr_after_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp_5) + scale(nestling_number) +
                                          scale(days_summer) + 
-                                         (1|fsite) +
                                          (1|fnest_id), 
                                        data = subset(late_nestling_parent_care,
                                                      !is.na(x = thermo_aft_iqr_temp_5)&
@@ -4700,7 +5049,7 @@ print(bt_ci_mass_iqr_after_thermo_adj_lmer_5)
 
 ### Before and after thermo
 mass_iqr_both_thermo_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_5) + 
-                                    scale(thermo_aft_iqr_temp_5) + (1|fsite) +
+                                    scale(thermo_aft_iqr_temp_5) +
                                     (1|fnest_id), 
                                   data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_iqr_temp_5) &
@@ -4751,7 +5100,7 @@ print(bt_ci_mass_iqr_both_thermo_lmer_5_2)
 ### Before and after thermo adjusted
 mass_iqr_both_thermo_adj_lmer_5 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_5) + 
                                         scale(thermo_aft_iqr_temp_5) + scale(nestling_number) +
-                                        scale(days_summer) +  (1|fsite) +
+                                        scale(days_summer) +  
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     !is.na(x = thermo_bef_iqr_temp_5) &
@@ -4801,7 +5150,7 @@ print(bt_ci_mass_iqr_both_thermo_adj_lmer_5_2)
 ############################ 7 days cut off ###################################
 #### Minimum temp
 ### Before thermo
-mass_min_before_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_7) + (1|fsite) +
+mass_min_before_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_7) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     !is.na(x = thermo_bef_min_temp_7)&
@@ -4840,7 +5189,7 @@ print(bt_ci_mass_min_before_thermo_lmer_7)
 
 ### Before thermo adjusted
 mass_min_before_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_7) + scale(nestling_number) +
-                                            scale(days_summer) + (1|fsite) +
+                                            scale(days_summer) +
                                             (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
                                                         !is.na(x = thermo_bef_min_temp_7)&
@@ -4878,7 +5227,7 @@ print(bt_ci_mass_min_before_thermo_adj_lmer_7)
 
 
 ### After thermo
-mass_min_after_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_7) + (1|fsite) +
+mass_min_after_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_7) +
                                        (1|fnest_id), 
                                      data = subset(late_nestling_parent_care,
                                                    !is.na(x = thermo_aft_min_temp_7)&
@@ -4917,7 +5266,7 @@ print(bt_ci_mass_min_after_thermo_lmer_7)
 
 ### After thermo adjusted
 mass_min_after_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_min_temp_7) + scale(nestling_number) +
-                                           scale(days_summer) + (1|fsite) +
+                                           scale(days_summer) +
                                            (1|fnest_id), 
                                          data = subset(late_nestling_parent_care,
                                                        !is.na(x = thermo_aft_min_temp_7)&
@@ -4955,7 +5304,7 @@ print(bt_ci_mass_min_after_thermo_adj_lmer_7)
 
 ### Before and after thermo
 mass_min_both_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_7) + 
-                                      scale(thermo_aft_min_temp_7) + (1|fsite) +
+                                      scale(thermo_aft_min_temp_7) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_min_temp_7) &
@@ -5005,7 +5354,7 @@ print(bt_ci_mass_min_both_thermo_lmer_7_2)
 ### Before and after thermo adjusted
 mass_min_both_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp_7) + 
                                           scale(thermo_aft_min_temp_7) + scale(nestling_number) +
-                                          scale(days_summer) + (1|fsite) +
+                                          scale(days_summer) +
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
                                                       !is.na(x = thermo_bef_min_temp_7) &
@@ -5054,7 +5403,7 @@ print(bt_ci_mass_min_both_thermo_adj_lmer_7_2)
 
 #### Maximum temp
 ### Before thermo
-mass_max_before_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_7) + (1|fsite) +
+mass_max_before_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_7) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     !is.na(x = thermo_bef_max_temp_7)&
@@ -5092,7 +5441,7 @@ print(bt_ci_mass_max_before_thermo_lmer_7)
 
 ### Before thermo adjusted
 mass_max_before_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_7) + scale(nestling_number) +
-                                            scale(days_summer) + (1|fsite) +
+                                            scale(days_summer) +
                                             (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
                                                         !is.na(x = thermo_bef_max_temp_7)&
@@ -5130,7 +5479,7 @@ print(bt_ci_mass_max_before_thermo_adj_lmer_7)
 
 
 ### After thermo
-mass_max_after_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_7) + (1|fsite) +
+mass_max_after_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_7) +
                                        (1|fnest_id), 
                                      data = subset(late_nestling_parent_care,
                                                    !is.na(x = thermo_aft_max_temp_7)&
@@ -5169,7 +5518,7 @@ print(bt_ci_mass_max_after_thermo_lmer_7)
 
 ### After thermo adjusted
 mass_max_after_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_max_temp_7) + scale(nestling_number) +
-                                           scale(days_summer) + (1|fsite) +
+                                           scale(days_summer) +
                                            (1|fnest_id), 
                                          data = subset(late_nestling_parent_care,
                                                        !is.na(x = thermo_aft_max_temp_7)&
@@ -5208,7 +5557,7 @@ print(bt_ci_mass_max_after_thermo_adj_lmer_7)
 
 ### Before and after thermo
 mass_max_both_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_7) + 
-                                      scale(thermo_aft_max_temp_7) + (1|fsite) +
+                                      scale(thermo_aft_max_temp_7) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_max_temp_7) &
@@ -5258,7 +5607,7 @@ print(bt_ci_mass_max_both_thermo_lmer_7_2)
 ### Before and after thermo adjusted
 mass_max_both_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_max_temp_7) + 
                                           scale(thermo_aft_max_temp_7) + scale(nestling_number) +
-                                          scale(days_summer) +  (1|fsite) +
+                                          scale(days_summer) +  
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
                                                       !is.na(x = thermo_bef_max_temp_7) &
@@ -5308,7 +5657,6 @@ print(bt_ci_mass_max_both_thermo_adj_lmer_7_2)
 #### IQR of temp
 ### Before thermo
 mass_iqr_before_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_7) + 
-                                        (1|fsite) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
                                                     !is.na(x = thermo_bef_iqr_temp_7)&
@@ -5348,7 +5696,6 @@ print(bt_ci_mass_iqr_before_thermo_lmer_7)
 ### Before thermo adjusted
 mass_iqr_before_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_7) + scale(nestling_number) +
                                             scale(days_summer) +  
-                                            (1|fsite) +
                                             (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
                                                         !is.na(x = thermo_bef_iqr_temp_7)&
@@ -5388,7 +5735,6 @@ print(bt_ci_mass_iqr_before_thermo_adj_lmer_7)
 
 ### After thermo
 mass_iqr_after_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp_7) + 
-                                       (1|fsite) +
                                        (1|fnest_id), 
                                      data = subset(late_nestling_parent_care,
                                                    !is.na(x = thermo_aft_iqr_temp_7)&
@@ -5428,7 +5774,6 @@ print(bt_ci_mass_iqr_after_thermo_lmer_7)
 ### After thermo adjusted
 mass_iqr_after_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_aft_iqr_temp_7) + scale(nestling_number) +
                                            scale(days_summer) + 
-                                           (1|fsite) +
                                            (1|fnest_id), 
                                          data = subset(late_nestling_parent_care,
                                                        !is.na(x = thermo_aft_iqr_temp_7)&
@@ -5467,7 +5812,7 @@ print(bt_ci_mass_iqr_after_thermo_adj_lmer_7)
 
 ### Before and after thermo
 mass_iqr_both_thermo_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_7) + 
-                                      scale(thermo_aft_iqr_temp_7) + (1|fsite) +
+                                      scale(thermo_aft_iqr_temp_7) +
                                       (1|fnest_id), 
                                     data = subset(late_nestling_parent_care,
                                                   !is.na(x = thermo_bef_iqr_temp_7) &
@@ -5518,7 +5863,7 @@ print(bt_ci_mass_iqr_both_thermo_lmer_7_2)
 ### Before and after thermo adjusted
 mass_iqr_both_thermo_adj_lmer_7 <- lmer(mass_pre_obs ~ scale(thermo_bef_iqr_temp_7) + 
                                           scale(thermo_aft_iqr_temp_7) + scale(nestling_number) +
-                                          scale(days_summer) +  (1|fsite) +
+                                          scale(days_summer) +  
                                           (1|fnest_id), 
                                         data = subset(late_nestling_parent_care,
                                                       !is.na(x = thermo_bef_iqr_temp_7) &
