@@ -1698,201 +1698,6 @@ bt_ci_mass_iqr_temp_blups_high_adj_noout_lmer <- boot.ci(boot_mass_iqr_temp_blup
 print(bt_ci_mass_iqr_temp_blups_high_adj_noout_lmer)
 
 
-## Create model results tables for straified parental care data
-
-# Extract number of observations for unadjusted models
-low_un_n <- c(nobs(mass_iqr_temp_blups_low_lmer), 
-              nobs(mass_max_temp_blups_low_lmer),
-              nobs(mass_iqr_temp_blups_low_lmer))
-
-med_un_n <- c(nobs(mass_min_temp_blups_med_lmer), 
-              nobs(mass_max_temp_blups_med_lmer),
-              nobs(mass_iqr_temp_blups_med_lmer))
-
-high_un_n <- c(nobs(mass_min_temp_blups_high_lmer), 
-               nobs(mass_max_temp_blups_high_lmer),
-               nobs(mass_iqr_temp_blups_high_lmer))
-
-# Extract Betas for unadjusted models
-low_un_b <- c(paste(round(fixef(mass_min_temp_blups_low_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_min_temp_blups_low_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_min_temp_blups_low_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_max_temp_blups_low_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_max_temp_blups_low_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_max_temp_blups_low_adj_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_iqr_temp_blups_low_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_iqr_temp_blups_low_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_iqr_temp_blups_low_lmer[[6]][5], 2), ")",
-                    sep = ""))
-
-
-med_un_b <- c(paste(round(fixef(mass_min_temp_blups_med_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_min_temp_blups_med_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_min_temp_blups_med_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_max_temp_blups_med_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_max_temp_blups_med_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_max_temp_blups_med_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_iqr_temp_blups_med_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_iqr_temp_blups_med_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_iqr_temp_blups_med_lmer[[6]][5], 2), ")",
-                    sep = ""))
-
-
-high_un_b <- c(paste(round(fixef(mass_min_temp_blups_high_lmer)[2], 2), " (", 
-                     round(bt_ci_mass_min_temp_blups_high_lmer[[6]][4], 2), ", ", 
-                     round(bt_ci_mass_min_temp_blups_high_lmer[[6]][5], 2), ")",
-                     sep = ""),
-               paste(round(fixef(mass_max_temp_blups_high_lmer)[2], 2), " (", 
-                     round(bt_ci_mass_max_temp_blups_high_lmer[[6]][4], 2), ", ", 
-                     round(bt_ci_mass_max_temp_blups_high_lmer[[6]][5], 2), ")",
-                     sep = ""),
-               paste(round(fixef(mass_iqr_temp_blups_high_lmer)[2], 2), " (", 
-                     round(bt_ci_mass_iqr_temp_blups_high_lmer[[6]][4], 2), ", ", 
-                     round(bt_ci_mass_iqr_temp_blups_high_lmer[[6]][5], 2), ")",
-                     sep = ""))
-
-
-# Extract number of observations for adjusted models
-low_ad_n <- c(nobs(mass_min_temp_blups_low_adj_lmer), 
-              nobs(mass_max_temp_blups_low_adj_lmer),
-              nobs(mass_iqr_temp_blups_low_adj_lmer))
-
-med_ad_n <- c(nobs(mass_min_temp_blups_med_adj_lmer), 
-              nobs(mass_max_temp_blups_med_adj_lmer),
-              nobs(mass_iqr_temp_blups_med_adj_lmer))
-
-high_ad_n <- c(nobs(mass_min_temp_blups_high_adj_lmer), 
-               nobs(mass_max_temp_blups_high_adj_lmer),
-               nobs(mass_iqr_temp_blups_high_adj_lmer))
-
-# Extract Betas for adjusted models
-low_ad_b <- c(paste(round(fixef(mass_min_temp_blups_low_adj_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_min_temp_blups_low_adj_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_min_temp_blups_low_adj_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_max_temp_blups_low_adj_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_max_temp_blups_low_adj_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_max_temp_blups_low_adj_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_iqr_temp_blups_low_adj_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_iqr_temp_blups_low_adj_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_iqr_temp_blups_low_adj_lmer[[6]][5], 2), ")",
-                    sep = ""))
-
-med_ad_b <- c(paste(round(fixef(mass_min_temp_blups_med_adj_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_min_temp_blups_med_adj_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_min_temp_blups_med_adj_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_max_temp_blups_med_adj_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_max_temp_blups_med_adj_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_max_temp_blups_med_adj_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_iqr_temp_blups_med_adj_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_iqr_temp_blups_med_adj_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_iqr_temp_blups_med_adj_lmer[[6]][5], 2), ")",
-                    sep = ""))
-
-
-high_ad_b <- c(paste(round(fixef(mass_min_temp_blups_high_adj_lmer)[2], 2), " (", 
-                     round(bt_ci_mass_min_temp_blups_high_adj_lmer[[6]][4], 2), ", ", 
-                     round(bt_ci_mass_min_temp_blups_high_adj_lmer[[6]][5], 2), ")",
-                     sep = ""),
-               paste(round(fixef(mass_max_temp_blups_high_adj_lmer)[2], 2), " (", 
-                     round(bt_ci_mass_max_temp_blups_high_adj_lmer[[6]][4], 2), ", ", 
-                     round(bt_ci_mass_max_temp_blups_high_adj_lmer[[6]][5], 2), ")",
-                     sep = ""),
-               paste(round(fixef(mass_iqr_temp_blups_high_adj_lmer)[2], 2), " (", 
-                     round(bt_ci_mass_iqr_temp_blups_high_adj_lmer[[6]][4], 2), ", ", 
-                     round(bt_ci_mass_iqr_temp_blups_high_adj_lmer[[6]][5], 2), ")",
-                     sep = ""))
-
-# Bind the values together into a single dataframe
-parental_care_strat_ad <- data.frame(
-  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
-  type <- c("Adjusted", "Adjusted", "Adjusted"),
-  low_ad_n, low_ad_b, 
-  med_ad_n, med_ad_b, 
-  high_ad_n, high_ad_b
-)
-
-parental_care_strat_un <- data.frame(
-  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
-  type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
-  low_un_n, low_un_b, 
-  med_un_n, med_un_b, 
-  high_un_n, high_un_b
-)
-
-colnames(parental_care_strat_ad) <- c("variable", "type",
-                                      "low_n", "low_b", 
-                                      "med_n", "med_b", 
-                                      "high_n", "high_b")
-
-colnames(parental_care_strat_un) <- c("variable", "type",
-                                      "low_n", "low_b", 
-                                      "med_n", "med_b", 
-                                      "high_n", "high_b")
-
-parental_care_strat <- rbind(parental_care_strat_un, parental_care_strat_ad)
-
-parental_care_strat <- arrange(parental_care_strat,
-                               factor(variable, levels = c("Minimum temperature", "Maximum temperature", "Temperature IQR")))
-
-
-str(parental_care_strat)
-
-# Create display table
-parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %>%
-  tab_header(
-    title = md("**Supplemental Table 4.** Associations nestling mass and temperature, assessed in separate models stratified by levels of parental care, when influential outliers are included in the dataset.")
-  ) %>%
-  tab_footnote(
-    footnote = "Estimated β (95% CI) from straified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as random intercepts. Models adjusted for hatch date and number of nestlings in the nest. Continuous predictors as z-score standardized.",
-    locations = cells_stub(rows = c(2, 4, 6))
-  ) %>%
-  tab_stubhead(
-    label = md("Type")
-  ) %>%
-  tab_row_group(
-    label = md("**Effect of temperature IQR**"), 
-    rows = c(5:6)
-  ) %>%
-  tab_row_group(
-    label = md("**Effect of maximum temperature**"), 
-    rows = c(3:4)
-  ) %>%
-  tab_row_group(
-    label = md("**Effect of minimum temperature**"), 
-    rows = c(1:2)
-  ) %>%
-  tab_spanner(
-    label = "Low parental care models",
-    columns = c(low_n, low_b)
-  ) %>%
-  tab_spanner(
-    label = "Medium parental care models",
-    columns = c(med_n, med_b)
-  ) %>%
-  tab_spanner(
-    label = "High parental care models",
-    columns = c(high_n, high_b)
-  ) %>% 
-  cols_label(
-    ends_with("n") ~ "N", 
-    ends_with("b") ~ "Estimate (95% CI)",
-    type = "Type"
-  ) %>%
-  cols_hide(variable)  %>%
-  opt_table_font(font = "Arial", size = 12)  %>%
-  tab_options(footnotes.font.size = 10)
-
-
-parental_care_strat_mod_table
-gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.docx")
 
 
 
@@ -2019,7 +1824,7 @@ boot_mass_min_temp_mid_size_big_lmer <- bootMer(x = mass_min_temp_mid_size_big_l
                                                     use.u = F, type = 'parametric')
 tidy(boot_mass_min_temp_mid_size_big_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_min_temp_mid_size_big_lmer <- boot.ci(mass_min_temp_mid_size_big_lmer,
+bt_ci_mass_min_temp_mid_size_big_lmer <- boot.ci(boot_mass_min_temp_mid_size_big_lmer,
                                                      type = c('perc', 'norm', 'basic'),
                                                      index = 2) # CI for 1st betas
 print(bt_ci_mass_min_temp_mid_size_big_lmer)
@@ -2654,32 +2459,31 @@ bt_ci_mass_iqr_temp_mid_size_big_adj_lmer <- boot.ci(boot_mass_iqr_temp_mid_size
 print(bt_ci_mass_iqr_temp_mid_size_big_adj_lmer)
 
 
-
 ## Create model results tables for straified parental care data
 
 # Extract number of observations for unadjusted models
 small_un_n <- c(nobs(mass_min_temp_mid_size_small_lmer), 
-                nobs(mass_max_temp_mid_size_small_lmer),
-                nobs(mass_iqr_temp_mid_size_small_lmer))
+              nobs(mass_max_temp_mid_size_small_lmer),
+              nobs(mass_iqr_temp_mid_size_small_lmer))
 
 big_un_n <- c(nobs(mass_min_temp_mid_size_big_lmer), 
-              nobs(mass_max_temp_mid_size_big_lmer),
-              nobs(mass_iqr_temp_mid_size_big_lmer))
+                nobs(mass_max_temp_mid_size_big_lmer),
+                nobs(mass_iqr_temp_mid_size_big_lmer))
 
 
 # Extract Betas for unadjusted models
 small_un_b <- c(paste(round(fixef(mass_min_temp_mid_size_small_lmer)[2], 2), " (", 
-                      round(bt_ci_mass_min_temp_mid_size_small_lmer[[6]][4], 2), ", ", 
-                      round(bt_ci_mass_min_temp_mid_size_small_lmer[[6]][5], 2), ")",
-                      sep = ""),
-                paste(round(fixef(mass_max_temp_mid_size_small_lmer)[2], 2), " (", 
-                      round(bt_ci_mass_max_temp_mid_size_small_lmer[[6]][4], 2), ", ", 
-                      round(bt_ci_mass_max_temp_mid_size_small_lmer[[6]][5], 2), ")",
-                      sep = ""),
-                paste(round(fixef(mass_iqr_temp_mid_size_small_lmer)[2], 2), " (", 
-                      round(bt_ci_mass_iqr_temp_mid_size_small_lmer[[6]][4], 2), ", ", 
-                      round(bt_ci_mass_iqr_temp_mid_size_small_lmer[[6]][5], 2), ")",
-                      sep = ""))
+                    round(bt_ci_mass_min_temp_mid_size_small_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_min_temp_mid_size_small_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_max_temp_mid_size_small_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_max_temp_mid_size_small_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_max_temp_mid_size_small_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_iqr_temp_mid_size_small_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_iqr_temp_mid_size_small_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_iqr_temp_mid_size_small_lmer[[6]][5], 2), ")",
+                    sep = ""))
 
 
 big_un_b <- c(paste(round(fixef(mass_min_temp_mid_size_big_lmer)[2], 2), " (", 
@@ -2748,12 +2552,12 @@ size_strat_un <- data.frame(
 )
 
 colnames(size_strat_ad) <- c("variable", "type",
-                             "small_n", "small_b", 
-                             "big_n", "big_b")
+                                      "small_n", "small_b", 
+                                      "big_n", "big_b")
 
 colnames(size_strat_un) <- c("variable", "type",
-                             "small_n", "small_b", 
-                             "big_n", "big_b")
+                                      "small_n", "small_b", 
+                                      "big_n", "big_b")
 
 size_strat <- rbind(size_strat_un, size_strat_ad)
 
@@ -3346,6 +3150,8 @@ bt_ci_mass_iqr_temp_size_big_adj_lmer <- boot.ci(boot_mass_iqr_temp_size_big_adj
                                                  type = c('perc', 'norm', 'basic'),
                                                  index = 2) # CI for 1st betas
 print(bt_ci_mass_iqr_temp_size_big_adj_lmer)
+
+
 
 
 
