@@ -2808,7 +2808,6 @@ size_strat_mod_table
 gtsave(size_strat_mod_table, filename = "Output/size_adjusted_strat.docx")
 
 
-
 ########################## LATE SIZE #######################################
 
 #### Minimum temp
