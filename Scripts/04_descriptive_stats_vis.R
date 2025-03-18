@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset at nestling level
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 11/18/2024
+####### Last modified: 3/13/2025
 
 ##### Fill in code blocks + write down parental care stats
 
@@ -58,6 +58,9 @@ nest_dat <- late_nestling_parent_care
 nest_dat$duplicate <- duplicated(nest_dat$nest_id)
 nest_dat <- nest_dat %>% filter(duplicate == FALSE) %>%
   select(-duplicate)
+
+# Remove nests excluded from analyses from Govee dataset
+govee_daily <- filter(govee_daily, nest_id != "schaaps 110" & nest_id != "hayes 7")
 
 ###############################################################################
 ##############             Univariate descriptive stats          ##############
@@ -147,6 +150,12 @@ univar_brood_size <- nest_dat %>%
                              na.rm = T), 2)
   )
 
+iqr_brood_size <- nest_dat %>%
+  summarise (n = sum(!is.na(nestling_number)),
+             iqr = round (IQR(nestling_number, 
+                               na.rm = T),2)
+  )
+
 univar_brood_size$variable_name <- c("brood_size")
 
 ## save the data frame of summary stats as a pdf into output file
@@ -212,6 +221,12 @@ univar_hatch_date <- nest_dat %>%
                              na.rm = T), 2),
              max = round(max(days_summer,
                              na.rm = T), 2)
+  )
+
+iqr_hatch_date <- nest_dat %>%
+  summarise (n = sum(!is.na(hatch_date)),
+             iqr = round (IQR(hatch_date, 
+                              na.rm = T),2)
   )
 
 univar_hatch_date$variable_name <- c("hatch_date")
@@ -789,6 +804,54 @@ grid.table(bivar_growth_relative_size)
 dev.off()
 
 
+## Mid devel wing by relative nestling size 
+bivar_wing_mid_relative_size <- nestl_merged %>%
+  filter(sample_state == "mid") %>%
+  group_by(size_order) %>%
+  filter(!is.na(size_order)) %>%
+  summarise (n = sum(!is.na(rt_wing_length)),
+             avg = round (mean(rt_wing_length, 
+                               na.rm = T),2),
+             stdev = round (sd(rt_wing_length, 
+                               na.rm = T), 2),
+             med = round(median(rt_wing_length,
+                                na.rm = T), 2),
+             min = round(min(rt_wing_length,
+                             na.rm = T), 2),
+             max = round(max(rt_wing_length,
+                             na.rm = T), 2)
+  )
+
+## Mass growth by relative nestling size
+bivar_mass_mid_relative_size <- nestl_merged %>%
+  filter(sample_state == "mid") %>%
+  group_by(size_order) %>%
+  filter(!is.na(size_order)) %>%
+  summarise (n = sum(!is.na(mass_pre_obs)),
+             avg = round (mean(mass_pre_obs, 
+                               na.rm = T),2),
+             stdev = round (sd(mass_pre_obs, 
+                               na.rm = T), 2),
+             med = round(median(mass_pre_obs,
+                                na.rm = T), 2),
+             min = round(min(mass_pre_obs,
+                             na.rm = T), 2),
+             max = round(max(mass_pre_obs,
+                             na.rm = T), 2)
+  )
+
+bivar_growth_mid_relative_size <- rbind(bivar_wing_mid_relative_size, 
+                                    bivar_mass_mid_relative_size)
+
+bivar_growth_mid_relative_size$variable_name <- c(rep("rt_wing_length", 2),
+                                              rep("mass_pre_obs", 2))
+
+## save the data frame of summary stats as a pdf into output file
+pdf('Output/bivar_growth_mid_relative_size.pdf', height = 3, width = 14)
+grid.table(bivar_growth_mid_relative_size)
+dev.off()
+
+
 ## Wing by age
 bivar_wing_age <- late_nestling_parent_care %>%
   group_by(nestling_age) %>%
@@ -942,7 +1005,16 @@ bivar_feeding_devel <- prim_merged %>%
                              na.rm = T), 2)
   )
 
+early <- filter(prim_merged, obs_state == "early")
+mid <- filter(prim_merged, obs_state == "mid")
+late <- filter(prim_merged, obs_state == "late")
 
+unique(early$nest_id)
+unique(late$nest_id)
+
+
+test <- filter(prim_merged, is.na(total_feeding_visits) == T)
+unique(test$nest_id)
 
 bivar_feeding_devel$variable_name <- c("total_feeding_rate")
 
@@ -976,6 +1048,98 @@ bivar_brooding_devel$variable_name <- c("total_brooding_dur")
 pdf('Output/bivar_brooding_devel.pdf', height = 6, width = 14)
 grid.table(bivar_brooding_devel)
 dev.off()
+
+
+### Create summary stats table
+
+# Get summary stats for all different variables into the same format 
+
+# Right wing length
+bivar_wing_table <- bivar_wing_devel
+bivar_wing_table$variable_name <- bivar_wing_table$sample_state
+bivar_wing_table$sample_state <- NULL
+
+# Mass
+bivar_mass_table <- bivar_mass_devel
+bivar_mass_table$variable_name <- bivar_mass_table$sample_state
+bivar_mass_table$sample_state <- NULL
+
+# Feeding rate
+bivar_feeding_table <- bivar_feeding_devel
+bivar_feeding_table$variable_name <- bivar_feeding_table$obs_state
+bivar_feeding_table$obs_state <- NULL
+
+# Temperature
+univar_temp_min$variable_name <- "Minimum temperature (C)"
+
+univar_temp_max$variable_name <- "Maximum temperature (C)"
+
+univar_temp_iqr$variable_name <- "Temperature IQR (C)"
+
+univar_brood_size$variable_name <- "Brood size (number of nestlings)"
+
+univar_hatch_date$variable_name <- "Hatch date (days since June 1)"
+
+univar_nestling_age$variable_name <- "Nest age at last measure (days since hatch)"
+
+# Bind all variables together
+summary_stats_df <- rbind(univar_temp_min, univar_temp_max, univar_temp_iqr, univar_brood_size,
+                            univar_hatch_date, univar_nestling_age, bivar_feeding_table,
+                            bivar_wing_table, bivar_mass_table)
+
+summary_stats_df$variable_name[summary_stats_df$variable_name == "early"] <- "Early"
+summary_stats_df$variable_name[summary_stats_df$variable_name == "mid"] <- "Mid"
+summary_stats_df$variable_name[summary_stats_df$variable_name == "late"] <- "Late"
+
+summary_stats_df <- rename(summary_stats_df,
+                           N = n,
+                           Mean = avg, 
+                           SD = stdev,
+                           Median = med,
+                           Minimum = min, 
+                           Maximum = max)
+
+summary_stats_table <- gt(summary_stats_df, rowname_col = "variable_name") %>%
+  tab_header(
+    title = md("**Table 1.** Background characteristics of wild nestling Barn Swallows in Boulder County, CO. Total number of feeding visits, nestling mass, and nestling wing length are separately estimated for three developmental stages (early, mid, and late).")
+  ) %>%
+  tab_stubhead(
+    label = md("Variable")
+  ) %>%
+  tab_row_group(
+    label = md("**Nestling mass (g) across development**"), 
+    rows = c(13:15)
+  ) %>%
+  tab_row_group(
+    label = md("**Right wing length (mm) across development**"), 
+    rows = c(10:12)
+  ) %>%
+  tab_row_group(
+    label = md("**Total feeding rate (counts/hour) across development**"), 
+    rows = c(7:9)
+  ) %>%
+  tab_row_group(
+    label = md("**Other nest characteristics**"), 
+    rows = c(4:6)
+  ) %>%
+  tab_row_group(
+    label = md("**Near-nest temperature**"), 
+    rows = c(1:3)
+  ) %>%
+  tab_footnote(
+    footnote = " Parental feeding behaviors are measured at the level of the nest and include the totals for both social parents (maternal and paternal care).",
+    locations = cells_row_groups(groups = "**Total feeding rate (counts/hour) across development**")
+  ) %>%
+  opt_table_font(font = "Arial", size = 12)  %>%
+  tab_options(footnotes.font.size = 10)
+
+
+summary_stats_table
+gtsave(summary_stats_table, filename = "Output/summary_stats_table.docx")
+gtsave(summary_stats_table, filename = "Output/summary_stats_table.html")
+
+
+
 
 
 ###############################################################################

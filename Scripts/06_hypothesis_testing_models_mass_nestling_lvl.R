@@ -54,8 +54,6 @@ library('boot')
 # load pbkrtest and lmertest (emmeans dependency)
 library('pbkrtest')
 library('lmerTest')
-# prevent lmerTest from masking the lme4 function for lmer
-lmer <- lme4::lmer
 
 ## Broom packages
 library('broom')
@@ -81,6 +79,7 @@ load('Data/Tidy/tidy_parent_nestl_weather_data_10-4_with_BLUPs.RData')
 late_nestling_parent_care$fsite <- as.factor(late_nestling_parent_care$site)
 late_nestling_parent_care$fnest_id <- as.factor(late_nestling_parent_care$nest_id)
 
+unique(late_nestling_parent_care$fsite)
 late_nestling_parent_care$num_pairs <- as.numeric(late_nestling_parent_care$num_pairs)
 
 ###############################################################################
@@ -179,7 +178,7 @@ bt_ci_mass_min_temp_blups_low_lmer <- boot.ci(boot_mass_min_temp_blups_low_lmer,
 print(bt_ci_mass_min_temp_blups_low_lmer)
 
 
-## MED parental care - adjusted
+## MED parental care- unadjusted
 mass_min_temp_blups_med_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
                                            (1|fnest_id), 
                                          data = subset(late_nestling_parent_care,
@@ -214,7 +213,7 @@ bt_ci_mass_min_temp_blups_med_lmer <- boot.ci(boot_mass_min_temp_blups_med_lmer,
 print(bt_ci_mass_min_temp_blups_med_lmer)
 
 
-## HIGH parental care - adjusted 
+## HIGH parental care - unadjusted
 mass_min_temp_blups_high_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
                                             (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
@@ -259,7 +258,7 @@ print(bt_ci_mass_min_temp_blups_high_lmer)
 
 
 ### Mass adjusted
-mass_min_temp_blups_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
+mass_min_temp_blups_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_min_temp) *
                                    scale(feeding_expontd_blups) + scale(nestling_number) + 
                                      scale(days_summer) +
                                    (1|fnest_id), 
@@ -425,7 +424,7 @@ print(bt_ci_mass_min_temp_blups_high_adj_lmer)
 mass_outliers_removed <- late_nestling_parent_care[-c(4, 40), ]
 
 ### Mass unadjusted with outliers removed
-mass_min_temp_blups_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
+mass_min_temp_blups_noout_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_min_temp) *
                                    scale(feeding_expontd_blups) +
                                    (1|fnest_id), 
                                  data = subset(mass_outliers_removed,
@@ -716,7 +715,7 @@ bt_ci_mass_max_temp_blups_low_lmer <- boot.ci(boot_mass_max_temp_blups_low_lmer,
 print(bt_ci_mass_max_temp_blups_low_lmer)
 
 
-## MED parental care - adjusted
+## MED parental care - unadjusted
 mass_max_temp_blups_med_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
                                        (1|fnest_id), 
                                      data = subset(late_nestling_parent_care,
@@ -751,7 +750,7 @@ bt_ci_mass_max_temp_blups_med_lmer <- boot.ci(boot_mass_max_temp_blups_med_lmer,
 print(bt_ci_mass_max_temp_blups_med_lmer)
 
 
-## HIGH parental care - adjusted 
+## HIGH parental care - unadjusted 
 mass_max_temp_blups_high_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
@@ -788,7 +787,7 @@ print(bt_ci_mass_max_temp_blups_high_lmer)
 
 
 ### Mass adjusted
-mass_max_temp_blups_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
+mass_max_temp_blups_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_max_temp) *
                                    scale(feeding_expontd_blups) + 
                                      scale(nestling_number) + scale(days_summer) +
                                    (1|fnest_id), 
@@ -1002,7 +1001,7 @@ print(bt_ci_mass_max_temp_blups_noout_lmer_3)
 
 
 ### Mass adjusted -- outliers removed
-mass_max_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
+mass_max_temp_blups_adj_noout_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_max_temp) *
                                        scale(feeding_expontd_blups) + 
                                        scale(nestling_number) + scale(days_summer) +
                                        (1|fnest_id), 
@@ -1253,7 +1252,7 @@ bt_ci_mass_iqr_temp_blups_low_lmer <- boot.ci(boot_mass_iqr_temp_blups_low_lmer,
 print(bt_ci_mass_iqr_temp_blups_low_lmer)
 
 
-## MED parental care - adjusted
+## MED parental care - unadjusted
 mass_iqr_temp_blups_med_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
                                        (1|fnest_id), 
                                      data = subset(late_nestling_parent_care,
@@ -1288,7 +1287,7 @@ bt_ci_mass_iqr_temp_blups_med_lmer <- boot.ci(boot_mass_iqr_temp_blups_med_lmer,
 print(bt_ci_mass_iqr_temp_blups_med_lmer)
 
 
-## HIGH parental care - adjusted 
+## HIGH parental care - unadjusted 
 mass_iqr_temp_blups_high_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
@@ -1325,7 +1324,7 @@ print(bt_ci_mass_iqr_temp_blups_high_lmer)
 
 
 ### Mass adjusted
-mass_iqr_temp_blups_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+mass_iqr_temp_blups_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
                                    scale(feeding_expontd_blups) + 
                                      scale(nestling_number) + scale(days_summer) +
                                    (1|fnest_id), 
@@ -1538,7 +1537,7 @@ bt_ci_mass_iqr_temp_blups_noout_lmer_3 <- boot.ci(boot_mass_iqr_temp_blups_noout
 print(bt_ci_mass_iqr_temp_blups_noout_lmer_3)
 
 ### Mass adjusted -- outliers removed 
-mass_iqr_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+mass_iqr_temp_blups_adj_noout_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
                                        scale(feeding_expontd_blups) + 
                                        scale(nestling_number) + scale(days_summer) +
                                        (1|fnest_id), 
@@ -1701,7 +1700,7 @@ print(bt_ci_mass_iqr_temp_blups_high_adj_noout_lmer)
 ## Create model results tables for straified parental care data
 
 # Extract number of observations for unadjusted models
-low_un_n <- c(nobs(mass_iqr_temp_blups_low_lmer), 
+low_un_n <- c(nobs(mass_min_temp_blups_low_lmer), 
               nobs(mass_max_temp_blups_low_lmer),
               nobs(mass_iqr_temp_blups_low_lmer))
 
@@ -1720,7 +1719,7 @@ low_un_b <- c(paste(round(fixef(mass_min_temp_blups_low_lmer)[2], 2), " (",
                     sep = ""),
               paste(round(fixef(mass_max_temp_blups_low_lmer)[2], 2), " (", 
                     round(bt_ci_mass_max_temp_blups_low_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_max_temp_blups_low_adj_lmer[[6]][5], 2), ")",
+                    round(bt_ci_mass_max_temp_blups_low_lmer[[6]][5], 2), ")",
                     sep = ""),
               paste(round(fixef(mass_iqr_temp_blups_low_lmer)[2], 2), " (", 
                     round(bt_ci_mass_iqr_temp_blups_low_lmer[[6]][4], 2), ", ", 
@@ -1810,6 +1809,8 @@ high_ad_b <- c(paste(round(fixef(mass_min_temp_blups_high_adj_lmer)[2], 2), " ("
                      round(bt_ci_mass_iqr_temp_blups_high_adj_lmer[[6]][5], 2), ")",
                      sep = ""))
 
+
+
 # Bind the values together into a single dataframe
 parental_care_strat_ad <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
@@ -1848,11 +1849,44 @@ str(parental_care_strat)
 # Create display table
 parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**Supplemental Table 4.** Associations nestling mass and temperature, assessed in separate models stratified by levels of parental care, when influential outliers are included in the dataset.")
+    title = md("**Supplemental Table 4.** Associations of nestling mass and temperature, assessed in separate models stratified by levels of parental feeding, when influential outliers are included in the dataset.")
   ) %>%
   tab_footnote(
-    footnote = "Estimated β (95% CI) from straified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as random intercepts. Models adjusted for hatch date and number of nestlings in the nest. Continuous predictors as z-score standardized.",
-    locations = cells_stub(rows = c(2, 4, 6))
+    footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
+    locations = cells_column_labels(columns = c(low_b, med_b, high_b))
+  ) %>%
+  tab_footnote(
+    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
+                        "Low parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[2], 2),
+                        "; Medium parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_med_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_med_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[2], 2),
+                 sep = "")),
+    locations = cells_stub(rows = c(2))
+    ) %>%
+  tab_footnote(
+    footnote = md(paste("R^2^ for adjusted maximum temperature models. ",
+                        "Low parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[2], 2),
+                        "; Medium parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_med_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_med_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(4))
+  ) %>%
+  tab_footnote(
+    footnote = md(paste("R^2^ for adjusted temperature IQR models. ",
+                        "Low parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[2], 2),
+                        "; Medium parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_med_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_med_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(6))
   ) %>%
   tab_stubhead(
     label = md("Type")
@@ -1870,20 +1904,20 @@ parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %
     rows = c(1:2)
   ) %>%
   tab_spanner(
-    label = "Low parental care models",
+    label = "Low parental feeding models",
     columns = c(low_n, low_b)
   ) %>%
   tab_spanner(
-    label = "Medium parental care models",
+    label = "Medium parental feeding models",
     columns = c(med_n, med_b)
   ) %>%
   tab_spanner(
-    label = "High parental care models",
+    label = "High parental feeding models",
     columns = c(high_n, high_b)
   ) %>% 
   cols_label(
     ends_with("n") ~ "N", 
-    ends_with("b") ~ "Estimate (95% CI)",
+    ends_with("b") ~ "β (95% CI)",
     type = "Type"
   ) %>%
   cols_hide(variable)  %>%
@@ -1892,7 +1926,8 @@ parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %
 
 
 parental_care_strat_mod_table
-gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.docx")
+gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.docx") 
+gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.html")
 
 
 
@@ -2019,7 +2054,7 @@ boot_mass_min_temp_mid_size_big_lmer <- bootMer(x = mass_min_temp_mid_size_big_l
                                                     use.u = F, type = 'parametric')
 tidy(boot_mass_min_temp_mid_size_big_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_min_temp_mid_size_big_lmer <- boot.ci(mass_min_temp_mid_size_big_lmer,
+bt_ci_mass_min_temp_mid_size_big_lmer <- boot.ci(boot_mass_min_temp_mid_size_big_lmer,
                                                      type = c('perc', 'norm', 'basic'),
                                                      index = 2) # CI for 1st betas
 print(bt_ci_mass_min_temp_mid_size_big_lmer)
@@ -2027,7 +2062,7 @@ print(bt_ci_mass_min_temp_mid_size_big_lmer)
 
 
 ### Mass adjusted
-mass_min_temp_mid_size_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
+mass_min_temp_mid_size_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_min_temp) *
                                       mid_size_order + scale(nestling_number) +
                                       scale(days_summer) +
                                       (1|fnest_id), 
@@ -2134,8 +2169,8 @@ plot(mass_min_temp_mid_size_small_adj_lmer)
 # Histogram of residuals
 hist(resid(mass_min_temp_mid_size_small_adj_lmer))
 
-summary(mass_min_temp_mid_size_small_adj_lmer)
-confint(mass_min_temp_mid_size_small_adj_lmer)
+summary(mass_min_temp_mid_size_big_adj_lmer)
+confint(mass_min_temp_mid_size_big_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2275,7 +2310,7 @@ print(bt_ci_mass_max_temp_mid_size_big_lmer)
 
 
 ### Mass adjusted
-mass_max_temp_mid_size_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
+mass_max_temp_mid_size_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_max_temp) *
                                       mid_size_order + scale(nestling_number) +
                                       scale(days_summer) +
                                       (1|fnest_id), 
@@ -2527,7 +2562,7 @@ print(bt_ci_mass_iqr_temp_mid_size_big_lmer)
 
 
 ### Mass adjusted
-mass_iqr_temp_mid_size_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+mass_iqr_temp_mid_size_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
                                       mid_size_order + scale(nestling_number) + 
                                       scale(days_summer) +
                                       (1|fnest_id), 
@@ -2765,11 +2800,38 @@ str(size_strat)
 # Create display table
 size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**Supplemental Table 3.** Associations nestling mass and temperature, assessed in separate models stratified by relative nestling size at mid development measure (smallest vs. other).")
+    title = md("**Supplemental Table 3.** Associations of nestling mass and temperature, assessed in separate models stratified by relative nestling size at mid development measure (smallest vs. other).")
   ) %>%
   tab_footnote(
-    footnote = "Estimated β (95% CI) from straified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as random intercepts. Models adjusted for hatch date and number of nestlings in the nest. Continuous predictors as z-score standardized.",
-    locations = cells_stub(rows = c(2, 4, 6))
+    footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
+    locations = cells_column_labels(columns = c(small_b, big_b))
+  ) %>%
+  tab_footnote(
+    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
+                        "Small size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_mid_size_small_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_mid_size_small_adj_lmer)[2], 2),
+                        "; Other size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_mid_size_big_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_mid_size_big_adj_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(2))
+  ) %>%
+  tab_footnote(
+    footnote = md(paste("R^2^ for adjusted maximum temperature models. ",
+                        "Small size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_mid_size_small_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_mid_size_small_adj_lmer)[2], 2),
+                        "; Other size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_mid_size_big_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_mid_size_big_adj_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(4))
+  ) %>%  
+  tab_footnote(
+    footnote = md(paste("R^2^ for adjusted temperature IQR models. ",
+                        "Small size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_small_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_small_adj_lmer)[2], 2),
+                        "; Other size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_big_adj_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_big_adj_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(6))
   ) %>%
   tab_stubhead(
     label = md("Type")
@@ -2796,7 +2858,7 @@ size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
   )  %>% 
   cols_label(
     ends_with("n") ~ "N", 
-    ends_with("b") ~ "Estimate (95% CI)",
+    ends_with("b") ~ "β (95% CI)",
     type = "Type"
   ) %>%
   cols_hide(variable)  %>%
@@ -2806,6 +2868,7 @@ size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
 
 size_strat_mod_table
 gtsave(size_strat_mod_table, filename = "Output/size_adjusted_strat.docx")
+gtsave(size_strat_mod_table, filename = "Output/size_adjusted_strat.html")
 
 
 ########################## LATE SIZE #######################################
@@ -4881,6 +4944,274 @@ bt_ci_mass_iqr_both_thermo_adj_noout_lmer_2 <- boot.ci(boot_mass_iqr_both_thermo
                                                    index = 3) # CI for 2nd beta
 print(bt_ci_mass_iqr_both_thermo_adj_noout_lmer_2)
 
+
+
+
+## Create model results tables for developmental stages models
+
+# Extract number of observations for unadjusted models
+before_un_n <- c(nobs(mass_min_before_thermo_lmer), 
+                nobs(mass_max_before_thermo_lmer),
+                nobs(mass_iqr_before_thermo_lmer))
+
+after_un_n <- c(nobs(mass_min_after_thermo_lmer), 
+                 nobs(mass_max_after_thermo_lmer),
+                 nobs(mass_iqr_after_thermo_lmer))
+
+both_un_n <- c(nobs(mass_min_both_thermo_lmer), 
+                nobs(mass_max_both_thermo_lmer),
+                nobs(mass_iqr_both_thermo_lmer))
+
+# Extract Betas for unadjusted models
+before_un_b <- c(paste(round(fixef(mass_min_before_thermo_lmer)[2], 2), " (", 
+                      round(bt_ci_mass_min_before_thermo_lmer[[6]][4], 2), ", ", 
+                      round(bt_ci_mass_min_before_thermo_lmer[[6]][5], 2), ")",
+                      sep = ""),
+                paste(round(fixef(mass_max_before_thermo_lmer)[2], 2), " (", 
+                      round(bt_ci_mass_max_before_thermo_lmer[[6]][4], 2), ", ", 
+                      round(bt_ci_mass_max_before_thermo_lmer[[6]][5], 2), ")",
+                      sep = ""),
+                paste(round(fixef(mass_iqr_before_thermo_lmer)[2], 2), " (", 
+                      round(bt_ci_mass_iqr_before_thermo_lmer[[6]][4], 2), ", ", 
+                      round(bt_ci_mass_iqr_before_thermo_lmer[[6]][5], 2), ")",
+                      sep = ""))
+
+
+after_un_b <- c(paste(round(fixef(mass_min_after_thermo_lmer)[2], 2), " (", 
+                       round(bt_ci_mass_min_after_thermo_lmer[[6]][4], 2), ", ", 
+                       round(bt_ci_mass_min_after_thermo_lmer[[6]][5], 2), ")",
+                       sep = ""),
+                 paste(round(fixef(mass_max_after_thermo_lmer)[2], 2), " (", 
+                       round(bt_ci_mass_max_after_thermo_lmer[[6]][4], 2), ", ", 
+                       round(bt_ci_mass_max_after_thermo_lmer[[6]][5], 2), ")",
+                       sep = ""),
+                 paste(round(fixef(mass_iqr_after_thermo_lmer)[2], 2), " (", 
+                       round(bt_ci_mass_iqr_after_thermo_lmer[[6]][4], 2), ", ", 
+                       round(bt_ci_mass_iqr_after_thermo_lmer[[6]][5], 2), ")",
+                       sep = ""))
+
+both_bef_un_b <- c(paste(round(fixef(mass_min_both_thermo_lmer)[2], 2), " (", 
+                      round(bt_ci_mass_min_both_thermo_lmer[[6]][4], 2), ", ", 
+                      round(bt_ci_mass_min_both_thermo_lmer[[6]][5], 2), ")",
+                      sep = ""),
+                paste(round(fixef(mass_max_both_thermo_lmer)[2], 2), " (", 
+                      round(bt_ci_mass_max_both_thermo_lmer[[6]][4], 2), ", ", 
+                      round(bt_ci_mass_max_both_thermo_lmer[[6]][5], 2), ")",
+                      sep = ""),
+                paste(round(fixef(mass_iqr_both_thermo_lmer)[2], 2), " (", 
+                      round(bt_ci_mass_iqr_both_thermo_lmer[[6]][4], 2), ", ", 
+                      round(bt_ci_mass_iqr_both_thermo_lmer[[6]][5], 2), ")",
+                      sep = ""))
+
+both_aft_un_b <- c(paste(round(fixef(mass_min_both_thermo_lmer)[3], 2), " (", 
+                         round(bt_ci_mass_min_both_thermo_lmer_2[[6]][4], 2), ", ", 
+                         round(bt_ci_mass_min_both_thermo_lmer_2[[6]][5], 2), ")",
+                         sep = ""),
+                   paste(round(fixef(mass_max_both_thermo_lmer)[3], 2), " (", 
+                         round(bt_ci_mass_max_both_thermo_lmer_2[[6]][4], 2), ", ", 
+                         round(bt_ci_mass_max_both_thermo_lmer_2[[6]][5], 2), ")",
+                         sep = ""),
+                   paste(round(fixef(mass_iqr_both_thermo_lmer)[3], 2), " (", 
+                         round(bt_ci_mass_iqr_both_thermo_lmer_2[[6]][4], 2), ", ", 
+                         round(bt_ci_mass_iqr_both_thermo_lmer_2[[6]][5], 2), ")",
+                         sep = ""))
+
+
+# Extract number of observations for adjusted models
+before_ad_n <- c(nobs(mass_min_before_thermo_adj_lmer), 
+                 nobs(mass_max_before_thermo_adj_lmer),
+                 nobs(mass_iqr_before_thermo_adj_lmer))
+
+after_ad_n <- c(nobs(mass_min_after_thermo_adj_lmer), 
+                nobs(mass_max_after_thermo_adj_lmer),
+                nobs(mass_iqr_after_thermo_adj_lmer))
+
+both_ad_n <- c(nobs(mass_min_both_thermo_adj_lmer), 
+               nobs(mass_max_both_thermo_adj_lmer),
+               nobs(mass_iqr_both_thermo_adj_lmer))
+
+
+# Extract Betas for unadjusted models
+before_ad_b <- c(paste(round(fixef(mass_min_before_thermo_adj_lmer)[2], 2), " (", 
+                       round(bt_ci_mass_min_before_thermo_adj_lmer[[6]][4], 2), ", ", 
+                       round(bt_ci_mass_min_before_thermo_adj_lmer[[6]][5], 2), ")",
+                       sep = ""),
+                 paste(round(fixef(mass_max_before_thermo_adj_lmer)[2], 2), " (", 
+                       round(bt_ci_mass_max_before_thermo_adj_lmer[[6]][4], 2), ", ", 
+                       round(bt_ci_mass_max_before_thermo_adj_lmer[[6]][5], 2), ")",
+                       sep = ""),
+                 paste(round(fixef(mass_iqr_before_thermo_adj_lmer)[2], 2), " (", 
+                       round(bt_ci_mass_iqr_before_thermo_adj_lmer[[6]][4], 2), ", ", 
+                       round(bt_ci_mass_iqr_before_thermo_adj_lmer[[6]][5], 2), ")",
+                       sep = ""))
+
+
+after_ad_b <- c(paste(round(fixef(mass_min_after_thermo_adj_lmer)[2], 2), " (", 
+                      round(bt_ci_mass_min_after_thermo_adj_lmer[[6]][4], 2), ", ", 
+                      round(bt_ci_mass_min_after_thermo_adj_lmer[[6]][5], 2), ")",
+                      sep = ""),
+                paste(round(fixef(mass_max_after_thermo_adj_lmer)[2], 2), " (", 
+                      round(bt_ci_mass_max_after_thermo_adj_lmer[[6]][4], 2), ", ", 
+                      round(bt_ci_mass_max_after_thermo_adj_lmer[[6]][5], 2), ")",
+                      sep = ""),
+                paste(round(fixef(mass_iqr_after_thermo_adj_lmer)[2], 2), " (", 
+                      round(bt_ci_mass_iqr_after_thermo_adj_lmer[[6]][4], 2), ", ", 
+                      round(bt_ci_mass_iqr_after_thermo_adj_lmer[[6]][5], 2), ")",
+                      sep = ""))
+
+both_bef_ad_b <- c(paste(round(fixef(mass_min_both_thermo_adj_lmer)[2], 2), " (", 
+                         round(bt_ci_mass_min_both_thermo_adj_lmer[[6]][4], 2), ", ", 
+                         round(bt_ci_mass_min_both_thermo_adj_lmer[[6]][5], 2), ")",
+                         sep = ""),
+                   paste(round(fixef(mass_max_both_thermo_adj_lmer)[2], 2), " (", 
+                         round(bt_ci_mass_max_both_thermo_adj_lmer[[6]][4], 2), ", ", 
+                         round(bt_ci_mass_max_both_thermo_adj_lmer[[6]][5], 2), ")",
+                         sep = ""),
+                   paste(round(fixef(mass_iqr_both_thermo_adj_lmer)[2], 2), " (", 
+                         round(bt_ci_mass_iqr_both_thermo_adj_lmer[[6]][4], 2), ", ", 
+                         round(bt_ci_mass_iqr_both_thermo_adj_lmer[[6]][5], 2), ")",
+                         sep = ""))
+
+both_aft_ad_b <- c(paste(round(fixef(mass_min_both_thermo_adj_lmer)[3], 2), " (", 
+                         round(bt_ci_mass_min_both_thermo_adj_lmer_2[[6]][4], 2), ", ", 
+                         round(bt_ci_mass_min_both_thermo_adj_lmer_2[[6]][5], 2), ")",
+                         sep = ""),
+                   paste(round(fixef(mass_max_both_thermo_adj_lmer)[3], 2), " (", 
+                         round(bt_ci_mass_max_both_thermo_adj_lmer_2[[6]][4], 2), ", ", 
+                         round(bt_ci_mass_max_both_thermo_adj_lmer_2[[6]][5], 2), ")",
+                         sep = ""),
+                   paste(round(fixef(mass_iqr_both_thermo_adj_lmer)[3], 2), " (", 
+                         round(bt_ci_mass_iqr_both_thermo_adj_lmer_2[[6]][4], 2), ", ", 
+                         round(bt_ci_mass_iqr_both_thermo_adj_lmer_2[[6]][5], 2), ")",
+                         sep = ""))
+
+# Bind the values together into a single dataframe
+devel_ad <- data.frame(
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
+  type <- c("Adjusted", "Adjusted", "Adjusted"),
+  before_ad_n, before_ad_b, 
+  after_ad_n, after_ad_b, 
+  both_ad_n, both_bef_ad_b, both_aft_ad_b
+)
+
+devel_un <- data.frame(
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
+  type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
+  before_un_n, before_un_b, 
+  after_un_n, after_un_b, 
+  both_un_n, both_bef_un_b, both_aft_un_b
+)
+
+colnames(devel_ad) <- c("variable", "type",
+                                      "before_n", "before_b", 
+                                      "after_n", "after_b", 
+                                      "both_n", "both_bef_b",
+                                       "both_aft_b")
+
+colnames(devel_un) <- c("variable", "type",
+                                      "before_n", "before_b", 
+                                      "after_n", "after_b", 
+                                      "both_n", "both_bef_b",
+                                       "both_aft_b")
+
+devel <- rbind(devel_un, devel_ad)
+
+devel <- arrange(devel,
+                factor(variable, levels = c("Minimum temperature", "Maximum temperature", "Temperature IQR")))
+
+
+str(devel)
+
+# Create display table
+devel_mod_table <- gt(devel, rowname_col = "type") %>%
+  tab_header(
+    title = md("**Supplemental Table 2.** Associations of three temperature variables before and/or after thermoregulatory independence (defined as occurring six days post-hatch) with nestling mass.")
+  ) %>%
+  tab_footnote(
+    footnote = "Estimated β (95% CI) from straified linear mixed models in which temperature before and/or after thermoregulatory independence are the explanatory variables of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors as z-score standardized.",
+    locations = cells_column_labels(columns = c(before_b, after_b, both_bef_b, both_aft_b))
+  )  %>%
+  tab_footnote(
+    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
+                        "Before model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_before_thermo_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_before_thermo_lmer)[2], 2),
+                        "; After model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_after_thermo_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_after_thermo_lmer)[2], 2),
+                        "; Both model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_both_thermo_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_both_thermo_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(2))
+  ) %>%
+  tab_footnote(
+    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
+                        "Before model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_before_thermo_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_before_thermo_lmer)[2], 2),
+                        "; After model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_after_thermo_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_after_thermo_lmer)[2], 2),
+                        "; Both model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_both_thermo_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_both_thermo_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(4))
+  ) %>%
+  tab_footnote(
+    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
+                        "Before model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_before_thermo_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_before_thermo_lmer)[2], 2),
+                        "; After model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_after_thermo_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_after_thermo_lmer)[2], 2),
+                        "; Both model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_both_thermo_lmer)[1], 2),
+                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_both_thermo_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(6))
+  ) %>%
+  tab_stubhead(
+    label = md("Type")
+  ) %>%
+  tab_row_group(
+    label = md("**Effect of temperature IQR**"), 
+    rows = c(5:6)
+  ) %>%
+  tab_row_group(
+    label = md("**Effect of maximum temperature**"), 
+    rows = c(3:4)
+  ) %>%
+  tab_row_group(
+    label = md("**Effect of minimum temperature**"), 
+    rows = c(1:2)
+  ) %>%
+  tab_spanner(
+    label = "Before models",
+    columns = c(before_n, before_b)
+  ) %>%
+  tab_spanner(
+    label = "After models",
+    columns = c(after_n, after_b)
+  ) %>%
+  tab_spanner(
+    label = "Before",
+    columns = c(both_bef_b)
+  ) %>% 
+  tab_spanner(
+    label = "After",
+    columns = c(both_aft_b)
+  ) %>% 
+  tab_spanner(
+    label = "Both models",
+    columns = c(both_n, both_bef_b, both_aft_b)
+  ) %>% 
+  cols_label(
+    ends_with("n") ~ "N", 
+    ends_with("b") ~ "β (95% CI)",
+    type = "Type"
+  ) %>%
+  cols_hide(variable)  %>%
+  opt_table_font(font = "Arial", size = 12)  %>%
+  tab_options(footnotes.font.size = 10)
+
+
+devel_mod_table
+gtsave(devel_mod_table, filename = "Output/devel_mod_table.docx")
+gtsave(devel_mod_table, filename = "Output/devel_mod_table.html")
 
 
 ############################ 5 days cut off ###################################
@@ -7058,7 +7389,7 @@ mass_iqr_both_thermo_adj_lmer_plot <-
         legend.position = 'none', #c(0.91, 0.94),
         legend.key = element_blank()) +
   labs(colour = "Parent feeding level") +
-  xlab(expression(italic('Standardized IQR of temperature (SD)'))) +
+  xlab(expression(italic('Standardized temperature IQR (SD)'))) +
   ylab(expression
        (atop(bold('Beta estimate and 95% CI'),
              paste(italic('Nestling mass (g)')))))
@@ -7178,7 +7509,7 @@ temp_thermo_both_iqr_predicted <- ggplot() +
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
   geom_point(data = sub, aes(x = thermo_aft_iqr_temp, y = mass_pre_obs, col = "After day 6"), 
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  labs(x = "IQR of temperature (C)", y = "Nestling mass (g)", 
+  labs(x = "Temperature IQR (C)", y = "Nestling mass (g)", 
        color = "Before vs. after day 6", fill = "Before vs. after day 6") +
   scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
                      aesthetics = c("color", "fill"))
