@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 2/28/2025
+####### Last modified: 4/23/2025
 
 # Code Blocks
 # 1: Configure work space
@@ -1813,7 +1813,7 @@ high_ad_b <- c(paste(round(fixef(mass_min_temp_blups_high_adj_lmer)[2], 2), " ("
 
 # Bind the values together into a single dataframe
 parental_care_strat_ad <- data.frame(
-  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
   low_ad_n, low_ad_b, 
   med_ad_n, med_ad_b, 
@@ -1821,7 +1821,7 @@ parental_care_strat_ad <- data.frame(
 )
 
 parental_care_strat_un <- data.frame(
-  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
   low_un_n, low_un_b, 
   med_un_n, med_un_b, 
@@ -1841,7 +1841,7 @@ colnames(parental_care_strat_un) <- c("variable", "type",
 parental_care_strat <- rbind(parental_care_strat_un, parental_care_strat_ad)
 
 parental_care_strat <- arrange(parental_care_strat,
-                               factor(variable, levels = c("Minimum temperature", "Maximum temperature", "Temperature IQR")))
+                               factor(variable, levels = c("Minimum temperature", "Maximum temperature", "Temperature variability")))
 
 
 str(parental_care_strat)
@@ -1849,42 +1849,42 @@ str(parental_care_strat)
 # Create display table
 parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**Supplemental Table 4.** Associations of nestling mass and temperature, assessed in separate models stratified by levels of parental feeding, when influential outliers are included in the dataset.")
+    title = md("**Supplemental Table 5.** Associations of nestling mass and temperature, assessed in separate models stratified by levels of parental feeding, when influential outliers are included in the dataset. Temperature variability is defined as the interquartile range.")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
     locations = cells_column_labels(columns = c(low_b, med_b, high_b))
   ) %>%
   tab_footnote(
-    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
-                        "Low parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[2], 2),
-                        "; Medium parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_med_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_med_adj_lmer)[2], 2),
-                        "; High parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[2], 2),
+    footnote = md(paste("R-squared for adjusted minimum temperature models. ",
+                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[2], 2),
+                        "; Medium parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_med_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_med_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[2], 2),
                  sep = "")),
     locations = cells_stub(rows = c(2))
     ) %>%
   tab_footnote(
-    footnote = md(paste("R^2^ for adjusted maximum temperature models. ",
-                        "Low parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[2], 2),
-                        "; Medium parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_med_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_med_adj_lmer)[2], 2),
-                        "; High parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[2], 2),
+    footnote = md(paste("R-squared for adjusted maximum temperature models. ",
+                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[2], 2),
+                        "; Medium parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_med_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_med_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(4))
   ) %>%
   tab_footnote(
-    footnote = md(paste("R^2^ for adjusted temperature IQR models. ",
-                        "Low parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[2], 2),
-                        "; Medium parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_med_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_med_adj_lmer)[2], 2),
-                        "; High parental feeding model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[2], 2),
+    footnote = md(paste("R-squared for adjusted temperature variability models. ",
+                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[2], 2),
+                        "; Medium parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_med_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_med_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(6))
   ) %>%
@@ -1892,7 +1892,7 @@ parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %
     label = md("Type")
   ) %>%
   tab_row_group(
-    label = md("**Effect of temperature IQR**"), 
+    label = md("**Effect of temperature variability**"), 
     rows = c(5:6)
   ) %>%
   tab_row_group(
@@ -2769,14 +2769,14 @@ big_ad_b <- c(paste(round(fixef(mass_min_temp_mid_size_big_adj_lmer)[2], 2), " (
 
 # Bind the values together into a single dataframe
 size_strat_ad <- data.frame(
-  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
   small_ad_n, small_ad_b, 
   big_ad_n, big_ad_b
 )
 
 size_strat_un <- data.frame(
-  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
   small_un_n, small_un_b, 
   big_un_n, big_un_b
@@ -2792,7 +2792,7 @@ colnames(size_strat_un) <- c("variable", "type",
 
 size_strat <- rbind(size_strat_un, size_strat_ad)
 
-size_strat <- arrange(size_strat, factor(variable, levels = c("Minimum temperature", "Maximum temperature", "Temperature IQR")))
+size_strat <- arrange(size_strat, factor(variable, levels = c("Minimum temperature", "Maximum temperature", "Temperature variability")))
 
 
 str(size_strat)
@@ -2800,36 +2800,36 @@ str(size_strat)
 # Create display table
 size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**Supplemental Table 3.** Associations of nestling mass and temperature, assessed in separate models stratified by relative nestling size at mid development measure (smallest vs. other).")
+    title = md("**Supplemental Table 4.** Associations of nestling mass and temperature, assessed in separate models stratified by relative nestling size at mid development measure (smallest vs. other). Temperature variability is defined as the interquartile range. ")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
     locations = cells_column_labels(columns = c(small_b, big_b))
   ) %>%
   tab_footnote(
-    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
-                        "Small size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_mid_size_small_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_mid_size_small_adj_lmer)[2], 2),
-                        "; Other size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_temp_mid_size_big_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_temp_mid_size_big_adj_lmer)[2], 2),
+    footnote = md(paste("R-squared for adjusted minimum temperature models. ",
+                        "Small size model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_mid_size_small_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_mid_size_small_adj_lmer)[2], 2),
+                        "; Other size model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_mid_size_big_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_mid_size_big_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(2))
   ) %>%
   tab_footnote(
-    footnote = md(paste("R^2^ for adjusted maximum temperature models. ",
-                        "Small size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_mid_size_small_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_mid_size_small_adj_lmer)[2], 2),
-                        "; Other size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_temp_mid_size_big_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_temp_mid_size_big_adj_lmer)[2], 2),
+    footnote = md(paste("R-squared for adjusted maximum temperature models. ",
+                        "Small size model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_mid_size_small_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_mid_size_small_adj_lmer)[2], 2),
+                        "; Other size model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_mid_size_big_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_mid_size_big_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(4))
   ) %>%  
   tab_footnote(
-    footnote = md(paste("R^2^ for adjusted temperature IQR models. ",
-                        "Small size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_small_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_small_adj_lmer)[2], 2),
-                        "; Other size model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_big_adj_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_big_adj_lmer)[2], 2),
+    footnote = md(paste("R-squared for adjusted temperature variability models. ",
+                        "Small size model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_small_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_small_adj_lmer)[2], 2),
+                        "; Other size model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_big_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_mid_size_big_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(6))
   ) %>%
@@ -2837,7 +2837,7 @@ size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
     label = md("Type")
   ) %>%
   tab_row_group(
-    label = md("**Effect of temperature IQR**"), 
+    label = md("**Effect of temperature variability**"), 
     rows = c(5:6)
   ) %>%
   tab_row_group(
@@ -3420,6 +3420,67 @@ print(bt_ci_mass_iqr_temp_size_big_adj_lmer)
 ######################## 6 days cut off #######################################
 
 #### Minimum temp
+
+## Interaction model
+
+# Create dataset with time period column / long format
+time_period_dat <- late_nestling_parent_care
+
+
+#### Minimum temp
+### Mass unadjusted
+mass_min_temp_time_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
+                                   time_period +
+                                   (1|fnest_id), 
+                                 data = subset(late_nestling_parent_care,
+                                               !is.na(x = mass_pre_obs) & 
+                                                 !is.na(x = nest_min_temp) &
+                                                 !is.na(x = time_period)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_lmer))
+  qqline(resid(mass_min_temp_blups_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_min_temp_blups_lmer, vars=c("Cook"))
+infIndexPlot(mass_min_temp_blups_lmer, vars=c("Studentized"))
+
+summary(mass_min_temp_blups_lmer)
+confint(mass_min_temp_blups_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_blups_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_lmer<- bootMer(x = mass_min_temp_blups_lmer,
+                                        FUN = fixef, nsim = 2000,
+                                        seed = 632760,
+                                        use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_lmer <- boot.ci(boot_mass_min_temp_blups_lmer,
+                                          type = c('perc', 'norm', 'basic'),
+                                          index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_temp_blups_lmer_2 <- boot.ci(boot_mass_min_temp_blups_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 3) # CI for 2nd betas
+print(bt_ci_mass_min_temp_blups_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_min_temp_blups_lmer_3 <- boot.ci(boot_mass_min_temp_blups_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 4) # CI for 3rd betas
+print(bt_ci_mass_min_temp_blups_lmer_3)
+
+
+## Stratified models
 ### Before thermo
 mass_min_before_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) +
                                   (1|fnest_id), 
@@ -5087,7 +5148,7 @@ both_aft_ad_b <- c(paste(round(fixef(mass_min_both_thermo_adj_lmer)[3], 2), " ("
 
 # Bind the values together into a single dataframe
 devel_ad <- data.frame(
-  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
   before_ad_n, before_ad_b, 
   after_ad_n, after_ad_b, 
@@ -5095,7 +5156,7 @@ devel_ad <- data.frame(
 )
 
 devel_un <- data.frame(
-  variable <- c("Minimum temperature", "Maximum temperature", "Temperature IQR"),
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
   before_un_n, before_un_b, 
   after_un_n, after_un_b, 
@@ -5117,7 +5178,7 @@ colnames(devel_un) <- c("variable", "type",
 devel <- rbind(devel_un, devel_ad)
 
 devel <- arrange(devel,
-                factor(variable, levels = c("Minimum temperature", "Maximum temperature", "Temperature IQR")))
+                factor(variable, levels = c("Minimum temperature", "Maximum temperature", "Temperature variability")))
 
 
 str(devel)
@@ -5125,42 +5186,42 @@ str(devel)
 # Create display table
 devel_mod_table <- gt(devel, rowname_col = "type") %>%
   tab_header(
-    title = md("**Supplemental Table 2.** Associations of three temperature variables before and/or after thermoregulatory independence (defined as occurring six days post-hatch) with nestling mass.")
+    title = md("**Supplemental Table 3.** Associations of three temperature variables before and/or after thermoregulatory independence (defined as occurring six days post-hatch) with nestling mass. Temperature variability is defined as the interquartile range. ")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from straified linear mixed models in which temperature before and/or after thermoregulatory independence are the explanatory variables of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors as z-score standardized.",
     locations = cells_column_labels(columns = c(before_b, after_b, both_bef_b, both_aft_b))
   )  %>%
   tab_footnote(
-    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
-                        "Before model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_before_thermo_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_before_thermo_lmer)[2], 2),
-                        "; After model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_after_thermo_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_after_thermo_lmer)[2], 2),
-                        "; Both model: Marginal R^2^ = ", round(r.squaredGLMM(mass_min_both_thermo_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_min_both_thermo_lmer)[2], 2),
+    footnote = md(paste("R-squared for adjusted minimum temperature models. ",
+                        "Before model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_before_thermo_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_before_thermo_lmer)[2], 2),
+                        "; After model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_after_thermo_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_after_thermo_lmer)[2], 2),
+                        "; Both model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_both_thermo_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_both_thermo_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(2))
   ) %>%
   tab_footnote(
-    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
-                        "Before model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_before_thermo_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_before_thermo_lmer)[2], 2),
-                        "; After model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_after_thermo_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_after_thermo_lmer)[2], 2),
-                        "; Both model: Marginal R^2^ = ", round(r.squaredGLMM(mass_max_both_thermo_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_max_both_thermo_lmer)[2], 2),
+    footnote = md(paste("R-squared for adjusted maximum temperature models. ",
+                        "Before model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_before_thermo_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_before_thermo_lmer)[2], 2),
+                        "; After model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_after_thermo_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_after_thermo_lmer)[2], 2),
+                        "; Both model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_both_thermo_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_both_thermo_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(4))
   ) %>%
   tab_footnote(
-    footnote = md(paste("R^2^ for adjusted minimum temperature models. ",
-                        "Before model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_before_thermo_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_before_thermo_lmer)[2], 2),
-                        "; After model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_after_thermo_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_after_thermo_lmer)[2], 2),
-                        "; Both model: Marginal R^2^ = ", round(r.squaredGLMM(mass_iqr_both_thermo_lmer)[1], 2),
-                        ", Conditional R^2^ = ", round(r.squaredGLMM(mass_iqr_both_thermo_lmer)[2], 2),
+    footnote = md(paste("R-squared for adjusted temperature variability models. ",
+                        "Before model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_before_thermo_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_before_thermo_lmer)[2], 2),
+                        "; After model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_after_thermo_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_after_thermo_lmer)[2], 2),
+                        "; Both model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_both_thermo_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_both_thermo_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(6))
   ) %>%
@@ -5168,7 +5229,7 @@ devel_mod_table <- gt(devel, rowname_col = "type") %>%
     label = md("Type")
   ) %>%
   tab_row_group(
-    label = md("**Effect of temperature IQR**"), 
+    label = md("**Effect of temperature variability**"), 
     rows = c(5:6)
   ) %>%
   tab_row_group(
@@ -6882,7 +6943,7 @@ temp_iqr_feeding_blups_predicted <- ggplot() +
                              col = as.character(feeding_expontd_blups_strat)), 
              show.legend = FALSE, size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "IQR of temperature (C)", y = "Nestling mass (g)",
+  labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
        colour = "Parent feeding level", fill = "Parent feeding level") +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
@@ -7034,7 +7095,7 @@ temp_iqr_size_predicted <- ggplot() +
                              col = as.character(mid_size_order)), 
              show.legend = FALSE, size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "IQR of temperature (C)", y = "Nestling mass (g)",
+  labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
        colour = "Relative nestling size", fill = "Relative nestling size") +
   theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
         legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
@@ -7389,7 +7450,7 @@ mass_iqr_both_thermo_adj_lmer_plot <-
         legend.position = 'none', #c(0.91, 0.94),
         legend.key = element_blank()) +
   labs(colour = "Parent feeding level") +
-  xlab(expression(italic('Standardized temperature IQR (SD)'))) +
+  xlab(expression(italic('Standardized temperature variability (SD)'))) +
   ylab(expression
        (atop(bold('Beta estimate and 95% CI'),
              paste(italic('Nestling mass (g)')))))
@@ -7509,7 +7570,7 @@ temp_thermo_both_iqr_predicted <- ggplot() +
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
   geom_point(data = sub, aes(x = thermo_aft_iqr_temp, y = mass_pre_obs, col = "After day 6"), 
              size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  labs(x = "Temperature IQR (C)", y = "Nestling mass (g)", 
+  labs(x = "Temperature variability (C)", y = "Nestling mass (g)", 
        color = "Before vs. after day 6", fill = "Before vs. after day 6") +
   scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
                      aesthetics = c("color", "fill"))
@@ -7523,7 +7584,8 @@ combined_thermo_both_dw <-
   ggarrange(mass_min_both_thermo_adj_lmer_plot, mass_max_both_thermo_adj_lmer_plot,
             mass_iqr_both_thermo_adj_lmer_plot,
             ncol = 3, nrow = 1, common.legend = TRUE,
-            legend = "bottom", labels = c("a", "b", "c"), font.label = list(size = 18))
+            legend = "none", labels = c("(a)", "(b)", "(c)"), 
+            font.label = list(size = 18, face = "bold", color = "red"))
 
 ggsave('combined_thermo_both_dw.png', plot = combined_thermo_both_dw, 
        device = NULL, 
@@ -7536,7 +7598,8 @@ combined_thermo_both_predictions <-
   ggarrange(temp_thermo_both_min_predicted, 
             temp_thermo_both_max_predicted, temp_thermo_both_iqr_predicted,
             ncol = 3, nrow = 1, common.legend = TRUE,
-            legend = "bottom", labels = c("d", "e", "f"), font.label = list(size = 18))
+            legend = "bottom", labels = c("(d)", "(e)", "(f)"), 
+            font.label = list(size = 18, face = "bold", color = "red"))
 
 ggsave('combined_thermo_both_predictions.png', plot = combined_thermo_both_predictions, 
        device = NULL, 
@@ -7547,17 +7610,524 @@ ggsave('combined_thermo_both_predictions.png', plot = combined_thermo_both_predi
 ## Combined plot with both types of plot
 combined_thermo_both_types <- 
   ggarrange(combined_thermo_both_dw, 
+            ggparagraph(text="   ", face = "italic", size = 16, color = "black"),
             combined_thermo_both_predictions,
-            ncol = 1, nrow = 2, common.legend = FALSE,
-            legend = "bottom")
+            ncol = 1, nrow = 3, common.legend = FALSE,
+            legend = "bottom", labels = c("", "", ""),
+            heights = c(1, 0.10, 1))
 
 # Print
 print(combined_thermo_both_types)
 
 # Save
-ggsave('combined_thermo_both_types.png', plot = combined_thermo_both_types, 
+ggsave('combined_thermo_both_types_5-22.png', plot = combined_thermo_both_types, 
+       device = NULL, 
+       path = 'Output/', scale = 1, width = 11, 
+       height = 8.5, 
+       units = c('in'), dpi = 300, limitsize = TRUE)
+
+
+
+###################### VERSION 2
+
+################## Developmental stages model ################################
+
+########### Dot and whisker plots
+## Min temp before model: extract estimates and tidy the data frame
+mass_min_before_thermo_adj_lmer_est <- tidy(mass_min_before_thermo_adj_lmer,
+                                            conf.int = T, conf.level = 0.95) %>%
+  filter(term == 'scale(thermo_bef_min_temp)')
+
+## Rename variables for estimates of interest
+mass_min_before_thermo_adj_lmer_est['term'][mass_min_before_thermo_adj_lmer_est['term'] ==
+                                              'scale(thermo_bef_min_temp)'] <- 'Before day 6'
+
+
+## Min temp before model: Label the estimates in data frame
+mass_min_before_thermo_adj_lmer_est$model <- c('Before model')
+
+## Min temp after model: extract estimates and tidy the data frame
+mass_min_after_thermo_adj_lmer_est <- tidy(mass_min_after_thermo_adj_lmer,
+                                           conf.int = T, conf.level = 0.95) %>%
+  filter(term == 'scale(thermo_aft_min_temp)')
+
+
+## Rename variables for estimates of interest
+mass_min_after_thermo_adj_lmer_est['term'][mass_min_after_thermo_adj_lmer_est['term'] ==
+                                             'scale(thermo_aft_min_temp)'] <- 'After day 6'
+
+
+## Min temp before model: Label the estimates in data frame
+mass_min_after_thermo_adj_lmer_est$model <- c('After model')
+
+
+## Min temp both model: extract estimates and tidy the data frame
+mass_min_both_thermo_adj_lmer_est <- tidy(mass_min_both_thermo_adj_lmer,
+                                          conf.int = T, conf.level = 0.95) %>%
+  filter(term == 'scale(thermo_bef_min_temp)' | term == 'scale(thermo_aft_min_temp)')
+
+
+## Rename variables for estimates of interest
+mass_min_both_thermo_adj_lmer_est['term'][mass_min_both_thermo_adj_lmer_est['term'] ==
+                                            'scale(thermo_bef_min_temp)'] <- 'Before day 6'
+
+
+mass_min_both_thermo_adj_lmer_est['term'][mass_min_both_thermo_adj_lmer_est['term'] ==
+                                            'scale(thermo_aft_min_temp)'] <- 'After day 6'
+
+
+## Min temp before model: Label the estimates in data frame
+mass_min_both_thermo_adj_lmer_est$model <- c('Both model')
+
+## Combine regression estimates into a tidy table
+mass_min_both_thermo_adj_lmer_tbl <- bind_rows(mass_min_before_thermo_adj_lmer_est,
+                                               mass_min_after_thermo_adj_lmer_est,
+                                               mass_min_both_thermo_adj_lmer_est)
+
+## Re-code *nominal* factor (with ordered levels)  
+# Set levels (odering) of 'model' variable
+mass_min_both_thermo_adj_lmer_tbl <-
+  transform(mass_min_both_thermo_adj_lmer_tbl,
+            model = factor(model,
+                           levels = c('Before model',
+                                      'After model',
+                                      'Both model')))
+
+mass_min_both_thermo_adj_lmer_tbl <-
+  transform(mass_min_both_thermo_adj_lmer_tbl,
+            term = factor(term,
+                          levels = c('Before day 6', 
+                                     'After day 6')))
+
+## Graph of estimates 
+mass_min_both_thermo_adj_lmer_plot <-
+  ggplot(mass_min_both_thermo_adj_lmer_tbl, aes(x = term, y = estimate,
+                                                color = model)) +
+  theme_classic() + 
+  geom_hline(yintercept = 0, color = 'red',
+             linetype = 2) + # line at null behind coefs
+  geom_point(size = 4,
+             position=position_dodge(width = 0.0)) +
+  geom_errorbar(aes(ymin=(conf.low),
+                    ymax=(conf.high)), width=.1,
+                position=position_dodge(0.0), size = 1) +
+  scale_color_manual(values=c('#481567FF', '#95D840FF','#20A387FF')) +
+  facet_grid(cols = vars(model), scales = 'free', space = 'free') +
+  theme(strip.background =element_rect(fill= 'white'))+
+  theme(strip.text = element_text(colour = 'black')) +
+  #coord_flip() + # flip x and y axes
+  theme(plot.subtitle = element_text(hjust = 0.5, size = 11)) +
+  theme(text = element_text(size=9)) +
+  # bold and size title and axes labels
+  theme(legend.position = 'none') +
+  theme(axis.ticks = element_blank()) +
+  theme(axis.line.x = element_blank(),
+        axis.line.y = element_blank(),
+        axis.text.x = element_text(size = 9, angle=45,
+                                   margin = margin(t = 25, r = 0,
+                                                   b = 0, l = 0), face = 'bold'), 
+        axis.text.y = element_text(size = 9, angle=0,
+                                   margin = margin(t = 25, r = 0,
+                                                   b = 0, l = 10)),
+        axis.title = element_text(size = 11), legend.title=element_blank(),
+        legend.text=element_text(size=11),
+        legend.position = 'none', #c(0.91, 0.94),
+        legend.key = element_blank()) +
+  labs(colour = "Parent feeding level") +
+  xlab(expression(italic('Standardized minimum temperature (SD)'))) +
+  ylab(expression
+       (atop(bold('Beta estimate and 95% CI'),
+             paste(italic('Nestling mass (g)')))))
+# remove axis ticks
+
+print(mass_min_both_thermo_adj_lmer_plot)
+
+
+
+## Max temp before model: extract estimates and tidy the data frame
+mass_max_before_thermo_adj_lmer_est <- tidy(mass_max_before_thermo_adj_lmer,
+                                            conf.int = T, conf.level = 0.95) %>%
+  filter(term == 'scale(thermo_bef_max_temp)')
+
+## Rename variables for estimates of interest
+mass_max_before_thermo_adj_lmer_est['term'][mass_max_before_thermo_adj_lmer_est['term'] ==
+                                              'scale(thermo_bef_max_temp)'] <- 'Before day 6'
+
+
+## Max temp before model: Label the estimates in data frame
+mass_max_before_thermo_adj_lmer_est$model <- c('Before model')
+
+## Max temp after model: extract estimates and tidy the data frame
+mass_max_after_thermo_adj_lmer_est <- tidy(mass_max_after_thermo_adj_lmer,
+                                           conf.int = T, conf.level = 0.95) %>%
+  filter(term == 'scale(thermo_aft_max_temp)')
+
+
+## Rename variables for estimates of interest
+mass_max_after_thermo_adj_lmer_est['term'][mass_max_after_thermo_adj_lmer_est['term'] ==
+                                             'scale(thermo_aft_max_temp)'] <- 'After day 6'
+
+
+## Max temp before model: Label the estimates in data frame
+mass_max_after_thermo_adj_lmer_est$model <- c('After model')
+
+
+## Max temp both model: extract estimates and tidy the data frame
+mass_max_both_thermo_adj_lmer_est <- tidy(mass_max_both_thermo_adj_lmer,
+                                          conf.int = T, conf.level = 0.95) %>%
+  filter(term == 'scale(thermo_bef_max_temp)' | term == 'scale(thermo_aft_max_temp)')
+
+
+## Rename variables for estimates of interest
+mass_max_both_thermo_adj_lmer_est['term'][mass_max_both_thermo_adj_lmer_est['term'] ==
+                                            'scale(thermo_bef_max_temp)'] <- 'Before day 6'
+
+
+mass_max_both_thermo_adj_lmer_est['term'][mass_max_both_thermo_adj_lmer_est['term'] ==
+                                            'scale(thermo_aft_max_temp)'] <- 'After day 6'
+
+
+## Max temp before model: Label the estimates in data frame
+mass_max_both_thermo_adj_lmer_est$model <- c('Both model')
+
+## Combine regression estimates into a tidy table
+mass_max_both_thermo_adj_lmer_tbl <- bind_rows(mass_max_before_thermo_adj_lmer_est,
+                                               mass_max_after_thermo_adj_lmer_est,
+                                               mass_max_both_thermo_adj_lmer_est)
+
+## Re-code *nominal* factor (with ordered levels)  
+# Set levels (odering) of 'model' variable
+mass_max_both_thermo_adj_lmer_tbl <-
+  transform(mass_max_both_thermo_adj_lmer_tbl,
+            model = factor(model,
+                           levels = c('Before model',
+                                      'After model',
+                                      'Both model')))
+
+mass_max_both_thermo_adj_lmer_tbl <-
+  transform(mass_max_both_thermo_adj_lmer_tbl,
+            term = factor(term,
+                          levels = c('Before day 6', 
+                                     'After day 6')))
+
+## Graph of estimates
+mass_max_both_thermo_adj_lmer_plot <-
+  ggplot(mass_max_both_thermo_adj_lmer_tbl, aes(x = term, y = estimate,
+                                                color = model)) +
+  theme_classic() + 
+  geom_hline(yintercept = 0, color = 'red',
+             linetype = 2) + # line at null behind coefs
+  geom_point(size = 4,
+             position=position_dodge(width = 0.0)) +
+  geom_errorbar(aes(ymin=(conf.low),
+                    ymax=(conf.high)), width=.1,
+                position=position_dodge(0.0), size = 1) +
+  scale_color_manual(values=c('#481567FF', '#95D840FF','#20A387FF')) +
+  facet_grid(cols = vars(model), scales = 'free', space = 'free') +
+  theme(strip.background =element_rect(fill= 'white'))+
+  theme(strip.text = element_text(colour = 'black')) +
+  #coord_flip() + # flip x and y axes
+  theme(plot.subtitle = element_text(hjust = 0.5, size = 11)) +
+  theme(text = element_text(size=9)) +
+  # bold and size title and axes labels
+  theme(legend.position = 'none') +
+  theme(axis.ticks = element_blank()) +
+  theme(axis.line.x = element_blank(),
+        axis.line.y = element_blank(),
+        axis.text.x = element_text(size = 9, angle=45,
+                                   margin = margin(t = 50, r = 0,
+                                                   b = 0, l = 0), face = 'bold'), 
+        axis.text.y = element_text(size = 9, angle=0,
+                                   margin = margin(t = 25, r = 0,
+                                                   b = 0, l = 10)),
+        axis.title = element_text(size = 11), legend.title=element_blank(),
+        legend.text=element_text(size=11),
+        legend.position = 'none', #c(0.91, 0.94),
+        legend.key = element_blank()) +
+  labs(colour = "Parent feeding level") +
+  xlab(expression(italic('Standardized maximum temperature (SD)'))) +
+  ylab(expression
+       (atop(bold('Beta estimate and 95% CI'),
+             paste(italic('Nestling mass (g)')))))
+
+
+print(mass_max_both_thermo_adj_lmer_plot)
+
+
+
+## IQR temp before model: extract estimates and tidy the data frame
+mass_iqr_before_thermo_adj_lmer_est <- tidy(mass_iqr_before_thermo_adj_lmer,
+                                            conf.int = T, conf.level = 0.95) %>%
+  filter(term == 'scale(thermo_bef_iqr_temp)')
+
+## Rename variables for estimates of interest
+mass_iqr_before_thermo_adj_lmer_est['term'][mass_iqr_before_thermo_adj_lmer_est['term'] ==
+                                              'scale(thermo_bef_iqr_temp)'] <- 'Before day 6'
+
+
+## Min temp before model: Label the estimates in data frame
+mass_iqr_before_thermo_adj_lmer_est$model <- c('Before model')
+
+## Min temp after model: extract estimates and tidy the data frame
+mass_iqr_after_thermo_adj_lmer_est <- tidy(mass_iqr_after_thermo_adj_lmer,
+                                           conf.int = T, conf.level = 0.95) %>%
+  filter(term == 'scale(thermo_aft_iqr_temp)')
+
+
+## Rename variables for estimates of interest
+mass_iqr_after_thermo_adj_lmer_est['term'][mass_iqr_after_thermo_adj_lmer_est['term'] ==
+                                             'scale(thermo_aft_iqr_temp)'] <- 'After day 6'
+
+
+## IQR temp before model: Label the estimates in data frame
+mass_iqr_after_thermo_adj_lmer_est$model <- c('After model')
+
+
+## IQR temp both model: extract estimates and tidy the data frame
+mass_iqr_both_thermo_adj_lmer_est <- tidy(mass_iqr_both_thermo_adj_lmer,
+                                          conf.int = T, conf.level = 0.95) %>%
+  filter(term == 'scale(thermo_bef_iqr_temp)' | term == 'scale(thermo_aft_iqr_temp)')
+
+
+## Rename variables for estimates of interest
+mass_iqr_both_thermo_adj_lmer_est['term'][mass_iqr_both_thermo_adj_lmer_est['term'] ==
+                                            'scale(thermo_bef_iqr_temp)'] <- 'Before day 6'
+
+
+mass_iqr_both_thermo_adj_lmer_est['term'][mass_iqr_both_thermo_adj_lmer_est['term'] ==
+                                            'scale(thermo_aft_iqr_temp)'] <- 'After day 6'
+
+
+## IQR temp before model: Label the estimates in data frame
+mass_iqr_both_thermo_adj_lmer_est$model <- c('Both model')
+
+## Combine regression estimates into a tidy table
+mass_iqr_both_thermo_adj_lmer_tbl <- bind_rows(mass_iqr_before_thermo_adj_lmer_est,
+                                               mass_iqr_after_thermo_adj_lmer_est,
+                                               mass_iqr_both_thermo_adj_lmer_est)
+
+## Re-code *nominal* factor (with ordered levels)  
+# Set levels (odering) of 'model' variable
+mass_iqr_both_thermo_adj_lmer_tbl <-
+  transform(mass_iqr_both_thermo_adj_lmer_tbl,
+            model = factor(model,
+                           levels = c('Before model',
+                                      'After model',
+                                      'Both model')))
+
+mass_iqr_both_thermo_adj_lmer_tbl <-
+  transform(mass_iqr_both_thermo_adj_lmer_tbl,
+            term = factor(term,
+                          levels = c('Before day 6', 
+                                     'After day 6')))
+
+## Graph of estimates 
+mass_iqr_both_thermo_adj_lmer_plot <-
+  ggplot(mass_iqr_both_thermo_adj_lmer_tbl, aes(x = term, y = estimate,
+                                                color = model)) +
+  theme_classic() + 
+  geom_hline(yintercept = 0, color = 'red',
+             linetype = 2) + # line at null behind coefs
+  geom_point(size = 4,
+             position=position_dodge(width = 0.0)) +
+  geom_errorbar(aes(ymin=(conf.low),
+                    ymax=(conf.high)), width=.1,
+                position=position_dodge(0.0), size = 1) +
+  scale_color_manual(values=c('#440154', '#7ad151','#20A387FF')) +
+  facet_grid(cols = vars(model), scales = 'free', space = 'free') +
+  theme(strip.background =element_rect(fill= 'white'))+
+  theme(strip.text = element_text(colour = 'black')) +
+  #coord_flip() + # flip x and y axes
+  theme(plot.subtitle = element_text(hjust = 0.5, size = 11)) +
+  theme(text = element_text(size=9)) +
+  # bold and size title and axes labels
+  theme(legend.position = 'none') +
+  theme(axis.ticks = element_blank()) +
+  theme(axis.line.x = element_blank(),
+        axis.line.y = element_blank(),
+        axis.text.x = element_text(size = 9, angle=45,
+                                   margin = margin(t = 50, r = 0,
+                                                   b = 0, l = 0), face = 'bold'), 
+        axis.text.y = element_text(size = 9, angle=0,
+                                   margin = margin(t = 25, r = 0,
+                                                   b = 0, l = 10)),
+        axis.title = element_text(size = 11), legend.title=element_blank(),
+        legend.text=element_text(size=11),
+        legend.position = 'none', #c(0.91, 0.94),
+        legend.key = element_blank()) +
+  labs(colour = "Parent feeding level") +
+  xlab(expression(italic('Standardized temperature variability (SD)'))) +
+  ylab(expression
+       (atop(bold('Beta estimate and 95% CI'),
+             paste(italic('Nestling mass (g)')))))
+# remove axis ticks
+
+print(mass_iqr_both_thermo_adj_lmer_plot)
+
+
+##################### Predicted results graphs
+
+## Make plots of temp effects before and after thermoreg
+## Both thermo min temp
+pred_bef <- ggpredict(mass_min_before_thermo_adj_lmer, c("thermo_bef_min_temp"))
+
+plot(pred_bef) 
+
+pred_aft <- ggpredict(mass_min_after_thermo_adj_lmer, c("thermo_aft_min_temp"))
+
+plot(pred_aft) 
+
+
+sub <- subset(late_nestling_parent_care,
+              !is.na(x = mass_pre_obs) & 
+                !is.na(x = thermo_bef_min_temp) &
+                !is.na(x = thermo_aft_min_temp))
+
+colors <- c("Before day 6" = "#481567FF", "After day 6" = "#95D840FF")
+lines <- c("Before day 6" = 4, "After day 6" = 1)
+
+temp_thermo_both_min_predicted <- ggplot() + 
+  theme_classic() +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11)) +
+  geom_line(data= pred_bef, size = 1.5, aes(x = x, y = predicted, col = "Before day 6")) +
+  # geom_ribbon(data = pred, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high,
+  #                              fill = "Before day 6"), alpha = .1, col = NA) +
+  geom_line(data= pred_aft, size = 1.5, aes(x = x, y = predicted, col = "After day 6")) +
+  # geom_ribbon(data = pred_aft, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high, 
+  #                                  fill = "After day 6"),  alpha = .1, col = NA) +
+  geom_point(data = sub, aes(x = thermo_bef_min_temp, y = mass_pre_obs, col = "Before day 6"), 
+             size = 1, alpha = 0.5, show.legend = FALSE) +
+  geom_point(data = sub, aes(x = thermo_aft_min_temp, y = mass_pre_obs, col = "After day 6"), 
+             size = 1, alpha = 0.5, show.legend = FALSE) +
+  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)", 
+       color = "Before vs. after day 6", fill = "Before vs. after day 6") +
+  scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
+                     aesthetics = c("color", "fill"))
+# Print
+print(temp_thermo_both_min_predicted)
+
+
+## Both thermo max temp
+pred_bef <- ggpredict(mass_max_before_thermo_adj_lmer, c("thermo_bef_max_temp"))
+
+plot(pred_bef) 
+
+pred_aft <- ggpredict(mass_max_after_thermo_adj_lmer, c("thermo_aft_max_temp"))
+
+plot(pred_aft) 
+
+
+sub <- subset(late_nestling_parent_care,
+              !is.na(x = mass_pre_obs) & 
+                !is.na(x = thermo_bef_max_temp) &
+                !is.na(x = thermo_aft_max_temp))
+
+temp_thermo_both_max_predicted <- ggplot() + 
+  theme_classic() +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11)) +
+  geom_line(data= pred_bef, size = 1.5, aes(x = x, y = predicted, col = "Before day 6")) +
+  # geom_ribbon(data = pred, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high,
+  #                              fill = "Before day 6"), alpha = .1, col = NA) +
+  geom_line(data= pred_aft, size = 1.5, aes(x = x, y = predicted, col = "After day 6")) +
+  # geom_ribbon(data = pred_aft, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high, 
+  #                                  fill = "After day 6"),  alpha = .1, col = NA) +
+  geom_point(data = sub, aes(x = thermo_bef_max_temp, y = mass_pre_obs, col = "Before day 6"), 
+             size = 1, alpha = 0.5, show.legend = FALSE) +
+  geom_point(data = sub, aes(x = thermo_aft_max_temp, y = mass_pre_obs, col = "After day 6"), 
+             size = 1, alpha = 0.5, show.legend = FALSE) +
+  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)", 
+       color = "Before vs. after day 6", fill = "Before vs. after day 6") +
+  scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
+                     aesthetics = c("color", "fill"))
+
+# Print
+print(temp_thermo_both_max_predicted)
+
+
+
+## Both thermo IQR temp
+pred_bef <- ggpredict(mass_iqr_before_thermo_adj_lmer, c("thermo_bef_iqr_temp"))
+
+plot(pred_bef) 
+
+pred_aft <- ggpredict(mass_iqr_after_thermo_adj_lmer, c("thermo_aft_iqr_temp"))
+
+plot(pred_aft) 
+
+
+sub <- subset(late_nestling_parent_care,
+              !is.na(x = mass_pre_obs) & 
+                !is.na(x = thermo_bef_iqr_temp) &
+                !is.na(x = thermo_aft_iqr_temp))
+
+temp_thermo_both_iqr_predicted <- ggplot() + 
+  theme_classic() +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11)) +
+  geom_line(data= pred_bef, size = 1.5, aes(x = x, y = predicted, col = "Before day 6")) +
+  # geom_ribbon(data = pred, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high,
+  #                              fill = "Before day 6"), alpha = .1, col = NA) +
+  geom_line(data= pred_aft, size = 1.5, aes(x = x, y = predicted, col = "After day 6")) +
+  # geom_ribbon(data = pred_aft, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high, 
+  #                                  fill = "After day 6"),  alpha = .1, col = NA) +
+  geom_point(data = sub, aes(x = thermo_bef_iqr_temp, y = mass_pre_obs, col = "Before day 6"), 
+             size = 1, alpha = 0.5, show.legend = FALSE) +
+  geom_point(data = sub, aes(x = thermo_aft_iqr_temp, y = mass_pre_obs, col = "After day 6"), 
+             size = 1, alpha = 0.5, show.legend = FALSE) +
+  labs(x = "Temperature variability (C)", y = "Nestling mass (g)", 
+       color = "Before vs. after day 6", fill = "Before vs. after day 6") +
+  scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
+                     aesthetics = c("color", "fill"))
+
+# Print
+print(temp_thermo_both_iqr_predicted)
+
+
+## Combined plot with points colored
+combined_thermo_both_dw <- 
+  ggarrange(mass_min_both_thermo_adj_lmer_plot, mass_max_both_thermo_adj_lmer_plot,
+            mass_iqr_both_thermo_adj_lmer_plot,
+            ncol = 3, nrow = 1, common.legend = TRUE,
+            legend = "none", labels = c("(a)", "(b)", "(c)"), 
+            font.label = list(size = 11, face = "bold", color = "red"), hjust = -0.1)
+
+ggsave('combined_thermo_both_dw.png', plot = combined_thermo_both_dw, 
+       device = NULL, 
+       path = 'Output/', scale = 1, width = 11, 
+       height = 8, 
+       units = c('in'), dpi = 300, limitsize = TRUE)
+
+## Combined plot with points colored
+combined_thermo_both_predictions <- 
+  ggarrange(temp_thermo_both_min_predicted, 
+            temp_thermo_both_max_predicted, temp_thermo_both_iqr_predicted,
+            ncol = 3, nrow = 1, common.legend = TRUE,
+            legend = "bottom", labels = c("(d)", "(e)", "(f)"), 
+            font.label = list(size = 11, face = "bold", color = "red"), hjust = -0.1)
+
+ggsave('combined_thermo_both_predictions.png', plot = combined_thermo_both_predictions, 
        device = NULL, 
        path = 'Output/', scale = 1, width = 19, 
        height = 12, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
+## Combined plot with both types of plot
+combined_thermo_both_types <- 
+  ggarrange(combined_thermo_both_dw, 
+            ggparagraph(text="   ", face = "italic", size = 11, color = "black"),
+            combined_thermo_both_predictions,
+            ncol = 1, nrow = 3, common.legend = FALSE,
+            legend = "bottom", labels = c("", "", ""),
+            heights = c(1, 0.05, 1))
+
+# Print
+print(combined_thermo_both_types)
+
+# Save
+ggsave('combined_thermo_both_types_5-22.png', plot = combined_thermo_both_types, 
+       device = NULL, 
+       path = 'Output/', scale = 1, width = 11, 
+       height = 8.5, 
+       units = c('in'), dpi = 300, limitsize = TRUE)

@@ -1074,7 +1074,7 @@ univar_temp_min$variable_name <- "Minimum temperature (C)"
 
 univar_temp_max$variable_name <- "Maximum temperature (C)"
 
-univar_temp_iqr$variable_name <- "Temperature IQR (C)"
+univar_temp_iqr$variable_name <- "Temperature variability (C)"
 
 univar_brood_size$variable_name <- "Brood size (number of nestlings)"
 
@@ -1091,17 +1091,18 @@ summary_stats_df$variable_name[summary_stats_df$variable_name == "early"] <- "Ea
 summary_stats_df$variable_name[summary_stats_df$variable_name == "mid"] <- "Mid"
 summary_stats_df$variable_name[summary_stats_df$variable_name == "late"] <- "Late"
 
+summary_stats_df$med <- NULL
+
 summary_stats_df <- rename(summary_stats_df,
-                           N = n,
+                           n = n,
                            Mean = avg, 
                            SD = stdev,
-                           Median = med,
                            Minimum = min, 
                            Maximum = max)
 
 summary_stats_table <- gt(summary_stats_df, rowname_col = "variable_name") %>%
   tab_header(
-    title = md("**Table 1.** Background characteristics of wild nestling Barn Swallows in Boulder County, CO. Total number of feeding visits, nestling mass, and nestling wing length are separately estimated for three developmental stages (early, mid, and late).")
+    title = md("**Supplemental Table 2.** Background characteristics of wild nestling Barn Swallows in Boulder County, CO. Total number of feeding visits, nestling mass, and nestling wing length are separately estimated for three developmental stages (early, mid, and late). Temperature variability is defined as the interquartile range.")
   ) %>%
   tab_stubhead(
     label = md("Variable")
@@ -1139,7 +1140,7 @@ gtsave(summary_stats_table, filename = "Output/summary_stats_table.docx")
 gtsave(summary_stats_table, filename = "Output/summary_stats_table.html")
 
 
-
+citation(package = "ggeffects")
 
 
 ###############################################################################
@@ -1889,7 +1890,7 @@ daily_iqr_temps_site_scatter <-
                 col = site, group = nest_ids), data = govee_split,
             size = 0.8) +
   labs(x ='Date', 
-       y ='Daily IQR of temperature (C)',
+       y ='Daily temperature variability (C)',
        col = "Site") +
   theme_classic() +
   scale_color_viridis(discrete = TRUE, alpha=0.8,
