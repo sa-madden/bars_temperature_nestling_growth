@@ -17,7 +17,7 @@
 ##############                 Configure work space              ##############
 ###############################################################################
 
-### 1Global options
+### Global options
 ## clear global environment
 rm(list = ls())
 
@@ -3411,8 +3411,6 @@ print(bt_ci_mass_iqr_temp_size_big_adj_lmer)
 
 
 
-
-
 ###############################################################################
 ##############           Sensitive development periods           ##############
 ###############################################################################
@@ -3420,65 +3418,6 @@ print(bt_ci_mass_iqr_temp_size_big_adj_lmer)
 ######################## 6 days cut off #######################################
 
 #### Minimum temp
-
-## Interaction model
-
-# Create dataset with time period column / long format
-time_period_dat <- late_nestling_parent_care
-
-
-#### Minimum temp
-### Mass unadjusted
-mass_min_temp_time_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                   time_period +
-                                   (1|fnest_id), 
-                                 data = subset(late_nestling_parent_care,
-                                               !is.na(x = mass_pre_obs) & 
-                                                 !is.na(x = nest_min_temp) &
-                                                 !is.na(x = time_period)))
-
-## Check diagnostics for the full model
-plot(mass_min_temp_blups_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_temp_blups_lmer))
-  qqline(resid(mass_min_temp_blups_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_temp_blups_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_min_temp_blups_lmer, vars=c("Cook"))
-infIndexPlot(mass_min_temp_blups_lmer, vars=c("Studentized"))
-
-summary(mass_min_temp_blups_lmer)
-confint(mass_min_temp_blups_lmer) 
-
-# Calculate R squared 
-r.squaredGLMM(mass_min_temp_blups_lmer)
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_min_temp_blups_lmer<- bootMer(x = mass_min_temp_blups_lmer,
-                                        FUN = fixef, nsim = 2000,
-                                        seed = 632760,
-                                        use.u = F, type = 'parametric')
-tidy(boot_mass_min_temp_blups_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_min_temp_blups_lmer <- boot.ci(boot_mass_min_temp_blups_lmer,
-                                          type = c('perc', 'norm', 'basic'),
-                                          index = 2) # CI for 1st betas
-print(bt_ci_mass_min_temp_blups_lmer)
-
-# use 'boot' package to generate 95% CI for 2nd beta
-bt_ci_mass_min_temp_blups_lmer_2 <- boot.ci(boot_mass_min_temp_blups_lmer,
-                                            type = c('perc', 'norm', 'basic'),
-                                            index = 3) # CI for 2nd betas
-print(bt_ci_mass_min_temp_blups_lmer_2)
-
-# use 'boot' package to generate 95% CI for 3rd beta
-bt_ci_mass_min_temp_blups_lmer_3 <- boot.ci(boot_mass_min_temp_blups_lmer,
-                                            type = c('perc', 'norm', 'basic'),
-                                            index = 4) # CI for 3rd betas
-print(bt_ci_mass_min_temp_blups_lmer_3)
-
 
 ## Stratified models
 ### Before thermo
@@ -3517,6 +3456,7 @@ bt_ci_mass_min_before_thermo_lmer <- boot.ci(boot_mass_min_before_thermo_lmer,
                                                  type = c('perc', 'norm', 'basic'),
                                                  index = 2) # CI for 1st betas
 print(bt_ci_mass_min_before_thermo_lmer)
+
 
 ### Before thermo adjusted
 mass_min_before_thermo_adj_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) + scale(nestling_number) +
@@ -3788,6 +3728,79 @@ bt_ci_mass_min_after_thermo_adj_noout_lmer <- boot.ci(boot_mass_min_after_thermo
                                                   type = c('perc', 'norm', 'basic'),
                                                   index = 2) # CI for 1st betas
 print(bt_ci_mass_min_after_thermo_adj_noout_lmer)
+
+## Interaction models for temp before and after (separately)
+
+# Create dataset with time period column / long format for interaction models
+min_time_period_dat <- pivot_longer(late_nestling_parent_care,
+                                    cols = c(thermo_bef_min_temp, thermo_aft_min_temp),
+                                    names_to = c("time_period"),
+                                    values_to = "min_temp_time_mod"
+)
+
+min_time_period_dat$time_period <- as.factor(min_time_period_dat$time_period)
+min_time_period_dat$fnestling_band <- as.factor(min_time_period_dat$nestling_band)
+
+
+### Mass adjusted
+mass_min_temp_time_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(min_temp_time_mod) *
+                                      time_period + scale(nestling_number) + 
+                                      scale(days_summer) +
+                                      (1|fnest_id), 
+                                    data = subset(min_time_period_dat,
+                                                  !is.na(x = mass_pre_obs) & 
+                                                    !is.na(x = min_temp_time_mod) &
+                                                    !is.na(x = time_period)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_time_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_time_adj_lmer))
+  qqline(resid(mass_min_temp_time_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_time_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_min_temp_time_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_min_temp_time_adj_lmer, vars=c("Studentized"))
+
+summary(mass_min_temp_time_adj_lmer)
+confint(mass_min_temp_time_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_time_adj_lmer)
+
+
+pred <- ggpredict(mass_min_temp_time_adj_lmer, c("min_temp_time_mod", "time_period"))
+
+plot(pred)
+
+
+
+############## NEEDS TO BE UPDATED ###########################
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_size_adj_lmer <- bootMer(x = mass_iqr_temp_size_adj_lmer,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_size_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_size_adj_lmer <- boot.ci(boot_mass_iqr_temp_size_adj_lmer,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_size_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_temp_size_adj_lmer_2 <- boot.ci(boot_mass_iqr_temp_size_adj_lmer,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd betas
+print(bt_ci_mass_iqr_temp_size_adj_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_iqr_temp_size_adj_lmer_5 <- boot.ci(boot_mass_iqr_temp_size_adj_lmer,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 6) # CI for 3rd betas
+print(bt_ci_mass_iqr_temp_size_adj_lmer_5)
 
 
 ### Before and after thermo
@@ -6839,7 +6852,7 @@ cols <- c("#481567FF", "#20A387FF", "#95D840FF")
 lines <- c(4, 5, 1)
 
 temp_min_feeding_blups_predicted <- ggplot() +
-  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding), size = 2) +
+  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding), size = 1.5) +
   # geom_ribbon(data = pred_feeding, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = feeding), 
   # alpha = .1, col = NA) +
@@ -6849,8 +6862,8 @@ temp_min_feeding_blups_predicted <- ggplot() +
   theme_classic() +
   labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
        colour = "Parent feeding level", fill = "Parent feeding level") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11)) +
   scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
                      aesthetics = c("colour", "fill"))
 
@@ -6886,7 +6899,7 @@ sub <- subset(late_nestling_parent_care,
                 !is.na(x = feeding_expontd_blups))
 
 temp_max_feeding_blups_predicted <- ggplot() +
-  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding), size = 2) +
+  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding), size = 1.5) +
   # geom_ribbon(data = pred_feeding, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = feeding), 
   # alpha = .1, col = NA) +
@@ -6896,8 +6909,8 @@ temp_max_feeding_blups_predicted <- ggplot() +
   theme_classic() +
   labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
        colour = "Parent feeding level", fill = "Parent feeding level") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11)) +
   scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
                      aesthetics = c("colour", "fill")) 
 
@@ -6935,7 +6948,7 @@ sub <- subset(late_nestling_parent_care,
 
 
 temp_iqr_feeding_blups_predicted <- ggplot() +
-  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding), size = 2) +
+  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding), size = 1.5) +
   # geom_ribbon(data = pred_feeding, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = feeding), 
   # alpha = .1, col = NA) +
@@ -6945,8 +6958,8 @@ temp_iqr_feeding_blups_predicted <- ggplot() +
   theme_classic() +
   labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
        colour = "Parent feeding level", fill = "Parent feeding level") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11)) +
   scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
                      aesthetics = c("colour", "fill"))
 
@@ -6958,8 +6971,9 @@ print(temp_iqr_feeding_blups_predicted)
 combined_temp_feeding_predictions <- 
   ggarrange(temp_min_feeding_blups_predicted, temp_max_feeding_blups_predicted,
             temp_iqr_feeding_blups_predicted,
-            ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom",
-            labels = c("a", "b", "c"), font.label = list(size = 18))
+            ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom", 
+            labels = c("(a)", "(b)", "(c)"), 
+            font.label = list(size = 11, face = "bold", color = "red"), hjust = -0.1)
 
 # Print
 print(combined_temp_feeding_predictions)
@@ -6967,8 +6981,8 @@ print(combined_temp_feeding_predictions)
 # Save
 ggsave('combined_temp_feeding_predictions_solid.png', plot = combined_temp_feeding_predictions, 
        device = NULL, 
-       path = 'Output/', scale = 1, width = 6.5, 
-       height = 12, 
+       path = 'Output/', scale = 1, width = 4, 
+       height = 10, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
 
@@ -6999,7 +7013,7 @@ cols <- c("#481567FF","#95D840FF")
 lines <- c(4, 1)
 
 temp_min_size_predicted <- ggplot() +
-  geom_line(data = pred_size, aes(x = x, y = predicted, col = size), size = 2) +
+  geom_line(data = pred_size, aes(x = x, y = predicted, col = size), size = 1.5) +
   # geom_ribbon(data = pred_size, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = size), 
   # alpha = .1, col = NA) +
@@ -7009,8 +7023,8 @@ temp_min_size_predicted <- ggplot() +
   theme_classic() +
   labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
        colour = "Relative nestling size", fill = "Relative nestling size") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11)) +
   scale_color_manual(values = cols, labels=c("Smallest", "Other"),
                      aesthetics = c("colour", "fill")) 
 
@@ -7044,7 +7058,7 @@ cols <- c("#481567FF","#95D840FF")
 lines <- c(4, 1)
 
 temp_max_size_predicted <- ggplot() +
-  geom_line(data = pred_size, aes(x = x, y = predicted, col = size), size = 2) +
+  geom_line(data = pred_size, aes(x = x, y = predicted, col = size), size = 1.5) +
   # geom_ribbon(data = pred_size, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = size), 
   # alpha = .1, col = NA) +
@@ -7054,8 +7068,8 @@ temp_max_size_predicted <- ggplot() +
   theme_classic() +
   labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
        colour = "Relative nestling size", fill = "Relative nestling size") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11)) +
   scale_color_manual(values = cols, labels=c("Smallest", "Other"),
                      aesthetics = c("colour", "fill"))
 
@@ -7087,7 +7101,7 @@ sub <- subset(late_nestling_parent_care,
 
 
 temp_iqr_size_predicted <- ggplot() +
-  geom_line(data = pred_size, aes(x = x, y = predicted, col = size), size = 2) +
+  geom_line(data = pred_size, aes(x = x, y = predicted, col = size), size = 1.5) +
   # geom_ribbon(data = pred_size, aes(x = x, y = predicted, 
   # ymin = conf.low, ymax = conf.high, fill = size), 
   # alpha = .1, col = NA) +
@@ -7097,8 +7111,8 @@ temp_iqr_size_predicted <- ggplot() +
   theme_classic() +
   labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
        colour = "Relative nestling size", fill = "Relative nestling size") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11)) +
   scale_color_manual(values = cols, labels=c("Smallest", "Other"),
                      aesthetics = c("colour", "fill")) 
 
@@ -7110,8 +7124,9 @@ print(temp_iqr_size_predicted)
 combined_temp_size_predictions <- 
   ggarrange(temp_min_size_predicted, temp_max_size_predicted,
             temp_iqr_size_predicted,
-            ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom",
-            labels = c("a", "b", "c"), font.label = list(size = 18))
+            ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom", 
+            labels = c("(a)", "(b)", "(c)"), 
+            font.label = list(size = 11, face = "bold", color = "red"), hjust = -0.1)
 
 # Print
 print(combined_temp_size_predictions)
@@ -7119,518 +7134,13 @@ print(combined_temp_size_predictions)
 # Save
 ggsave('combined_temp_size_predictions_solid.png', plot = combined_temp_size_predictions, 
        device = NULL, 
-       path = 'Output/', scale = 1, width = 6.5, 
-       height = 12, 
+       path = 'Output/', scale = 1, width = 4, 
+       height = 10, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
 
 ################## Developmental stages model ################################
 
-########### Dot and whisker plots
-## Min temp before model: extract estimates and tidy the data frame
-mass_min_before_thermo_adj_lmer_est <- tidy(mass_min_before_thermo_adj_lmer,
-                                            conf.int = T, conf.level = 0.95) %>%
-  filter(term == 'scale(thermo_bef_min_temp)')
-
-## Rename variables for estimates of interest
-mass_min_before_thermo_adj_lmer_est['term'][mass_min_before_thermo_adj_lmer_est['term'] ==
-                                              'scale(thermo_bef_min_temp)'] <- 'Before day 6'
-
-
-## Min temp before model: Label the estimates in data frame
-mass_min_before_thermo_adj_lmer_est$model <- c('Before model')
-
-## Min temp after model: extract estimates and tidy the data frame
-mass_min_after_thermo_adj_lmer_est <- tidy(mass_min_after_thermo_adj_lmer,
-                                           conf.int = T, conf.level = 0.95) %>%
-  filter(term == 'scale(thermo_aft_min_temp)')
-
-
-## Rename variables for estimates of interest
-mass_min_after_thermo_adj_lmer_est['term'][mass_min_after_thermo_adj_lmer_est['term'] ==
-                                             'scale(thermo_aft_min_temp)'] <- 'After day 6'
-
-
-## Min temp before model: Label the estimates in data frame
-mass_min_after_thermo_adj_lmer_est$model <- c('After model')
-
-
-## Min temp both model: extract estimates and tidy the data frame
-mass_min_both_thermo_adj_lmer_est <- tidy(mass_min_both_thermo_adj_lmer,
-                                          conf.int = T, conf.level = 0.95) %>%
-  filter(term == 'scale(thermo_bef_min_temp)' | term == 'scale(thermo_aft_min_temp)')
-
-
-## Rename variables for estimates of interest
-mass_min_both_thermo_adj_lmer_est['term'][mass_min_both_thermo_adj_lmer_est['term'] ==
-                                            'scale(thermo_bef_min_temp)'] <- 'Before day 6'
-
-
-mass_min_both_thermo_adj_lmer_est['term'][mass_min_both_thermo_adj_lmer_est['term'] ==
-                                            'scale(thermo_aft_min_temp)'] <- 'After day 6'
-
-
-## Min temp before model: Label the estimates in data frame
-mass_min_both_thermo_adj_lmer_est$model <- c('Both model')
-
-## Combine regression estimates into a tidy table
-mass_min_both_thermo_adj_lmer_tbl <- bind_rows(mass_min_before_thermo_adj_lmer_est,
-                                               mass_min_after_thermo_adj_lmer_est,
-                                               mass_min_both_thermo_adj_lmer_est)
-
-## Re-code *nominal* factor (with ordered levels)  
-# Set levels (odering) of 'model' variable
-mass_min_both_thermo_adj_lmer_tbl <-
-  transform(mass_min_both_thermo_adj_lmer_tbl,
-            model = factor(model,
-                           levels = c('Before model',
-                                      'After model',
-                                      'Both model')))
-
-mass_min_both_thermo_adj_lmer_tbl <-
-  transform(mass_min_both_thermo_adj_lmer_tbl,
-            term = factor(term,
-                          levels = c('Before day 6', 
-                                     'After day 6')))
-
-## Graph of estimates 
-mass_min_both_thermo_adj_lmer_plot <-
-  ggplot(mass_min_both_thermo_adj_lmer_tbl, aes(x = term, y = estimate,
-                                                color = model)) +
-  theme_classic() + 
-  geom_hline(yintercept = 0, color = 'red',
-             linetype = 2) + # line at null behind coefs
-  geom_point(size = 6,
-             position=position_dodge(width = 0.0)) +
-  geom_errorbar(aes(ymin=(conf.low),
-                    ymax=(conf.high)), width=.1,
-                position=position_dodge(0.0), size = 1) +
-  scale_color_manual(values=c('#481567FF', '#95D840FF','#20A387FF')) +
-  facet_grid(cols = vars(model), scales = 'free', space = 'free') +
-  theme(strip.background =element_rect(fill= 'white'))+
-  theme(strip.text = element_text(colour = 'black')) +
-  #coord_flip() + # flip x and y axes
-  theme(plot.subtitle = element_text(hjust = 0.5, size = 18)) +
-  theme(text = element_text(size=18)) +
-  # bold and size title and axes labels
-  theme(legend.position = 'none') +
-  theme(axis.ticks = element_blank()) +
-  theme(axis.line.x = element_blank(),
-        axis.line.y = element_blank(),
-        axis.text.x = element_text(size = 16, angle=45,
-                                   margin = margin(t = 50, r = 0,
-                                                   b = 0, l = 0), face = 'bold'), 
-        axis.text.y = element_text(size = 16, angle=0,
-                                   margin = margin(t = 25, r = 0,
-                                                   b = 0, l = 10)),
-        axis.title = element_text(size = 18), legend.title=element_blank(),
-        legend.text=element_text(size=18),
-        legend.position = 'none', #c(0.91, 0.94),
-        legend.key = element_blank()) +
-  labs(colour = "Parent feeding level") +
-  xlab(expression(italic('Standardized minimum temperature (SD)'))) +
-  ylab(expression
-       (atop(bold('Beta estimate and 95% CI'),
-             paste(italic('Nestling mass (g)')))))
-# remove axis ticks
-
-print(mass_min_both_thermo_adj_lmer_plot)
-
-
-
-## Max temp before model: extract estimates and tidy the data frame
-mass_max_before_thermo_adj_lmer_est <- tidy(mass_max_before_thermo_adj_lmer,
-                                            conf.int = T, conf.level = 0.95) %>%
-  filter(term == 'scale(thermo_bef_max_temp)')
-
-## Rename variables for estimates of interest
-mass_max_before_thermo_adj_lmer_est['term'][mass_max_before_thermo_adj_lmer_est['term'] ==
-                                              'scale(thermo_bef_max_temp)'] <- 'Before day 6'
-
-
-## Max temp before model: Label the estimates in data frame
-mass_max_before_thermo_adj_lmer_est$model <- c('Before model')
-
-## Max temp after model: extract estimates and tidy the data frame
-mass_max_after_thermo_adj_lmer_est <- tidy(mass_max_after_thermo_adj_lmer,
-                                           conf.int = T, conf.level = 0.95) %>%
-  filter(term == 'scale(thermo_aft_max_temp)')
-
-
-## Rename variables for estimates of interest
-mass_max_after_thermo_adj_lmer_est['term'][mass_max_after_thermo_adj_lmer_est['term'] ==
-                                             'scale(thermo_aft_max_temp)'] <- 'After day 6'
-
-
-## Max temp before model: Label the estimates in data frame
-mass_max_after_thermo_adj_lmer_est$model <- c('After model')
-
-
-## Max temp both model: extract estimates and tidy the data frame
-mass_max_both_thermo_adj_lmer_est <- tidy(mass_max_both_thermo_adj_lmer,
-                                          conf.int = T, conf.level = 0.95) %>%
-  filter(term == 'scale(thermo_bef_max_temp)' | term == 'scale(thermo_aft_max_temp)')
-
-
-## Rename variables for estimates of interest
-mass_max_both_thermo_adj_lmer_est['term'][mass_max_both_thermo_adj_lmer_est['term'] ==
-                                            'scale(thermo_bef_max_temp)'] <- 'Before day 6'
-
-
-mass_max_both_thermo_adj_lmer_est['term'][mass_max_both_thermo_adj_lmer_est['term'] ==
-                                            'scale(thermo_aft_max_temp)'] <- 'After day 6'
-
-
-## Max temp before model: Label the estimates in data frame
-mass_max_both_thermo_adj_lmer_est$model <- c('Both model')
-
-## Combine regression estimates into a tidy table
-mass_max_both_thermo_adj_lmer_tbl <- bind_rows(mass_max_before_thermo_adj_lmer_est,
-                                               mass_max_after_thermo_adj_lmer_est,
-                                               mass_max_both_thermo_adj_lmer_est)
-
-## Re-code *nominal* factor (with ordered levels)  
-# Set levels (odering) of 'model' variable
-mass_max_both_thermo_adj_lmer_tbl <-
-  transform(mass_max_both_thermo_adj_lmer_tbl,
-            model = factor(model,
-                           levels = c('Before model',
-                                      'After model',
-                                      'Both model')))
-
-mass_max_both_thermo_adj_lmer_tbl <-
-  transform(mass_max_both_thermo_adj_lmer_tbl,
-            term = factor(term,
-                          levels = c('Before day 6', 
-                                     'After day 6')))
-
-## Graph of estimates
-mass_max_both_thermo_adj_lmer_plot <-
-  ggplot(mass_max_both_thermo_adj_lmer_tbl, aes(x = term, y = estimate,
-                                                color = model)) +
-  theme_classic() + 
-  geom_hline(yintercept = 0, color = 'red',
-             linetype = 2) + # line at null behind coefs
-  geom_point(size = 6,
-             position=position_dodge(width = 0.0)) +
-  geom_errorbar(aes(ymin=(conf.low),
-                    ymax=(conf.high)), width=.1,
-                position=position_dodge(0.0), size = 1) +
-  scale_color_manual(values=c('#481567FF', '#95D840FF','#20A387FF')) +
-  facet_grid(cols = vars(model), scales = 'free', space = 'free') +
-  theme(strip.background =element_rect(fill= 'white'))+
-  theme(strip.text = element_text(colour = 'black')) +
-  #coord_flip() + # flip x and y axes
-  theme(plot.subtitle = element_text(hjust = 0.5, size = 18)) +
-  theme(text = element_text(size=18)) +
-  # bold and size title and axes labels
-  theme(legend.position = 'none') +
-  theme(axis.ticks = element_blank()) +
-  theme(axis.line.x = element_blank(),
-        axis.line.y = element_blank(),
-        axis.text.x = element_text(size = 16, angle=45,
-                                   margin = margin(t = 50, r = 0,
-                                                   b = 0, l = 0), face = 'bold'), 
-        axis.text.y = element_text(size = 16, angle=0,
-                                   margin = margin(t = 25, r = 0,
-                                                   b = 0, l = 10)),
-        axis.title = element_text(size = 18), legend.title=element_blank(),
-        legend.text=element_text(size=18),
-        legend.position = 'none', #c(0.91, 0.94),
-        legend.key = element_blank()) +
-  labs(colour = "Parent feeding level") +
-  xlab(expression(italic('Standardized maximum temperature (SD)'))) +
-  ylab(expression
-       (atop(bold('Beta estimate and 95% CI'),
-             paste(italic('Nestling mass (g)')))))
-
-
-print(mass_max_both_thermo_adj_lmer_plot)
-
-
-
-## IQR temp before model: extract estimates and tidy the data frame
-mass_iqr_before_thermo_adj_lmer_est <- tidy(mass_iqr_before_thermo_adj_lmer,
-                                            conf.int = T, conf.level = 0.95) %>%
-  filter(term == 'scale(thermo_bef_iqr_temp)')
-
-## Rename variables for estimates of interest
-mass_iqr_before_thermo_adj_lmer_est['term'][mass_iqr_before_thermo_adj_lmer_est['term'] ==
-                                              'scale(thermo_bef_iqr_temp)'] <- 'Before day 6'
-
-
-## Min temp before model: Label the estimates in data frame
-mass_iqr_before_thermo_adj_lmer_est$model <- c('Before model')
-
-## Min temp after model: extract estimates and tidy the data frame
-mass_iqr_after_thermo_adj_lmer_est <- tidy(mass_iqr_after_thermo_adj_lmer,
-                                           conf.int = T, conf.level = 0.95) %>%
-  filter(term == 'scale(thermo_aft_iqr_temp)')
-
-
-## Rename variables for estimates of interest
-mass_iqr_after_thermo_adj_lmer_est['term'][mass_iqr_after_thermo_adj_lmer_est['term'] ==
-                                             'scale(thermo_aft_iqr_temp)'] <- 'After day 6'
-
-
-## IQR temp before model: Label the estimates in data frame
-mass_iqr_after_thermo_adj_lmer_est$model <- c('After model')
-
-
-## IQR temp both model: extract estimates and tidy the data frame
-mass_iqr_both_thermo_adj_lmer_est <- tidy(mass_iqr_both_thermo_adj_lmer,
-                                          conf.int = T, conf.level = 0.95) %>%
-  filter(term == 'scale(thermo_bef_iqr_temp)' | term == 'scale(thermo_aft_iqr_temp)')
-
-
-## Rename variables for estimates of interest
-mass_iqr_both_thermo_adj_lmer_est['term'][mass_iqr_both_thermo_adj_lmer_est['term'] ==
-                                            'scale(thermo_bef_iqr_temp)'] <- 'Before day 6'
-
-
-mass_iqr_both_thermo_adj_lmer_est['term'][mass_iqr_both_thermo_adj_lmer_est['term'] ==
-                                            'scale(thermo_aft_iqr_temp)'] <- 'After day 6'
-
-
-## IQR temp before model: Label the estimates in data frame
-mass_iqr_both_thermo_adj_lmer_est$model <- c('Both model')
-
-## Combine regression estimates into a tidy table
-mass_iqr_both_thermo_adj_lmer_tbl <- bind_rows(mass_iqr_before_thermo_adj_lmer_est,
-                                               mass_iqr_after_thermo_adj_lmer_est,
-                                               mass_iqr_both_thermo_adj_lmer_est)
-
-## Re-code *nominal* factor (with ordered levels)  
-# Set levels (odering) of 'model' variable
-mass_iqr_both_thermo_adj_lmer_tbl <-
-  transform(mass_iqr_both_thermo_adj_lmer_tbl,
-            model = factor(model,
-                           levels = c('Before model',
-                                      'After model',
-                                      'Both model')))
-
-mass_iqr_both_thermo_adj_lmer_tbl <-
-  transform(mass_iqr_both_thermo_adj_lmer_tbl,
-            term = factor(term,
-                          levels = c('Before day 6', 
-                                     'After day 6')))
-
-## Graph of estimates 
-mass_iqr_both_thermo_adj_lmer_plot <-
-  ggplot(mass_iqr_both_thermo_adj_lmer_tbl, aes(x = term, y = estimate,
-                                                color = model)) +
-  theme_classic() + 
-  geom_hline(yintercept = 0, color = 'red',
-             linetype = 2) + # line at null behind coefs
-  geom_point(size = 6,
-             position=position_dodge(width = 0.0)) +
-  geom_errorbar(aes(ymin=(conf.low),
-                    ymax=(conf.high)), width=.1,
-                position=position_dodge(0.0), size = 1) +
-  scale_color_manual(values=c('#440154', '#7ad151','#20A387FF')) +
-  facet_grid(cols = vars(model), scales = 'free', space = 'free') +
-  theme(strip.background =element_rect(fill= 'white'))+
-  theme(strip.text = element_text(colour = 'black')) +
-  #coord_flip() + # flip x and y axes
-  theme(plot.subtitle = element_text(hjust = 0.5, size = 18)) +
-  theme(text = element_text(size=18)) +
-  # bold and size title and axes labels
-  theme(legend.position = 'none') +
-  theme(axis.ticks = element_blank()) +
-  theme(axis.line.x = element_blank(),
-        axis.line.y = element_blank(),
-        axis.text.x = element_text(size = 16, angle=45,
-                                   margin = margin(t = 50, r = 0,
-                                                   b = 0, l = 0), face = 'bold'), 
-        axis.text.y = element_text(size = 16, angle=0,
-                                   margin = margin(t = 25, r = 0,
-                                                   b = 0, l = 10)),
-        axis.title = element_text(size = 18), legend.title=element_blank(),
-        legend.text=element_text(size=18),
-        legend.position = 'none', #c(0.91, 0.94),
-        legend.key = element_blank()) +
-  labs(colour = "Parent feeding level") +
-  xlab(expression(italic('Standardized temperature variability (SD)'))) +
-  ylab(expression
-       (atop(bold('Beta estimate and 95% CI'),
-             paste(italic('Nestling mass (g)')))))
-# remove axis ticks
-
-print(mass_iqr_both_thermo_adj_lmer_plot)
-
-
-##################### Predicted results graphs
-
-## Make plots of temp effects before and after thermoreg
-## Both thermo min temp
-pred_bef <- ggpredict(mass_min_before_thermo_adj_lmer, c("thermo_bef_min_temp"))
-
-plot(pred_bef) 
-
-pred_aft <- ggpredict(mass_min_after_thermo_adj_lmer, c("thermo_aft_min_temp"))
-
-plot(pred_aft) 
-
-
-sub <- subset(late_nestling_parent_care,
-              !is.na(x = mass_pre_obs) & 
-                !is.na(x = thermo_bef_min_temp) &
-                !is.na(x = thermo_aft_min_temp))
-
-colors <- c("Before day 6" = "#481567FF", "After day 6" = "#95D840FF")
-lines <- c("Before day 6" = 4, "After day 6" = 1)
-
-temp_thermo_both_min_predicted <- ggplot() + 
-  theme_classic() +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
-  geom_line(data= pred_bef, size = 2, aes(x = x, y = predicted, col = "Before day 6")) +
-  # geom_ribbon(data = pred, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high,
-  #                              fill = "Before day 6"), alpha = .1, col = NA) +
-  geom_line(data= pred_aft, size = 2, aes(x = x, y = predicted, col = "After day 6")) +
-  # geom_ribbon(data = pred_aft, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high, 
-  #                                  fill = "After day 6"),  alpha = .1, col = NA) +
-  geom_point(data = sub, aes(x = thermo_bef_min_temp, y = mass_pre_obs, col = "Before day 6"), 
-             size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  geom_point(data = sub, aes(x = thermo_aft_min_temp, y = mass_pre_obs, col = "After day 6"), 
-             size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)", 
-       color = "Before vs. after day 6", fill = "Before vs. after day 6") +
-  scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
-                     aesthetics = c("color", "fill"))
-# Print
-print(temp_thermo_both_min_predicted)
-
-
-## Both thermo max temp
-pred_bef <- ggpredict(mass_max_before_thermo_adj_lmer, c("thermo_bef_max_temp"))
-
-plot(pred_bef) 
-
-pred_aft <- ggpredict(mass_max_after_thermo_adj_lmer, c("thermo_aft_max_temp"))
-
-plot(pred_aft) 
-
-
-sub <- subset(late_nestling_parent_care,
-              !is.na(x = mass_pre_obs) & 
-                !is.na(x = thermo_bef_max_temp) &
-                !is.na(x = thermo_aft_max_temp))
-
-temp_thermo_both_max_predicted <- ggplot() + 
-  theme_classic() +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
-  geom_line(data= pred_bef, size = 2, aes(x = x, y = predicted, col = "Before day 6")) +
-  # geom_ribbon(data = pred, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high,
-  #                              fill = "Before day 6"), alpha = .1, col = NA) +
-  geom_line(data= pred_aft, size = 2, aes(x = x, y = predicted, col = "After day 6")) +
-  # geom_ribbon(data = pred_aft, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high, 
-  #                                  fill = "After day 6"),  alpha = .1, col = NA) +
-  geom_point(data = sub, aes(x = thermo_bef_max_temp, y = mass_pre_obs, col = "Before day 6"), 
-             size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  geom_point(data = sub, aes(x = thermo_aft_max_temp, y = mass_pre_obs, col = "After day 6"), 
-             size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)", 
-       color = "Before vs. after day 6", fill = "Before vs. after day 6") +
-  scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
-                     aesthetics = c("color", "fill"))
-
-# Print
-print(temp_thermo_both_max_predicted)
-
-
-
-## Both thermo IQR temp
-pred_bef <- ggpredict(mass_iqr_before_thermo_adj_lmer, c("thermo_bef_iqr_temp"))
-
-plot(pred_bef) 
-
-pred_aft <- ggpredict(mass_iqr_after_thermo_adj_lmer, c("thermo_aft_iqr_temp"))
-
-plot(pred_aft) 
-
-
-sub <- subset(late_nestling_parent_care,
-              !is.na(x = mass_pre_obs) & 
-                !is.na(x = thermo_bef_iqr_temp) &
-                !is.na(x = thermo_aft_iqr_temp))
-
-temp_thermo_both_iqr_predicted <- ggplot() + 
-  theme_classic() +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18)) +
-  geom_line(data= pred_bef, size = 2, aes(x = x, y = predicted, col = "Before day 6")) +
-  # geom_ribbon(data = pred, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high,
-  #                              fill = "Before day 6"), alpha = .1, col = NA) +
-  geom_line(data= pred_aft, size = 2, aes(x = x, y = predicted, col = "After day 6")) +
-  # geom_ribbon(data = pred_aft, aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high, 
-  #                                  fill = "After day 6"),  alpha = .1, col = NA) +
-  geom_point(data = sub, aes(x = thermo_bef_iqr_temp, y = mass_pre_obs, col = "Before day 6"), 
-             size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  geom_point(data = sub, aes(x = thermo_aft_iqr_temp, y = mass_pre_obs, col = "After day 6"), 
-             size = 1.5, alpha = 0.5, show.legend = FALSE) +
-  labs(x = "Temperature variability (C)", y = "Nestling mass (g)", 
-       color = "Before vs. after day 6", fill = "Before vs. after day 6") +
-  scale_color_manual(values = colors, breaks = c("Before day 6", "After day 6"),
-                     aesthetics = c("color", "fill"))
-
-# Print
-print(temp_thermo_both_iqr_predicted)
-
-
-## Combined plot with points colored
-combined_thermo_both_dw <- 
-  ggarrange(mass_min_both_thermo_adj_lmer_plot, mass_max_both_thermo_adj_lmer_plot,
-            mass_iqr_both_thermo_adj_lmer_plot,
-            ncol = 3, nrow = 1, common.legend = TRUE,
-            legend = "none", labels = c("(a)", "(b)", "(c)"), 
-            font.label = list(size = 18, face = "bold", color = "red"))
-
-ggsave('combined_thermo_both_dw.png', plot = combined_thermo_both_dw, 
-       device = NULL, 
-       path = 'Output/', scale = 1, width = 19, 
-       height = 8, 
-       units = c('in'), dpi = 300, limitsize = TRUE)
-
-## Combined plot with points colored
-combined_thermo_both_predictions <- 
-  ggarrange(temp_thermo_both_min_predicted, 
-            temp_thermo_both_max_predicted, temp_thermo_both_iqr_predicted,
-            ncol = 3, nrow = 1, common.legend = TRUE,
-            legend = "bottom", labels = c("(d)", "(e)", "(f)"), 
-            font.label = list(size = 18, face = "bold", color = "red"))
-
-ggsave('combined_thermo_both_predictions.png', plot = combined_thermo_both_predictions, 
-       device = NULL, 
-       path = 'Output/', scale = 1, width = 19, 
-       height = 12, 
-       units = c('in'), dpi = 300, limitsize = TRUE)
-
-## Combined plot with both types of plot
-combined_thermo_both_types <- 
-  ggarrange(combined_thermo_both_dw, 
-            ggparagraph(text="   ", face = "italic", size = 16, color = "black"),
-            combined_thermo_both_predictions,
-            ncol = 1, nrow = 3, common.legend = FALSE,
-            legend = "bottom", labels = c("", "", ""),
-            heights = c(1, 0.10, 1))
-
-# Print
-print(combined_thermo_both_types)
-
-# Save
-ggsave('combined_thermo_both_types_5-22.png', plot = combined_thermo_both_types, 
-       device = NULL, 
-       path = 'Output/', scale = 1, width = 11, 
-       height = 8.5, 
-       units = c('in'), dpi = 300, limitsize = TRUE)
-
-
-
-###################### VERSION 2
-
-################## Developmental stages model ################################
 
 ########### Dot and whisker plots
 ## Min temp before model: extract estimates and tidy the data frame
