@@ -3731,6 +3731,7 @@ print(bt_ci_mass_min_after_thermo_adj_noout_lmer)
 
 ## Interaction models for temp before and after (separately)
 
+### MINIMUM TEMPERATURE
 # Create dataset with time period column / long format for interaction models
 min_time_period_dat <- pivot_longer(late_nestling_parent_care,
                                     cols = c(thermo_bef_min_temp, thermo_aft_min_temp),
@@ -3771,6 +3772,95 @@ r.squaredGLMM(mass_min_temp_time_adj_lmer)
 
 
 pred <- ggpredict(mass_min_temp_time_adj_lmer, c("min_temp_time_mod", "time_period"))
+
+plot(pred)
+
+
+#### MAX TEMP
+# Create dataset with time period column / long format for interaction models
+max_time_period_dat <- pivot_longer(late_nestling_parent_care,
+                                    cols = c(thermo_bef_max_temp, thermo_aft_max_temp),
+                                    names_to = c("time_period"),
+                                    values_to = "max_temp_time_mod"
+)
+
+max_time_period_dat$time_period <- as.factor(max_time_period_dat$time_period)
+max_time_period_dat$fnestling_band <- as.factor(max_time_period_dat$nestling_band)
+
+
+### Mass adjusted
+mass_max_temp_time_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(max_temp_time_mod) *
+                                                time_period + scale(nestling_number) + 
+                                                scale(days_summer) +
+                                                (1|fnest_id), 
+                                              data = subset(max_time_period_dat,
+                                                            !is.na(x = mass_pre_obs) & 
+                                                              !is.na(x = max_temp_time_mod) &
+                                                              !is.na(x = time_period)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_time_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_time_adj_lmer))
+  qqline(resid(mass_max_temp_time_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_time_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_max_temp_time_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_max_temp_time_adj_lmer, vars=c("Studentized"))
+
+summary(mass_max_temp_time_adj_lmer)
+confint(mass_max_temp_time_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_time_adj_lmer)
+
+
+pred <- ggpredict(mass_max_temp_time_adj_lmer, c("max_temp_time_mod", "time_period"))
+
+plot(pred)
+
+
+# Create dataset with time period column / long format for interaction models
+iqr_time_period_dat <- pivot_longer(late_nestling_parent_care,
+                                    cols = c(thermo_bef_iqr_temp, thermo_aft_iqr_temp),
+                                    names_to = c("time_period"),
+                                    values_to = "iqr_temp_time_mod"
+)
+
+iqr_time_period_dat$time_period <- as.factor(iqr_time_period_dat$time_period)
+iqr_time_period_dat$fnestling_band <- as.factor(iqr_time_period_dat$nestling_band)
+
+
+### Mass adjusted
+mass_iqr_temp_time_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(iqr_temp_time_mod) *
+                                                time_period + scale(nestling_number) + 
+                                                scale(days_summer) +
+                                                (1|fnest_id), 
+                                              data = subset(iqr_time_period_dat,
+                                                            !is.na(x = mass_pre_obs) & 
+                                                              !is.na(x = iqr_temp_time_mod) &
+                                                              !is.na(x = time_period)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_time_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_time_adj_lmer))
+  qqline(resid(mass_iqr_temp_time_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_time_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_temp_time_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_iqr_temp_time_adj_lmer, vars=c("Studentized"))
+
+summary(mass_iqr_temp_time_adj_lmer)
+confint(mass_iqr_temp_time_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_time_adj_lmer)
+
+
+pred <- ggpredict(mass_iqr_temp_time_adj_lmer, c("iqr_temp_time_mod", "time_period"))
 
 plot(pred)
 
