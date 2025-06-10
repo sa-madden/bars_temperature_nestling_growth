@@ -1,10 +1,8 @@
 ####### Purpose: calculate descriptive stats and visualize barn swallow
-####### nest mircoclimate and nestling growth dataset at nestling level
-####### By: Sage Madden
+####### nest mircoclimate and nestling growth dataset
+####### By: XXX
 ####### Created: 12/19/2022
-####### Last modified: 3/13/2025
-
-##### Fill in code blocks + write down parental care stats
+####### Last modified: 06/10/2025
 
 
 # Code Blocks
@@ -20,15 +18,15 @@
 ##############                 Configure work space              ##############
 ###############################################################################
 
-### 1.1 Global options
+###  Global options
 ## clear global environment
 rm(list = ls())
 
-## b) prevent R from automatically reading charater strins as factors
+## prevent R from automatically reading charater strins as factors
 options(stringsAsFactors = FALSE)
 
 
-### 1.2 Install and load CRAN packages   
+### Install and load CRAN packages   
 ## Data Manipulation and Descriptive Stats Packages
 library('tidyverse')
 
@@ -38,9 +36,10 @@ library('hrbrthemes')
 library('viridis')
 library ('gridExtra')
 library('ggpubr')
+library('gt')
 
 
-### 1.3 Get Version and Session Info
+### Get Version and Session Info
 R.Version()
 sessionInfo()
 
@@ -61,6 +60,8 @@ nest_dat <- nest_dat %>% filter(duplicate == FALSE) %>%
 
 # Remove nests excluded from analyses from Govee dataset
 govee_daily <- filter(govee_daily, nest_id != "schaaps 110" & nest_id != "hayes 7")
+
+
 
 ###############################################################################
 ##############             Univariate descriptive stats          ##############
@@ -185,29 +186,6 @@ pdf('Output/univar_nestling_age.pdf', height = 3, width = 14)
 grid.table(univar_nestling_age)
 dev.off()
 
-## Colony size
-nest_dat$num_pairs <- as.integer(nest_dat$num_pairs)
-univar_colony_size <- nest_dat %>%
-  summarise (n = sum(!is.na(num_pairs)),
-             avg = round (mean(num_pairs, 
-                               na.rm = T),2),
-             stdev = round (sd(num_pairs, 
-                               na.rm = T), 2),
-             med = round(median(num_pairs,
-                                na.rm = T), 2),
-             min = round(min(num_pairs,
-                             na.rm = T), 2),
-             max = round(max(num_pairs,
-                             na.rm = T), 2)
-  )
-
-univar_colony_size$variable_name <- c("colony_size")
-
-## save the data frame of summary stats as a pdf into output file
-pdf('Output/univar_colony_size.pdf', height = 3, width = 14)
-grid.table(univar_colony_size)
-dev.off()
-
 ## Hatch date
 univar_hatch_date <- nest_dat %>%
   summarise (n = sum(!is.na(days_summer)),
@@ -237,21 +215,6 @@ grid.table(univar_hatch_date)
 dev.off()
 
 ## Nest temperature
-# Median temp
-univar_temp_med <- nest_dat %>%
-  summarise (n = sum(!is.na(nest_med_temp)),
-             avg = round (mean(nest_med_temp, 
-                               na.rm = T),2),
-             stdev = round (sd(nest_med_temp, 
-                               na.rm = T), 2),
-             med = round(median(nest_med_temp,
-                                na.rm = T), 2),
-             min = round(min(nest_med_temp,
-                             na.rm = T), 2),
-             max = round(max(nest_med_temp,
-                             na.rm = T), 2)
-  )
-
 # Min temp
 univar_temp_min <- nest_dat %>%
   summarise (n = sum(!is.na(nest_min_temp)),
@@ -297,7 +260,7 @@ univar_temp_iqr <- nest_dat %>%
                              na.rm = T), 2)
   )
 
-# Before thermo median
+# Before thermo temp
 univar_temp_bef_thermo <- nest_dat %>%
   summarise (n = sum(!is.na(thermo_bef_med_temp)),
              avg = round (mean(thermo_bef_med_temp, 
@@ -312,7 +275,7 @@ univar_temp_bef_thermo <- nest_dat %>%
                              na.rm = T), 2)
   )
 
-# After thermo median
+# After thermo temp
 univar_temp_aft_thermo <- nest_dat %>%
   summarise (n = sum(!is.na(thermo_aft_med_temp)),
              avg = round (mean(thermo_aft_med_temp, 
@@ -327,10 +290,10 @@ univar_temp_aft_thermo <- nest_dat %>%
                              na.rm = T), 2)
   )
 
-univar_temp <- rbind(univar_temp_med, univar_temp_min, univar_temp_max, 
+univar_temp <- rbind(univar_temp_min, univar_temp_max, 
                      univar_temp_iqr, univar_temp_bef_thermo, univar_temp_aft_thermo)
 
-univar_temp$variable_name <- c("nest_med_temp", "nest_min_temp", 
+univar_temp$variable_name <- c("nest_min_temp", 
                                "nest_max_temp", "nest_iqr_temp",
                                "thermo_bef_med_temp", "thermo_aft_med_temp")
 
@@ -378,6 +341,7 @@ univar_growth$variable_name <- c("univar_growth_wing", "univar_growth_mass")
 pdf('Output/univar_growth.pdf', height = 3, width = 14)
 grid.table(univar_growth)
 dev.off()
+
 
 
 ###############################################################################
@@ -519,28 +483,6 @@ ggsave('site_hist.png', plot = site_hist,
        height = 6, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
-## Median temperature at nest 
-med_temp_hist <- nest_dat %>%
-  ggplot(aes(x = nest_med_temp, fill = nest_id)) +
-  geom_histogram(alpha=0.6, col = "gray5",
-                 position = 'stack', 
-                 binwidth = 1) +
-  labs(title = 'Histogram of median nest temperature colored by nest',
-       x ='Median nest temperature (deg C)', 
-       y ='Frequency') +
-  theme_classic() +
-  theme(legend.position = "none") +
-  scale_fill_viridis(discrete = TRUE, alpha=0.6)
-
-# Print plot 
-print(med_temp_hist)
-
-# Save plot
-ggsave('med_temp_hist.png', plot = med_temp_hist, 
-       device = NULL, 
-       path = 'Output/', scale = 1, width = 12, 
-       height = 6, 
-       units = c('in'), dpi = 300, limitsize = TRUE) 
 
 ## Minimum temperature at nest 
 min_temp_hist <- nest_dat %>%
@@ -897,50 +839,6 @@ pdf('Output/bivar_growth_age.pdf', height = 3, width = 14)
 grid.table(bivar_growth_age)
 dev.off()
 
-## Wing by colony size
-bivar_wing_colony <- late_nestling_parent_care %>%
-  group_by(num_pairs) %>%
-  filter(!is.na(num_pairs)) %>%
-  summarise (n = sum(!is.na(rt_wing_length)),
-             avg = round (mean(rt_wing_length, 
-                               na.rm = T),2),
-             stdev = round (sd(rt_wing_length, 
-                               na.rm = T), 2),
-             med = round(median(rt_wing_length,
-                                na.rm = T), 2),
-             min = round(min(rt_wing_length,
-                             na.rm = T), 2),
-             max = round(max(rt_wing_length,
-                             na.rm = T), 2)
-  )
-
-bivar_mass_colony <- late_nestling_parent_care %>%
-  group_by(num_pairs) %>%
-  filter(!is.na(num_pairs)) %>%
-  summarise (n = sum(!is.na(mass_pre_obs)),
-             avg = round (mean(mass_pre_obs, 
-                               na.rm = T),2),
-             stdev = round (sd(mass_pre_obs, 
-                               na.rm = T), 2),
-             med = round(median(mass_pre_obs,
-                                na.rm = T), 2),
-             min = round(min(mass_pre_obs,
-                             na.rm = T), 2),
-             max = round(max(mass_pre_obs,
-                             na.rm = T), 2)
-  )
-
-bivar_growth_colony <- rbind(bivar_wing_colony, 
-                             bivar_mass_colony)
-
-bivar_growth_colony$variable_name <- c(rep("rt_wing_length", 5),
-                                    rep("mass_pre_obs", 5))
-
-## save the data frame of summary stats as a pdf into output file
-pdf('Output/bivar_growth_colony.pdf', height = 6, width = 14)
-grid.table(bivar_growth_colony)
-dev.off()
-
 ## Wing by developmental stage
 bivar_wing_devel <- nestl_merged %>%
   group_by(sample_state) %>%
@@ -1008,13 +906,6 @@ bivar_feeding_devel <- prim_merged %>%
 early <- filter(prim_merged, obs_state == "early")
 mid <- filter(prim_merged, obs_state == "mid")
 late <- filter(prim_merged, obs_state == "late")
-
-unique(early$nest_id)
-unique(late$nest_id)
-
-
-test <- filter(prim_merged, is.na(total_feeding_visits) == T)
-unique(test$nest_id)
 
 bivar_feeding_devel$variable_name <- c("total_feeding_rate")
 
@@ -1140,9 +1031,6 @@ gtsave(summary_stats_table, filename = "Output/summary_stats_table.docx")
 gtsave(summary_stats_table, filename = "Output/summary_stats_table.html")
 
 
-citation(package = "ggeffects")
-
-
 ###############################################################################
 ##############             Bivariate visualizations              ##############
 ###############################################################################
@@ -1193,48 +1081,6 @@ ggsave('mass_feeding_blups_scatter.png', plot = mass_feeding_blups_scatter,
 
 
 ## Temperature 
-# Wing growth by median temperature 
-wing_med_temp_scatter <- late_nestling_parent_care %>%
-  ggplot(aes(x = nest_med_temp, y = rt_wing_length)) + 
-  geom_jitter(size=2, alpha=0.9, width = 0.2) +
-  geom_smooth() + 
-  labs(title = 'Scatter plot of right wing length on day 12 by median nest temperature',
-       x ='Median nest temperature', 
-       y ='Right wing length (mm)') +
-  theme_classic() +
-  scale_color_viridis(discrete = TRUE, alpha=0.8)
-
-# Print plot 
-print(wing_med_temp_scatter)
-
-# Save plot
-ggsave('wing_med_temp_scatter.png', plot = wing_med_temp_scatter, 
-       device = NULL, 
-       path = 'Output/', scale = 1, width = 12, 
-       height = 6, 
-       units = c('in'), dpi = 300, limitsize = TRUE)
-
-# Mass growth by median temperature 
-mass_med_temp_scatter <- late_nestling_parent_care %>%
-  ggplot(aes(x = nest_med_temp, y = mass_pre_obs)) + 
-  geom_jitter(size=2, alpha=0.9, width = 0.2) +
-  geom_smooth() + 
-  labs(title = 'Scatter plot of mass on day 12 by median nest temperature',
-       x ='Median nest temperature', 
-       y ='Mass (g)') +
-  theme_classic() +
-  scale_color_viridis(discrete = TRUE, alpha=0.8)
-
-# Print plot 
-print(mass_med_temp_scatter)
-
-# Save plot
-ggsave('mass_med_temp_scatter.png', plot = mass_med_temp_scatter, 
-       device = NULL, 
-       path = 'Output/', scale = 1, width = 12, 
-       height = 6, 
-       units = c('in'), dpi = 300, limitsize = TRUE)
-
 # Wing growth by min temperature 
 wing_min_temp_scatter <- late_nestling_parent_care %>%
   ggplot(aes(x = nest_min_temp, y = rt_wing_length)) + 
@@ -1256,7 +1102,7 @@ ggsave('wing_min_temp_scatter.png', plot = wing_min_temp_scatter,
        height = 6, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
-# Mass growth by median temperature 
+# Mass growth by min temperature 
 mass_min_temp_scatter <- late_nestling_parent_care %>%
   ggplot(aes(x = nest_min_temp, y = mass_pre_obs)) + 
   geom_jitter(size=2, alpha=0.9, width = 0.2) +
@@ -1298,7 +1144,7 @@ ggsave('wing_max_temp_scatter.png', plot = wing_max_temp_scatter,
        height = 6, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
-# Mass growth by median temperature 
+# Mass growth by max temperature 
 mass_max_temp_scatter <- late_nestling_parent_care %>%
   ggplot(aes(x = nest_max_temp, y = mass_pre_obs)) + 
   geom_jitter(size=2, alpha=0.9, width = 0.2) +
@@ -1341,7 +1187,7 @@ ggsave('wing_iqr_temp_scatter.png', plot = wing_iqr_temp_scatter,
        height = 6, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
-# Mass growth by median temperature 
+# Mass growth by IQR temperature 
 mass_iqr_temp_scatter <- late_nestling_parent_care %>%
   ggplot(aes(x = nest_iqr_temp, y = mass_pre_obs)) + 
   geom_jitter(size=2, alpha=0.9, width = 0.2) +
@@ -1362,7 +1208,7 @@ ggsave('mass_iqr_temp_scatter.png', plot = mass_iqr_temp_scatter,
        height = 6, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
-# Wing growth by temp before thermo independence
+# Wing growth by max temp before thermo independence
 wing_bef_thermo_temp_scatter <- late_nestling_parent_care %>%
   ggplot(aes(x = thermo_bef_max_temp, y = rt_wing_length)) + 
   geom_jitter(size=2, alpha=0.9, width = 0.2) +
@@ -1384,7 +1230,7 @@ ggsave('wing_bef_thermo_temp_scatter.png', plot = wing_bef_thermo_temp_scatter,
        height = 6, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
-# Mass growth by median temperature 
+# Mass growth by max temp before thermo independence 
 mass_before_thermo_temp_scatter <- late_nestling_parent_care %>%
   ggplot(aes(x = thermo_bef_max_temp, y = mass_pre_obs)) + 
   geom_jitter(size=2, alpha=0.9, width = 0.2) +
@@ -1840,8 +1686,8 @@ daily_max_temps_site_scatter <-
   theme_classic() +
   scale_color_viridis(discrete = TRUE, alpha=0.8,
                       option = "viridis") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18))
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11))
   
 
 # Print plot 
@@ -1868,8 +1714,8 @@ daily_min_temps_site_scatter <-
   theme_classic() +
   scale_color_viridis(discrete = TRUE, alpha=0.8,
                       option = "viridis") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18))
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11))
 
 
 # Print plot 
@@ -1895,8 +1741,8 @@ daily_iqr_temps_site_scatter <-
   theme_classic() +
   scale_color_viridis(discrete = TRUE, alpha=0.8,
                       option = "viridis") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18),
-        legend.text = element_text(size = 16), legend.title = element_text(size = 18))
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11))
 
 
 # Print plot 
@@ -1912,7 +1758,8 @@ ggsave('daily_iqr_temps_site_scatter.png', plot = daily_iqr_temps_site_scatter,
 combined_temp_date <- 
   ggarrange(daily_min_temps_site_scatter, daily_max_temps_site_scatter,
             daily_iqr_temps_site_scatter,
-            labels = c("a", "b", "c"),
+            labels = c("(a)", "(b)", "(c)"), 
+            font.label = list(size = 11, face = "bold", color = "red"), hjust = -0.1,
             ncol = 1, nrow = 3, common.legend = TRUE, 
             legend = "right")
 
@@ -1920,8 +1767,8 @@ print(combined_temp_date)
 
 ggsave('combined_temp_date.png', plot = combined_temp_date, 
        device = NULL, 
-       path = 'Output/', scale = 1, width = 10, 
-       height = 14, 
+       path = 'Output/', scale = 1, width = 6, 
+       height = 9, 
        units = c('in'), dpi = 300, limitsize = TRUE) 
 
 
@@ -1942,10 +1789,10 @@ blups_stratified_boxplot <- ggplot(data = late_nestling_parent_care,
                                    aes(x = blups_factor, y = feeding_expontd_blups, 
                                        fill = blups_factor), col = "black") +
   geom_jitter(aes(col = blups_factor), size = 1.5, alpha = 0.5, width = 0.2) +
-  geom_boxplot(alpha = 0.5, size = 1) +
+  geom_boxplot(alpha = 0.5, size = 0.8) +
   theme_classic() +
   labs(x = "Parent feeding level", y = "Feeding BLUPs (visits/hr)", fill = "Parent feeding level") +
-  theme(axis.text = element_text(size = 16), axis.title = element_text(size = 18)) +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11)) +
   theme(legend.position="none") +
   scale_color_manual(values = cols) +
   scale_fill_manual(values = cols)
@@ -1957,8 +1804,8 @@ print(blups_stratified_boxplot)
 # Save
 ggsave('blups_stratified_boxplot.png', plot = blups_stratified_boxplot, 
        device = NULL, 
-       path = 'Output/', scale = 1, width = 6, 
-       height = 6, 
+       path = 'Output/', scale = 1, width = 5, 
+       height = 5, 
        units = c('in'), dpi = 300, limitsize = TRUE)
 
 

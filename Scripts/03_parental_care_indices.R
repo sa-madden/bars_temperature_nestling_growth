@@ -1,9 +1,9 @@
 ####### Purpose: calculate parental care index and format final
 ####### dataset for barn swallow nest microclimate and nestling 
-####### growth dataset at nestling level
-####### By: Sage Madden
+####### growth dataset
+####### By: XXX
 ####### Created: 12/16/2022
-####### Last modified: 10/11/2024
+####### Last modified: 06/10/2024
 
 # Code Blocks
 # 1: Configure work space
@@ -16,7 +16,7 @@
 ##############                 Configure work space              ##############
 ###############################################################################
 
-### 1.1 Global options
+### Global options
 ## clear global environment
 rm(list = ls())
 
@@ -24,7 +24,7 @@ rm(list = ls())
 options(stringsAsFactors = FALSE)
 
 
-### 1.2 Install and load CRAN packages   
+### Install and load CRAN packages   
 ## Data Manipulation and Descriptive Stats Packages
 library('tidyverse')
 
@@ -43,7 +43,7 @@ library('DHARMa')
 library ('boot')
 
 
-### 1.3 Get Version and Session Info
+### Get Version and Session Info
 R.Version()
 sessionInfo()
 
@@ -126,8 +126,6 @@ feeding_blups_glmm_nb <- glmer.nb(total_feeding_visits ~ scale(nestling_age) +
 simulation_output <- simulateResiduals(fittedModel = feeding_blups_glmm_nb, 
                                        plot = T)
 # Looks pretty good
-
-
 
 
 ## b) Parameter estimates

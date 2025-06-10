@@ -1,8 +1,8 @@
 ####### Purpose: run covariate models for barn swallow
 ####### nest microclimate and nestling growth dataset
-####### By: Sage Madden
+####### By: XXX
 ####### Created: 1/16/2023
-####### Last modified: 10/21/2024
+####### Last modified: 06/10/2025
 
 # Code Blocks
 # 1: Configure work space
@@ -115,41 +115,6 @@ bt_ci_mass_hatch_lmer <- boot.ci(boot_mass_hatch_lmer,
                                        type = c('perc', 'norm', 'basic'),
                                        index = 2) # CI for 1st betas
 print(bt_ci_mass_hatch_lmer)
-
-
-## Mass and colony size -- not significant 
-mass_colony_lmer <- lmer(mass_pre_obs ~ scale(num_pairs) + (1|fsite) +
-                          (1|fnest_id), 
-                        data = subset(late_nestling_parent_care,
-                                      !is.na(x = mass_pre_obs) & 
-                                        !is.na(x = num_pairs)))
-
-## Check diagnostics for the full model
-plot(mass_colony_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_colony_lmer))
-  qqline(resid(mass_colony_lmer))}
-# Histogram of residuals
-hist(resid(mass_colony_lmer))
-# Checking for influential outliers
-infIndexPlot(mass_colony_lmer, vars=c("Cook"))
-infIndexPlot(mass_colony_lmer, vars=c("Studentized"))
-
-summary(mass_colony_lmer)
-confint(mass_colony_lmer)
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_colony_lmer <- bootMer(x = mass_colony_lmer,
-                                FUN = fixef, nsim = 2000,
-                                seed = 632760,
-                                use.u = F, type = 'parametric')
-tidy(boot_mass_colony_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI
-bt_ci_mass_colony_lmer <- boot.ci(boot_mass_colony_lmer,
-                                 type = c('perc', 'norm', 'basic'),
-                                 index = 2) # CI for 1st betas
-print(bt_ci_mass_colony_lmer)
 
 
 ## Mass and brood size -- not significant, but marginal
@@ -364,41 +329,6 @@ tidy(boot_feeding_blups_hatch_lmer) # beta estimates and SE
 bt_ci_feeding_blups_hatch_lmer <- boot.ci(boot_feeding_blups_hatch_lmer,
                                  type = c('perc', 'norm', 'basic'),
                                  index = 2) # CI for 1st betas
-print(bt_ci_feeding_blups_hatch_lmer)
-
-
-## feeding_blups and colony size -- not significant 
-feeding_blups_colony_lmer <- lmer(feeding_expontd_blups ~ scale(num_pairs) + (1|fsite), 
-                         data = subset(one_measure,
-                                       !is.na(x = feeding_expontd_blups) & 
-                                         !is.na(x = num_pairs)))
-
-## Check diagnostics for the full model
-plot(feeding_blups_colony_lmer)
-# Normal QQplot
-{qqnorm(resid(feeding_blups_colony_lmer))
-  qqline(resid(feeding_blups_colony_lmer))}
-# Histogram of residuals
-hist(resid(feeding_blups_colony_lmer))
-# Checking for influential outliers
-infIndexPlot(feeding_blups_colony_lmer, vars=c("Cook"))
-infIndexPlot(feeding_blups_colony_lmer, vars=c("Studentized"))
-
-summary(feeding_blups_colony_lmer)
-confint(feeding_blups_colony_lmer)
-
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_feeding_blups_hatch_lmer <- bootMer(x = feeding_blups_hatch_lmer,
-                                         FUN = fixef, nsim = 2000,
-                                         seed = 632760,
-                                         use.u = F, type = 'parametric')
-tidy(boot_feeding_blups_hatch_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI
-bt_ci_feeding_blups_hatch_lmer <- boot.ci(boot_feeding_blups_hatch_lmer,
-                                          type = c('perc', 'norm', 'basic'),
-                                          index = 2) # CI for 1st betas
 print(bt_ci_feeding_blups_hatch_lmer)
 
 

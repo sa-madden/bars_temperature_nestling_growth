@@ -1,8 +1,8 @@
 ####### Purpose: write functions to calculate parental care variables from
 ####### animal behavior pro logs
-####### By: Sage Madden and Aleea Pardue
+####### By: XXX and XXX
 ####### Created: 7/15/2021
-####### Last modified: 10/2/2024
+####### Last modified: 06/10/2025
 
 
 # Code Blocks

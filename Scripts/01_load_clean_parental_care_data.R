@@ -1,9 +1,9 @@
 ####### Purpose: run functions to calculate parental care variables from
 ####### animal behavior pro logs and link up with parental care
 ####### metadata
-####### By: Sage Madden
+####### By: XXX
 ####### Created: 4/27/2021
-####### Last modified: 10/4/2024
+####### Last modified: 06/10/2025
 
 ## Load relevant packages 
 library(tidyverse)

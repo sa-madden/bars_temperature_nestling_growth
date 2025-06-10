@@ -1,7 +1,7 @@
 ####### Purpose: combine all govee datasheets into a single df and clean it
-####### By: Sage Madden
+####### By: XXX
 ####### Created: 3/1/2022
-####### Last modified: 10/4/2024
+####### Last modified: 06/10/2025
 
 # Code Blocks
 # 1: Configure work space
@@ -14,8 +14,6 @@
 ###############################################################################
 
 ### Global options
-# clear global environment
-rm(list = ls())
 
 # prevent R from automatically reading character strings as factors
 options(stringsAsFactors = FALSE)
@@ -103,6 +101,7 @@ govee_df_splt$date <- format(as.POSIXct(govee_df_splt$ymd_hms,
 
 #write.csv(govee_df_splt, file = "Output/govee_data_used_nests_unfiltered.csv")
 
+
 ## Filter to include dates and times from hatch day placement to 
 ## end time of last observation period 
 
@@ -131,7 +130,7 @@ unique(govee_df_splt$site)
 obs_dat$site <- gsub(" ", "", obs_dat$site)
 obs_dat$site <- tolower(obs_dat$site)
 
-# Now I've got the end obs date and time
+# Now we've got the end obs date and time
 # Join with govee data
 joined_df <- left_join(obs_dat, govee_df_splt, by = c("nest", "site"))
 unique(joined_df$site)
