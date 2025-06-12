@@ -1,6 +1,6 @@
 ####### Purpose: data tidying and summary for barn swallow weather/
 ####### nestling growth project
-####### By: Sage Madden
+####### By: XXX
 ####### Created: 5/11/2022
 ####### Last modified: 6/10/2025
 
