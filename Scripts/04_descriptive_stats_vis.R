@@ -1,8 +1,8 @@
 ####### Purpose: calculate descriptive stats and visualize barn swallow
 ####### nest mircoclimate and nestling growth dataset
-####### By: XXX
+####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 06/10/2025
+####### Last modified: 9/25/2025
 
 
 # Code Blocks
@@ -749,6 +749,25 @@ dev.off()
 ## Mid devel wing by relative nestling size 
 bivar_wing_mid_relative_size <- nestl_merged %>%
   filter(sample_state == "mid") %>%
+  group_by(size_order) %>%
+  filter(!is.na(size_order)) %>%
+  summarise (n = sum(!is.na(rt_wing_length)),
+             avg = round (mean(rt_wing_length, 
+                               na.rm = T),2),
+             stdev = round (sd(rt_wing_length, 
+                               na.rm = T), 2),
+             med = round(median(rt_wing_length,
+                                na.rm = T), 2),
+             min = round(min(rt_wing_length,
+                             na.rm = T), 2),
+             max = round(max(rt_wing_length,
+                             na.rm = T), 2)
+  )
+
+
+## Late devel wing length
+bivar_wing_late_relative_size <- nestl_merged %>%
+  filter(sample_state == "late") %>%
   group_by(size_order) %>%
   filter(!is.na(size_order)) %>%
   summarise (n = sum(!is.na(rt_wing_length)),
@@ -1758,7 +1777,7 @@ ggsave('daily_iqr_temps_site_scatter.png', plot = daily_iqr_temps_site_scatter,
 combined_temp_date <- 
   ggarrange(daily_min_temps_site_scatter, daily_max_temps_site_scatter,
             daily_iqr_temps_site_scatter,
-            labels = c("(a)", "(b)", "(c)"), 
+            labels = c("(A)", "(B)", "(C)"), 
             font.label = list(size = 11, face = "bold", color = "red"), hjust = -0.1,
             ncol = 1, nrow = 3, common.legend = TRUE, 
             legend = "right")

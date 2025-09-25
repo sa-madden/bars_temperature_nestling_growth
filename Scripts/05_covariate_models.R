@@ -1,8 +1,8 @@
 ####### Purpose: run covariate models for barn swallow
 ####### nest microclimate and nestling growth dataset
-####### By: XXX
+####### By: Sage Madden
 ####### Created: 1/16/2023
-####### Last modified: 06/10/2025
+####### Last modified: 9/25/2025
 
 # Code Blocks
 # 1: Configure work space

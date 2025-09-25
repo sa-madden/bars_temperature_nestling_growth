@@ -1,8 +1,8 @@
 ####### Purpose: data tidying and summary for barn swallow weather/
 ####### nestling growth project
-####### By: XXX
+####### By: Sage Madden
 ####### Created: 5/11/2022
-####### Last modified: 6/10/2025
+####### Last modified: 9/25/2025
 
 # Code Blocks
 # 1: Configure work space
@@ -179,6 +179,17 @@ nestling <- nestling[, c("female_band", "male_band","nestling_band",
                          "nos_mites", "mite_bin", "mites_tp", 
                          "survive_at_sampling", "post_obs_extract_time", 
                          "mass_post_obs", "notes" )] 
+
+
+## Estimate levels of hatch asynchrony
+asynch_dat <- nestling %>% filter(sample_state == "early") %>%
+  group_by(nest_id) %>%
+  summarize(max_age = max(nestling_age),
+            min_age = min(nestling_age)) %>% 
+  mutate(asynch = max_age - min_age)
+
+mean(asynch_dat$asynch)
+range(asynch_dat$asynch)
 
 
 ###############################################################################

@@ -1,9 +1,9 @@
 ####### Purpose: calculate parental care index and format final
 ####### dataset for barn swallow nest microclimate and nestling 
 ####### growth dataset
-####### By: XXX
+####### By: Sage Madden
 ####### Created: 12/16/2022
-####### Last modified: 06/10/2024
+####### Last modified: 9/25/2024
 
 # Code Blocks
 # 1: Configure work space

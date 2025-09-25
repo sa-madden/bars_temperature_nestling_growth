@@ -1,7 +1,7 @@
 ####### Purpose: combine all govee datasheets into a single df and clean it
-####### By: XXX
+####### By: Sage Madden
 ####### Created: 3/1/2022
-####### Last modified: 06/10/2025
+####### Last modified: 9/25/2025
 
 # Code Blocks
 # 1: Configure work space
