@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 9/25/2025
+####### Last modified: 10/1/2025
 
 
 # Code Blocks
@@ -997,9 +997,9 @@ summary_stats_df <- rbind(univar_temp_min, univar_temp_max, univar_temp_iqr, uni
                             univar_hatch_date, univar_nestling_age, bivar_feeding_table,
                             bivar_wing_table, bivar_mass_table)
 
-summary_stats_df$variable_name[summary_stats_df$variable_name == "early"] <- "Early"
-summary_stats_df$variable_name[summary_stats_df$variable_name == "mid"] <- "Mid"
-summary_stats_df$variable_name[summary_stats_df$variable_name == "late"] <- "Late"
+summary_stats_df$variable_name[summary_stats_df$variable_name == "early"] <- "Days three to four"
+summary_stats_df$variable_name[summary_stats_df$variable_name == "mid"] <- "Days eight to nine"
+summary_stats_df$variable_name[summary_stats_df$variable_name == "late"] <- "Days 11-13"
 
 summary_stats_df$med <- NULL
 
@@ -1012,7 +1012,7 @@ summary_stats_df <- rename(summary_stats_df,
 
 summary_stats_table <- gt(summary_stats_df, rowname_col = "variable_name") %>%
   tab_header(
-    title = md("**Supplemental Table 2.** Background characteristics of wild nestling Barn Swallows in Boulder County, CO. Total number of feeding visits, nestling mass, and nestling wing length are separately estimated for three developmental stages (early, mid, and late). Temperature variability is defined as the interquartile range.")
+    title = md("**Supplemental Table 2.** Background characteristics of wild nestling Barn Swallows in Boulder County, CO. Total number of feeding visits, nestling mass, and nestling wing length are separately estimated three time points (days three to four, days eight to nine, and days 11-13). Temperature variability is defined as the interquartile range. The table provides the sample size for each variable at the level at which it was collected (n), as well as the mean, standard deviation (SD), minimum, and maximum.")
   ) %>%
   tab_stubhead(
     label = md("Variable")

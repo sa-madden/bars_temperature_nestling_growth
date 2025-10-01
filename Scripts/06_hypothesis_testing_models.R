@@ -4198,7 +4198,7 @@ temp_min_feeding_blups_predicted <- ggplot() +
              size = 1.5, alpha = 0.5) +
   theme_classic() +
   labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
-       colour = "Parent feeding level", fill = "Parent feeding level", 
+       colour = "Parent feeding level", 
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
         legend.text = element_text(size = 9), legend.title = element_text(size = 11),
@@ -4249,7 +4249,7 @@ temp_max_feeding_blups_predicted <- ggplot() +
               size = 1.5, alpha = 0.5) +
   theme_classic() +
   labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
-       colour = "Parent feeding level", fill = "Parent feeding level", 
+       colour = "Parent feeding level",  
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
         legend.text = element_text(size = 9), legend.title = element_text(size = 11),
@@ -4300,7 +4300,7 @@ temp_iqr_feeding_blups_predicted <- ggplot() +
              size = 1.5, alpha = 0.5) +
   theme_classic() +
   labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
-       colour = "Parent feeding level", fill = "Parent feeding level", 
+       colour = "Parent feeding level",  
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
         legend.text = element_text(size = 9), legend.title = element_text(size = 11),
@@ -4378,7 +4378,7 @@ temp_min_size_predicted <- ggplot() +
              size = 1.5, alpha = 0.5) +
   theme_classic() +
   labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
-       colour = "Relative nestling size", fill = "Relative nestling size",
+       colour = "Relative nestling size", 
        linetype = "Relative nestling size", shape = "Relative nestling size") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
         legend.text = element_text(size = 9), legend.title = element_text(size = 11),
@@ -4391,8 +4391,6 @@ temp_min_size_predicted <- ggplot() +
     shape = guide_legend(override.aes = list(size = 3))
   )
 
-# Print plot
-print(temp_min_feeding_blups_predicted)
 
 # Print plot
 print(temp_min_size_predicted)
@@ -4427,7 +4425,7 @@ temp_max_size_predicted <- ggplot() +
              size = 1.5, alpha = 0.5) +
   theme_classic() +
   labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
-       colour = "Relative nestling size", fill = "Relative nestling size",
+       colour = "Relative nestling size", 
        linetype = "Relative nestling size", shape = "Relative nestling size") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
         legend.text = element_text(size = 9), legend.title = element_text(size = 11),
@@ -4473,7 +4471,7 @@ temp_iqr_size_predicted <- ggplot() +
              size = 1.5, alpha = 0.5) +
   theme_classic() +
   labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
-       colour = "Relative nestling size", fill = "Relative nestling size",
+       colour = "Relative nestling size", 
        linetype = "Relative nestling size", shape = "Relative nestling size") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
         legend.text = element_text(size = 9), legend.title = element_text(size = 11),
@@ -4547,7 +4545,7 @@ temp_thermo_both_min_predicted <- ggplot() +
   geom_point(data = sub, aes(x = thermo_aft_min_temp, y = mass_pre_obs, col = "Late", shape = "Late"), 
              size = 1.5, alpha = 0.5) +
   labs(x = "Minimum temperature (C)", y = "Nestling mass (g)", 
-       color = "Developmental stage", fill = "Developmental stage", 
+       color = "Developmental stage",  
        linetype = "Developmental stage", shape = "Developmental stage") +
   scale_color_manual(values = colors, breaks = c("Early", "Late"),
                      aesthetics = c("color", "fill")) + 
@@ -4589,7 +4587,7 @@ temp_thermo_both_max_predicted <- ggplot() +
   geom_point(data = sub, aes(x = thermo_aft_max_temp, y = mass_pre_obs, col = "Late", shape = "Late"), 
              size = 1.5, alpha = 0.5) +
   labs(x = "Maximum temperature (C)", y = "Nestling mass (g)", 
-       color = "Developmental stage", fill = "Developmental stage", 
+       color = "Developmental stage",  
        linetype = "Developmental stage", shape = "Developmental stage") +
   scale_color_manual(values = colors, breaks = c("Early", "Late"),
                      aesthetics = c("color", "fill")) + 
@@ -4629,7 +4627,7 @@ temp_thermo_both_iqr_predicted <- ggplot() +
   geom_point(data = sub, aes(x = thermo_aft_iqr_temp, y = mass_pre_obs, col = "Late", shape = "Late"), 
              size = 1.5, alpha = 0.5) +
   labs(x = "Temperature variability (C)", y = "Nestling mass (g)", 
-       color = "Developmental stage", fill = "Developmental stage", 
+       color = "Developmental stage", 
        linetype = "Developmental stage", shape = "Developmental stage") +
   scale_color_manual(values = colors, breaks = c("Early", "Late"),
                      aesthetics = c("color", "fill")) + 
