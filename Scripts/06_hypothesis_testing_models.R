@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 9/25/2025
+####### Last modified: 10/1/2025
 
 # Code Blocks
 # 1: Configure work space
@@ -1300,7 +1300,7 @@ str(parental_care_strat)
 # Create display table
 parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**S5 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by levels of parental feeding, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding t-value, degrees of freedom, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
+    title = md("**S5 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by levels of parental feeding, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
@@ -1858,7 +1858,7 @@ big_un_b <- c(paste(round(fixef(mass_min_temp_mid_size_big_lmer)[2], 2), " (",
 # Extract p-values for unadjusted models
 small_un_p <- c(round(summary(mass_min_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"], 2),
               round(summary(mass_max_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
-              as.character(round(summary(mass_iqr_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"], 3)))
+              as.character(round(summary(mass_iqr_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"]), 3))
 
 big_un_p <- c(round(summary(mass_min_temp_mid_size_big_lmer)$coefficients[2, "Pr(>|t|)"], 2),
                 as.character(round(summary(mass_max_temp_mid_size_big_lmer)$coefficients[2, "Pr(>|t|)"], 3)), 
@@ -1946,24 +1946,24 @@ big_ad_df <- c(round(summary(mass_min_temp_mid_size_big_adj_lmer)$coefficients[2
 size_strat_ad <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
-  small_ad_b, small_ad_t, small_ad_df, small_ad_p,
-  big_ad_b, big_ad_t, big_ad_df, big_ad_p
+  small_ad_b, small_ad_df, small_ad_t,  small_ad_p,
+  big_ad_b, big_ad_df, big_ad_t, big_ad_p
 )
 
 size_strat_un <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
-  small_un_b, small_un_t, small_un_df, small_un_p,
-  big_un_b, big_un_t, big_un_df, big_un_p
+  small_un_b, small_un_df, small_un_t,  small_un_p,
+  big_un_b, big_un_df, big_un_t, big_un_p
 )
 
 colnames(size_strat_ad) <- c("variable", "type",
-                             "small_b", "small_t", "small_df", "small_p", 
-                             "big_b", "big_t", "big_df", "big_p")
+                             "small_b", "small_df", "small_t", "small_p", 
+                             "big_b", "big_df", "big_t",  "big_p")
 
 colnames(size_strat_un) <- c("variable", "type",
-                             "small_b", "small_t", "small_df", "small_p", 
-                             "big_b", "big_t", "big_df", "big_p")
+                             "small_b", "small_df", "small_t","small_p", 
+                             "big_b", "big_df", "big_t", "big_p")
 
 size_strat <- rbind(size_strat_un, size_strat_ad)
 
@@ -1975,7 +1975,7 @@ str(size_strat)
 # Create display table
 size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**S4 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by relative nestling size at mid development measure (smallest vs. other), for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding t-value, degrees of freedom, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
+    title = md("**S4 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by relative nestling size at days eight to nine measure (smallest vs. other), for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
@@ -2025,11 +2025,11 @@ size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
   ) %>%
   tab_spanner(
     label = paste("Small size models (n = ", nobs(mass_min_temp_mid_size_small_adj_lmer), ")", sep = ""),
-    columns = c(small_b, small_t, small_df, small_p)
+    columns = c(small_b, small_df, small_t, small_p)
   ) %>%
   tab_spanner(
     label = paste("Big size models (n = ", nobs(mass_min_temp_mid_size_big_adj_lmer), ")", sep = ""),
-    columns = c(big_b, big_t, big_df, big_p)
+    columns = c(big_b, big_df, big_t, big_p)
   )  %>% 
   cols_label(
     ends_with("n") ~ "N", 
@@ -3110,24 +3110,24 @@ after_ad_df <- c(round(summary(mass_min_after_thermo_adj_lmer)$coefficients[2, "
 devel_ad <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
-  before_ad_b, before_ad_t, before_ad_df, before_ad_p, 
-  after_ad_b, after_ad_t, after_ad_df, after_ad_p
+  before_ad_b, before_ad_df, before_ad_t, before_ad_p, 
+  after_ad_b, after_ad_df, after_ad_t, after_ad_p
 )
 
 devel_un <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
-  before_un_b, before_un_t, before_un_df, before_un_p,
- after_un_b, after_un_t, after_un_df, after_un_p
+  before_un_b, before_un_df, before_un_t, before_un_p,
+ after_un_b, after_un_df, after_un_t, after_un_p
 )
 
 colnames(devel_ad) <- c("variable", "type",
-                        "before_b", "before_t", "before_df", "before_p", 
-                        "after_b", "after_t", "after_df", "after_p")
+                        "before_b", "before_df", "before_t", "before_p", 
+                        "after_b", "after_df", "after_t", "after_p")
 
 colnames(devel_un) <- c("variable", "type",
-                        "before_b", "before_t", "before_df", "before_p", 
-                        "after_b", "after_t", "after_df", "after_p")
+                        "before_b", "before_df", "before_t", "before_p", 
+                        "after_b", "after_df", "after_t", "after_p")
 
 devel <- rbind(devel_un, devel_ad)
 
@@ -3140,7 +3140,7 @@ str(devel)
 # Create display table
 devel_mod_table <- gt(devel, rowname_col = "type") %>%
   tab_header(
-    title = md("**S3 Table. Associations of three temperature variables in early and late development (before or after six days post-hatch) with nestling mass for wild barns swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each developmental stage is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding t-value, degrees of freedom, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
+    title = md("**S3 Table. Associations of three temperature variables in early and late development (before or after six days post-hatch) with nestling mass for wild barns swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each developmental stage is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature before or after thermoregulatory independence are the explanatory variables of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors as z-score standardized.",
@@ -3190,11 +3190,11 @@ devel_mod_table <- gt(devel, rowname_col = "type") %>%
   ) %>%
   tab_spanner(
     label = paste("Before models (n = ", nobs(mass_min_before_thermo_adj_lmer), ")", sep = ""),
-    columns = c(before_b, before_t, before_df, before_p)
+    columns = c(before_b, before_df, before_t, before_p)
   ) %>%
   tab_spanner(
     label = paste("After models (n = ", nobs(mass_min_after_thermo_adj_lmer), ")", sep = ""),
-    columns = c(after_b, after_t, after_df, after_p)
+    columns = c(after_b, after_df, after_t, after_p)
   ) %>%
   cols_label(
     ends_with("n") ~ "N", 
