@@ -1,8 +1,8 @@
 ####### Purpose: run models to test hypotheses for barn swallow
-####### nest mircoclimate and nestling growth dataset
-####### By: Sage Madden
+####### nest microclimate and nestling growth dataset
+####### By: Sage
 ####### Created: 12/19/2022
-####### Last modified: 10/1/2025
+####### Last modified: 12/8/2025
 
 # Code Blocks
 # 1: Configure work space
@@ -86,13 +86,17 @@ load('Data/Tidy/tidy_parent_nestl_weather_data_10-4_with_BLUPs.RData')
 late_nestling_parent_care$fsite <- as.factor(late_nestling_parent_care$site)
 late_nestling_parent_care$fnest_id <- as.factor(late_nestling_parent_care$nest_id)
 
-## Create three categories for BLUPs to allow stratification 
+## Create two categories for BLUPs to allow stratification 
 late_nestling_parent_care <- late_nestling_parent_care %>%
-  mutate(feeding_expontd_blups_strat =  as.integer(Hmisc::cut2(feeding_expontd_blups, g=3)))
+  mutate(feeding_expontd_blups_strat =  as.integer(Hmisc::cut2(feeding_expontd_blups, g=2)))
+
+## Create three categories for sensitivity analysis
+late_nestling_parent_care <- late_nestling_parent_care %>%
+  mutate(feeding_expontd_blups_strat_3 =  as.integer(Hmisc::cut2(feeding_expontd_blups, g=3)))
 
 ### Remove outliers in minimum temp x parental feeding analyses (identified based on 
 ### diagnostic plots later in script)
-mass_outliers_removed <- late_nestling_parent_care[-c(4, 40), ]
+mass_outliers_removed <- late_nestling_parent_care[-c(4, 39, 40), ]
 
 ### Remove outliers in maximum temp x parental feeding analyses (identified based on 
 ### diagnostic plots later in script)
@@ -107,17 +111,72 @@ before_thermo_outliers_removed <- late_nestling_parent_care[-c(4, 39, 40), ]
 ##############             Growth, temp, and parental care       ##############
 ###############################################################################
 
+######### Interaction models and stratified models with two categories ######
+
 ######################### Minimum temperature #################################
+
+### Interaction model - unadjusted
+mass_min_temp_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
+                                   scale(feeding_expontd_blups) +
+                                   (1|fnest_id), 
+                                 data = subset(late_nestling_parent_care,
+                                               !is.na(x = mass_pre_obs) & 
+                                                 !is.na(x = nest_min_temp) &
+                                                 !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_lmer))
+  qqline(resid(mass_min_temp_blups_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_min_temp_blups_lmer, vars=c("Cook"))
+infIndexPlot(mass_min_temp_blups_lmer, vars=c("Studentized"))
+
+summary(mass_min_temp_blups_lmer)
+confint(mass_min_temp_blups_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_blups_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_lmer<- bootMer(x = mass_min_temp_blups_lmer,
+                                        FUN = fixef, nsim = 2000,
+                                        seed = 632760,
+                                        use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_lmer <- boot.ci(boot_mass_min_temp_blups_lmer,
+                                          type = c('perc', 'norm', 'basic'),
+                                          index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_temp_blups_lmer_2 <- boot.ci(boot_mass_min_temp_blups_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 3) # CI for 2nd betas
+print(bt_ci_mass_min_temp_blups_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_min_temp_blups_lmer_3 <- boot.ci(boot_mass_min_temp_blups_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 4) # CI for 3rd betas
+print(bt_ci_mass_min_temp_blups_lmer_3)
+
+
 
 ### Stratified models - unadjusted
 ## LOW parental care model - unadjusted
 mass_min_temp_blups_low_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
-                                           (1|fnest_id), 
-                                         data = subset(late_nestling_parent_care,
-                                                       feeding_expontd_blups_strat == 1,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_min_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
+                                       (1|fnest_id), 
+                                     data = subset(late_nestling_parent_care,
+                                                   feeding_expontd_blups_strat == 1,
+                                                   !is.na(x = mass_pre_obs) & 
+                                                     !is.na(x = nest_min_temp) &
+                                                     !is.na(x = feeding_expontd_blups)))
 
 ## Check diagnostics for the full model
 plot(mass_min_temp_blups_low_lmer)
@@ -134,60 +193,25 @@ confint(mass_min_temp_blups_low_lmer)
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_temp_blups_low_lmer <- bootMer(x = mass_min_temp_blups_low_lmer,
-                                                 FUN = fixef, nsim = 2000,
-                                                 seed = 632760,
-                                                 use.u = F, type = 'parametric')
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
 tidy(boot_mass_min_temp_blups_low_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
 bt_ci_mass_min_temp_blups_low_lmer <- boot.ci(boot_mass_min_temp_blups_low_lmer,
-                                                  type = c('perc', 'norm', 'basic'),
-                                                  index = 2) # CI for 1st betas
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
 print(bt_ci_mass_min_temp_blups_low_lmer)
-
-
-## MED parental care- unadjusted
-mass_min_temp_blups_med_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
-                                           (1|fnest_id), 
-                                         data = subset(late_nestling_parent_care,
-                                                       feeding_expontd_blups_strat == 2,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_min_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
-
-## Check diagnostics for the full model
-plot(mass_min_temp_blups_med_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_temp_blups_med_lmer))
-  qqline(resid(mass_min_temp_blups_med_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_temp_blups_med_lmer))
-
-
-summary(mass_min_temp_blups_med_lmer)
-confint(mass_min_temp_blups_med_lmer) 
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_min_temp_blups_med_lmer <- bootMer(x = mass_min_temp_blups_med_lmer,
-                                                 FUN = fixef, nsim = 2000,
-                                                 seed = 632760,
-                                                 use.u = F, type = 'parametric')
-tidy(boot_mass_min_temp_blups_med_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_min_temp_blups_med_lmer <- boot.ci(boot_mass_min_temp_blups_med_lmer,
-                                                  type = c('perc', 'norm', 'basic'),
-                                                  index = 2) # CI for 1st betas
-print(bt_ci_mass_min_temp_blups_med_lmer)
 
 
 ## HIGH parental care - unadjusted
 mass_min_temp_blups_high_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
-                                            (1|fnest_id), 
-                                          data = subset(late_nestling_parent_care,
-                                                        feeding_expontd_blups_strat == 3,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_min_temp) &
-                                                          !is.na(x = feeding_expontd_blups)))
+                                        (1|fnest_id), 
+                                      data = subset(late_nestling_parent_care,
+                                                    feeding_expontd_blups_strat == 2,
+                                                    !is.na(x = mass_pre_obs) & 
+                                                      !is.na(x = nest_min_temp) &
+                                                      !is.na(x = feeding_expontd_blups)))
 
 
 ## Check diagnostics for the full model
@@ -205,16 +229,69 @@ confint(mass_min_temp_blups_high_lmer)
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_temp_blups_high_lmer <- bootMer(x = mass_min_temp_blups_high_lmer,
-                                                  FUN = fixef, nsim = 2000,
-                                                  seed = 632760,
-                                                  use.u = F, type = 'parametric')
+                                              FUN = fixef, nsim = 2000,
+                                              seed = 632760,
+                                              use.u = F, type = 'parametric')
 tidy(boot_mass_min_temp_blups_high_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
 bt_ci_mass_min_temp_blups_high_lmer <- boot.ci(boot_mass_min_temp_blups_high_lmer,
-                                                   type = c('perc', 'norm', 'basic'),
-                                                   index = 2) # CI for 1st betas
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 2) # CI for 1st betas
 print(bt_ci_mass_min_temp_blups_high_lmer)
 
+
+
+### Interaction model - adjusted
+mass_min_temp_blups_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_min_temp) *
+                                                 scale(feeding_expontd_blups) + scale(nestling_number) + 
+                                                 scale(days_summer) +
+                                                 (1|fnest_id), 
+                                               data = subset(late_nestling_parent_care,
+                                                             !is.na(x = mass_pre_obs) & 
+                                                               !is.na(x = nest_min_temp) &
+                                                               !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_adj_lmer))
+  qqline(resid(mass_min_temp_blups_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_min_temp_blups_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_min_temp_blups_adj_lmer, vars=c("Studentized"))
+
+summary(mass_min_temp_blups_adj_lmer)
+confint(mass_min_temp_blups_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_blups_adj_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_adj_lmer<- bootMer(x = mass_min_temp_blups_adj_lmer,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_adj_lmer <- boot.ci(boot_mass_min_temp_blups_adj_lmer,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_temp_blups_adj_lmer_2 <- boot.ci(boot_mass_min_temp_blups_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 3) # CI for 2nd betas
+print(bt_ci_mass_min_temp_blups_adj_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_min_temp_blups_adj_lmer_5 <- boot.ci(boot_mass_min_temp_blups_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 6) # CI for 3rd betas
+print(bt_ci_mass_min_temp_blups_adj_lmer_5)
 
 
 ### Straified models - adjusted
@@ -243,62 +320,26 @@ confint(mass_min_temp_blups_low_adj_lmer)
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_temp_blups_low_adj_lmer <- bootMer(x = mass_min_temp_blups_low_adj_lmer,
-                                            FUN = fixef, nsim = 2000,
-                                            seed = 632760,
-                                            use.u = F, type = 'parametric')
-tidy(boot_mass_min_temp_blups_low_adj_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_min_temp_blups_low_adj_lmer <- boot.ci(boot_mass_min_temp_blups_low_adj_lmer,
-                                              type = c('perc', 'norm', 'basic'),
-                                              index = 2) # CI for 1st betas
-print(bt_ci_mass_min_temp_blups_low_adj_lmer)
-
-
-## MED parental care - adjusted
-mass_min_temp_blups_med_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
-                                           scale(nestling_number) + scale(days_summer) + 
-                                       (1|fnest_id), 
-                                     data = subset(late_nestling_parent_care,
-                                                   feeding_expontd_blups_strat == 2,
-                                                   !is.na(x = mass_pre_obs) & 
-                                                     !is.na(x = nest_min_temp) &
-                                                     !is.na(x = feeding_expontd_blups)))
-
-## Check diagnostics for the full model
-plot(mass_min_temp_blups_med_adj_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_temp_blups_med_adj_lmer))
-  qqline(resid(mass_min_temp_blups_med_adj_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_temp_blups_med_adj_lmer))
-
-
-summary(mass_min_temp_blups_med_adj_lmer)
-confint(mass_min_temp_blups_med_adj_lmer) 
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_min_temp_blups_med_adj_lmer <- bootMer(x = mass_min_temp_blups_med_adj_lmer,
                                                  FUN = fixef, nsim = 2000,
                                                  seed = 632760,
                                                  use.u = F, type = 'parametric')
-tidy(boot_mass_min_temp_blups_med_adj_lmer) # beta estimates and SE
+tidy(boot_mass_min_temp_blups_low_adj_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_min_temp_blups_med_adj_lmer <- boot.ci(boot_mass_min_temp_blups_med_adj_lmer,
+bt_ci_mass_min_temp_blups_low_adj_lmer <- boot.ci(boot_mass_min_temp_blups_low_adj_lmer,
                                                   type = c('perc', 'norm', 'basic'),
                                                   index = 2) # CI for 1st betas
-print(bt_ci_mass_min_temp_blups_med_adj_lmer)
+print(bt_ci_mass_min_temp_blups_low_adj_lmer)
 
 
 ## HIGH parental care - adjusted 
 mass_min_temp_blups_high_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
                                             scale(nestling_number) + scale(days_summer) + 
-                                        (1|fnest_id), 
-                                      data = subset(late_nestling_parent_care,
-                                                    feeding_expontd_blups_strat == 3,
-                                                    !is.na(x = mass_pre_obs) & 
-                                                      !is.na(x = nest_min_temp) &
-                                                      !is.na(x = feeding_expontd_blups)))
+                                            (1|fnest_id), 
+                                          data = subset(late_nestling_parent_care,
+                                                        feeding_expontd_blups_strat == 2,
+                                                        !is.na(x = mass_pre_obs) & 
+                                                          !is.na(x = nest_min_temp) &
+                                                          !is.na(x = feeding_expontd_blups)))
 
 
 ## Check diagnostics for the full model
@@ -316,27 +357,130 @@ confint(mass_min_temp_blups_high_adj_lmer)
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_temp_blups_high_adj_lmer <- bootMer(x = mass_min_temp_blups_high_adj_lmer,
-                                                 FUN = fixef, nsim = 2000,
-                                                 seed = 632760,
-                                                 use.u = F, type = 'parametric')
+                                                  FUN = fixef, nsim = 2000,
+                                                  seed = 632760,
+                                                  use.u = F, type = 'parametric')
 tidy(boot_mass_min_temp_blups_high_adj_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
 bt_ci_mass_min_temp_blups_high_adj_lmer <- boot.ci(boot_mass_min_temp_blups_high_adj_lmer,
-                                                  type = c('perc', 'norm', 'basic'),
-                                                  index = 2) # CI for 1st betas
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 2) # CI for 1st betas
 print(bt_ci_mass_min_temp_blups_high_adj_lmer)
+
+
+
+### Interaction model - unadjusted, outliers removed
+mass_min_temp_blups_noout_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_min_temp) *
+                                                   scale(feeding_expontd_blups) +
+                                                   (1|fnest_id), 
+                                                 data = subset(mass_outliers_removed,
+                                                               !is.na(x = mass_pre_obs) & 
+                                                                 !is.na(x = nest_min_temp) &
+                                                                 !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_noout_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_noout_lmer))
+  qqline(resid(mass_min_temp_blups_noout_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_noout_lmer))
+
+summary(mass_min_temp_blups_noout_lmer)
+confint(mass_min_temp_blups_noout_lmer)  
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_blups_noout_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_noout_lmer <- bootMer(x = mass_min_temp_blups_noout_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_noout_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_noout_lmer <- boot.ci(boot_mass_min_temp_blups_noout_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_noout_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_temp_blups_noout_lmer_2 <- boot.ci(boot_mass_min_temp_blups_noout_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 3) # CI for 2nd betas
+print(bt_ci_mass_min_temp_blups_noout_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_min_temp_blups_noout_lmer_3 <- boot.ci(boot_mass_min_temp_blups_noout_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 4) # CI for 3rd betas
+print(bt_ci_mass_min_temp_blups_noout_lmer_3)
+
+
+### Interaction model - adjusted, outliers removed
+mass_min_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
+                                             scale(feeding_expontd_blups) + scale(nestling_number) + 
+                                             scale(days_summer) +
+                                             (1|fnest_id), 
+                                           data = subset(mass_outliers_removed,
+                                                         !is.na(x = mass_pre_obs) & 
+                                                           !is.na(x = nest_min_temp) &
+                                                           !is.na(x = feeding_expontd_blups)))
+
+# Check diagnostics for the full model
+plot(mass_min_temp_blups_adj_noout_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_adj_noout_lmer))
+  qqline(resid(mass_min_temp_blups_adj_noout_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_adj_noout_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_min_temp_blups_adj_noout_lmer, vars=c("Cook"))
+infIndexPlot(mass_min_temp_blups_adj_noout_lmer, vars=c("Studentized"))
+
+summary(mass_min_temp_blups_adj_noout_lmer)
+confint(mass_min_temp_blups_adj_noout_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_blups_adj_noout_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_adj_noout_lmer <- bootMer(x = mass_min_temp_blups_adj_noout_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_adj_noout_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_adj_noout_lmer <- boot.ci(boot_mass_min_temp_blups_adj_noout_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_adj_noout_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_temp_blups_adj_noout_lmer_2 <- boot.ci(boot_mass_min_temp_blups_adj_noout_lmer,
+                                                      type = c('perc', 'norm', 'basic'),
+                                                      index = 3) # CI for 2nd betas
+print(bt_ci_mass_min_temp_blups_adj_noout_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_min_temp_blups_adj_noout_lmer_5 <- boot.ci(boot_mass_min_temp_blups_adj_noout_lmer,
+                                                      type = c('perc', 'norm', 'basic'),
+                                                      index = 6) # CI for 3rd betas
+print(bt_ci_mass_min_temp_blups_adj_noout_lmer_5)
 
 
 ### Stratified models - adjusted, outliers removed
 ## LOW parental care model - adjusted, outliers removed
 mass_min_temp_blups_low_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
-                                           scale(nestling_number) + scale(days_summer) + 
-                                           (1|fnest_id), 
-                                         data = subset(mass_outliers_removed,
-                                                       feeding_expontd_blups_strat == 1,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_min_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
+                                                 scale(nestling_number) + scale(days_summer) + 
+                                                 (1|fnest_id), 
+                                               data = subset(mass_outliers_removed,
+                                                             feeding_expontd_blups_strat == 1,
+                                                             !is.na(x = mass_pre_obs) & 
+                                                               !is.na(x = nest_min_temp) &
+                                                               !is.na(x = feeding_expontd_blups)))
 
 # Check diagnostics for the full model
 plot(mass_min_temp_blups_low_adj_noout_lmer)
@@ -352,60 +496,27 @@ confint(mass_min_temp_blups_low_adj_noout_lmer)
 # Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_temp_blups_low_adj_noout_lmer <- bootMer(x = mass_min_temp_blups_low_adj_noout_lmer,
-                                                   FUN = fixef, nsim = 2000,
-                                                   seed = 632760,
-                                                   use.u = F, type = 'parametric')
-tidy(boot_mass_min_temp_blups_low_adj_noout_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_min_temp_blups_low_adj_noout_lmer <- boot.ci(boot_mass_min_temp_blups_low_adj_noout_lmer,
-                                                    type = c('perc', 'norm', 'basic'),
-                                                    index = 2) # CI for 1st betas
-print(bt_ci_mass_min_temp_blups_low_adj_noout_lmer)
-
-
-## MED parental care - adjusted, outliers removed
-mass_min_temp_blups_med_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
-                                           scale(nestling_number) + scale(days_summer) + 
-                                           (1|fnest_id), 
-                                         data = subset(mass_outliers_removed,
-                                                       feeding_expontd_blups_strat == 2,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_min_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
-
-# Check diagnostics for the full model
-plot(mass_min_temp_blups_med_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_min_temp_blups_med_adj_noout_lmer))
-  qqline(resid(mass_min_temp_blups_med_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_min_temp_blups_med_adj_noout_lmer))
-
-summary(mass_min_temp_blups_med_adj_noout_lmer)
-confint(mass_min_temp_blups_med_adj_noout_lmer) 
-
-# Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_min_temp_blups_med_adj_noout_lmer <- bootMer(x = mass_min_temp_blups_med_adj_noout_lmer,
                                                        FUN = fixef, nsim = 2000,
                                                        seed = 632760,
                                                        use.u = F, type = 'parametric')
-tidy(boot_mass_min_temp_blups_med_adj_noout_lmer) # beta estimates and SE
+tidy(boot_mass_min_temp_blups_low_adj_noout_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_min_temp_blups_med_adj_noout_lmer <- boot.ci(boot_mass_min_temp_blups_med_adj_noout_lmer,
+bt_ci_mass_min_temp_blups_low_adj_noout_lmer <- boot.ci(boot_mass_min_temp_blups_low_adj_noout_lmer,
                                                         type = c('perc', 'norm', 'basic'),
                                                         index = 2) # CI for 1st betas
-print(bt_ci_mass_min_temp_blups_med_adj_noout_lmer)
+print(bt_ci_mass_min_temp_blups_low_adj_noout_lmer)
+
+
 
 ## HIGH parental care - adjusted, outliers removed
 mass_min_temp_blups_high_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
-                                            scale(nestling_number) + scale(days_summer) + 
-                                            (1|fnest_id), 
-                                          data = subset(mass_outliers_removed,
-                                                        feeding_expontd_blups_strat == 3,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_min_temp) &
-                                                          !is.na(x = feeding_expontd_blups)))
+                                                  scale(nestling_number) + scale(days_summer) + 
+                                                  (1|fnest_id), 
+                                                data = subset(mass_outliers_removed,
+                                                              feeding_expontd_blups_strat == 2,
+                                                              !is.na(x = mass_pre_obs) & 
+                                                                !is.na(x = nest_min_temp) &
+                                                                !is.na(x = feeding_expontd_blups)))
 
 # Check diagnostics for the full model
 plot(mass_min_temp_blups_high_adj_noout_lmer)
@@ -421,18 +532,69 @@ confint(mass_min_temp_blups_high_adj_noout_lmer)
 # Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_min_temp_blups_high_adj_noout_lmer <- bootMer(x = mass_min_temp_blups_high_adj_noout_lmer,
-                                                       FUN = fixef, nsim = 2000,
-                                                       seed = 632760,
-                                                       use.u = F, type = 'parametric')
+                                                        FUN = fixef, nsim = 2000,
+                                                        seed = 632760,
+                                                        use.u = F, type = 'parametric')
 tidy(boot_mass_min_temp_blups_high_adj_noout_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
 bt_ci_mass_min_temp_blups_high_adj_noout_lmer <- boot.ci(boot_mass_min_temp_blups_high_adj_noout_lmer,
-                                                        type = c('perc', 'norm', 'basic'),
-                                                        index = 2) # CI for 1st betas
+                                                         type = c('perc', 'norm', 'basic'),
+                                                         index = 2) # CI for 1st betas
 print(bt_ci_mass_min_temp_blups_high_adj_noout_lmer)
 
 
 ############################## Maximum temperature ############################
+
+## Interaction model - unadjusted 
+mass_max_temp_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
+                                   scale(feeding_expontd_blups) +
+                                   (1|fnest_id), 
+                                 data = subset(late_nestling_parent_care,
+                                               !is.na(x = mass_pre_obs) & 
+                                                 !is.na(x = nest_max_temp) &
+                                                 !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_lmer))
+  qqline(resid(mass_max_temp_blups_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_max_temp_blups_lmer, vars=c("Cook"))
+infIndexPlot(mass_max_temp_blups_lmer, vars=c("Studentized"))
+
+summary(mass_max_temp_blups_lmer)
+confint(mass_max_temp_blups_lmer)  
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_blups_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_lmer <- bootMer(x = mass_max_temp_blups_lmer,
+                                         FUN = fixef, nsim = 2000,
+                                         seed = 632760,
+                                         use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_lmer <- boot.ci(boot_mass_max_temp_blups_lmer,
+                                          type = c('perc', 'norm', 'basic'),
+                                          index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_temp_blups_lmer_2 <- boot.ci(boot_mass_max_temp_blups_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 3) # CI for 2nd betas
+print(bt_ci_mass_max_temp_blups_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_max_temp_blups_lmer_3 <- boot.ci(boot_mass_max_temp_blups_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 4) # CI for 3rd betas
+print(bt_ci_mass_max_temp_blups_lmer_3)
 
 
 ### Stratified models - unadjusted
@@ -470,47 +632,11 @@ bt_ci_mass_max_temp_blups_low_lmer <- boot.ci(boot_mass_max_temp_blups_low_lmer,
                                               index = 2) # CI for 1st betas
 print(bt_ci_mass_max_temp_blups_low_lmer)
 
-
-## MED parental care - unadjusted
-mass_max_temp_blups_med_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
-                                       (1|fnest_id), 
-                                     data = subset(late_nestling_parent_care,
-                                                   feeding_expontd_blups_strat == 2,
-                                                   !is.na(x = mass_pre_obs) & 
-                                                     !is.na(x = nest_max_temp) &
-                                                     !is.na(x = feeding_expontd_blups)))
-
-## Check diagnostics for the full model
-plot(mass_max_temp_blups_med_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_temp_blups_med_lmer))
-  qqline(resid(mass_max_temp_blups_med_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_temp_blups_med_lmer))
-
-
-summary(mass_max_temp_blups_med_lmer)
-confint(mass_max_temp_blups_med_lmer) 
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_max_temp_blups_med_lmer <- bootMer(x = mass_max_temp_blups_med_lmer,
-                                             FUN = fixef, nsim = 2000,
-                                             seed = 632760,
-                                             use.u = F, type = 'parametric')
-tidy(boot_mass_max_temp_blups_med_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_max_temp_blups_med_lmer <- boot.ci(boot_mass_max_temp_blups_med_lmer,
-                                              type = c('perc', 'norm', 'basic'),
-                                              index = 2) # CI for 1st betas
-print(bt_ci_mass_max_temp_blups_med_lmer)
-
-
 ## HIGH parental care - unadjusted 
 mass_max_temp_blups_high_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
-                                                    feeding_expontd_blups_strat == 3,
+                                                    feeding_expontd_blups_strat == 2,
                                                     !is.na(x = mass_pre_obs) & 
                                                       !is.na(x = nest_max_temp) &
                                                       !is.na(x = feeding_expontd_blups)))
@@ -541,6 +667,58 @@ bt_ci_mass_max_temp_blups_high_lmer <- boot.ci(boot_mass_max_temp_blups_high_lme
                                                index = 2) # CI for 1st betas
 print(bt_ci_mass_max_temp_blups_high_lmer)
 
+
+### Interaction model - adjusted
+mass_max_temp_blups_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_max_temp) *
+                                                 scale(feeding_expontd_blups) + 
+                                                 scale(nestling_number) + scale(days_summer) +
+                                                 (1|fnest_id), 
+                                               data = subset(late_nestling_parent_care,
+                                                             !is.na(x = mass_pre_obs) & 
+                                                               !is.na(x = nest_max_temp) &
+                                                               !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_adj_lmer))
+  qqline(resid(mass_max_temp_blups_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_max_temp_blups_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_max_temp_blups_adj_lmer, vars=c("Studentized"))
+
+summary(mass_max_temp_blups_adj_lmer)
+confint(mass_max_temp_blups_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_blups_adj_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_adj_lmer <- bootMer(x = mass_max_temp_blups_adj_lmer,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_adj_lmer <- boot.ci(boot_mass_max_temp_blups_adj_lmer,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_temp_blups_adj_lmer_2 <- boot.ci(boot_mass_max_temp_blups_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 3) # CI for 2nd betas
+print(bt_ci_mass_max_temp_blups_adj_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_max_temp_blups_adj_lmer_5 <- boot.ci(boot_mass_max_temp_blups_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 6) # CI for 3rd betas
+print(bt_ci_mass_max_temp_blups_adj_lmer_5)
 
 
 ### Stratified models - adjusted
@@ -580,48 +758,12 @@ bt_ci_mass_max_temp_blups_low_adj_lmer <- boot.ci(boot_mass_max_temp_blups_low_a
 print(bt_ci_mass_max_temp_blups_low_adj_lmer)
 
 
-## MED parental care - adjusted
-mass_max_temp_blups_med_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
-                                           scale(nestling_number) + scale(days_summer) + 
-                                           (1|fnest_id), 
-                                         data = subset(late_nestling_parent_care,
-                                                       feeding_expontd_blups_strat == 2,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_max_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
-
-## Check diagnostics for the full model
-plot(mass_max_temp_blups_med_adj_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_temp_blups_med_adj_lmer))
-  qqline(resid(mass_max_temp_blups_med_adj_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_temp_blups_med_adj_lmer))
-
-
-summary(mass_max_temp_blups_med_adj_lmer)
-confint(mass_max_temp_blups_med_adj_lmer) 
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_max_temp_blups_med_adj_lmer <- bootMer(x = mass_max_temp_blups_med_adj_lmer,
-                                                 FUN = fixef, nsim = 2000,
-                                                 seed = 632760,
-                                                 use.u = F, type = 'parametric')
-tidy(boot_mass_max_temp_blups_med_adj_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_max_temp_blups_med_adj_lmer <- boot.ci(boot_mass_max_temp_blups_med_adj_lmer,
-                                                  type = c('perc', 'norm', 'basic'),
-                                                  index = 2) # CI for 1st betas
-print(bt_ci_mass_max_temp_blups_med_adj_lmer)
-
-
 ## HIGH parental care - adjusted 
 mass_max_temp_blups_high_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
                                             scale(nestling_number) + scale(days_summer) + 
                                             (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
-                                                        feeding_expontd_blups_strat == 3,
+                                                        feeding_expontd_blups_strat == 2,
                                                         !is.na(x = mass_pre_obs) & 
                                                           !is.na(x = nest_max_temp) &
                                                           !is.na(x = feeding_expontd_blups)))
@@ -653,16 +795,120 @@ print(bt_ci_mass_max_temp_blups_high_adj_lmer)
 
 
 
+## Interaction model - unadjusted, outliers removed
+mass_max_temp_blups_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
+                                         scale(feeding_expontd_blups) +
+                                         (1|fnest_id), 
+                                       data = subset(mass_max_outliers_removed,
+                                                     !is.na(x = mass_pre_obs) & 
+                                                       !is.na(x = nest_max_temp) &
+                                                       !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_noout_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_noout_lmer))
+  qqline(resid(mass_max_temp_blups_noout_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_noout_lmer))
+
+summary(mass_max_temp_blups_noout_lmer)
+confint(mass_max_temp_blups_noout_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_blups_noout_lmer)
+
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_noout_lmer <- bootMer(x = mass_max_temp_blups_noout_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_noout_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_noout_lmer <- boot.ci(boot_mass_max_temp_blups_noout_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_noout_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_temp_blups_noout_lmer_2 <- boot.ci(boot_mass_max_temp_blups_noout_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 3) # CI for 2nd betas
+print(bt_ci_mass_max_temp_blups_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_max_temp_blups_noout_lmer_3 <- boot.ci(boot_mass_max_temp_blups_noout_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 4) # CI for 3rd betas
+print(bt_ci_mass_max_temp_blups_noout_lmer_3)
+
+
+### Interaction model - adjusted, outliers removed
+mass_max_temp_blups_adj_noout_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_max_temp) *
+                                                       scale(feeding_expontd_blups) + 
+                                                       scale(nestling_number) + scale(days_summer) +
+                                                       (1|fnest_id), 
+                                                     data = subset(mass_max_outliers_removed,
+                                                                   !is.na(x = mass_pre_obs) & 
+                                                                     !is.na(x = nest_max_temp) &
+                                                                     !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_adj_noout_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_adj_noout_lmer))
+  qqline(resid(mass_max_temp_blups_adj_noout_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_adj_noout_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_max_temp_blups_adj_noout_lmer, vars=c("Cook"))
+infIndexPlot(mass_max_temp_blups_adj_noout_lmer, vars=c("Studentized"))
+
+summary(mass_max_temp_blups_adj_noout_lmer)
+confint(mass_max_temp_blups_adj_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_blups_adj_noout_lmer)
+
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_adj_noout_lmer <- bootMer(x = mass_max_temp_blups_adj_noout_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_adj_noout_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_adj_noout_lmer <- boot.ci(boot_mass_max_temp_blups_adj_noout_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_temp_blups_adj_noout_lmer_2 <- boot.ci(boot_mass_max_temp_blups_adj_noout_lmer,
+                                                      type = c('perc', 'norm', 'basic'),
+                                                      index = 3) # CI for 2nd betas
+print(bt_ci_mass_max_temp_blups_adj_noout_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_max_temp_blups_adj_noout_lmer_5 <- boot.ci(boot_mass_max_temp_blups_adj_noout_lmer,
+                                                      type = c('perc', 'norm', 'basic'),
+                                                      index = 6) # CI for 3rd betas
+print(bt_ci_mass_max_temp_blups_adj_noout_lmer_5)
+
+
 ### Stratified models - adjusted, outliers removed
 ## LOW parental care model - adjusted, outliers removed
 mass_max_temp_blups_low_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
-                                           scale(nestling_number) + scale(days_summer) + 
-                                           (1|fnest_id), 
-                                         data = subset(mass_max_outliers_removed,
-                                                       feeding_expontd_blups_strat == 1,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_max_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
+                                                 scale(nestling_number) + scale(days_summer) + 
+                                                 (1|fnest_id), 
+                                               data = subset(mass_max_outliers_removed,
+                                                             feeding_expontd_blups_strat == 1,
+                                                             !is.na(x = mass_pre_obs) & 
+                                                               !is.na(x = nest_max_temp) &
+                                                               !is.na(x = feeding_expontd_blups)))
 
 ## Check diagnostics for the full model
 plot(mass_max_temp_blups_low_adj_noout_lmer)
@@ -679,62 +925,26 @@ confint(mass_max_temp_blups_low_adj_noout_lmer)
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_temp_blups_low_adj_noout_lmer <- bootMer(x = mass_max_temp_blups_low_adj_noout_lmer,
-                                                 FUN = fixef, nsim = 2000,
-                                                 seed = 632760,
-                                                 use.u = F, type = 'parametric')
+                                                       FUN = fixef, nsim = 2000,
+                                                       seed = 632760,
+                                                       use.u = F, type = 'parametric')
 tidy(boot_mass_max_temp_blups_low_adj_noout_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
 bt_ci_mass_max_temp_blups_low_adj_noout_lmer <- boot.ci(boot_mass_max_temp_blups_low_adj_noout_lmer,
-                                                  type = c('perc', 'norm', 'basic'),
-                                                  index = 2) # CI for 1st betas
+                                                        type = c('perc', 'norm', 'basic'),
+                                                        index = 2) # CI for 1st betas
 print(bt_ci_mass_max_temp_blups_low_adj_noout_lmer)
-
-
-## MED parental care - adjusted, outliers removed
-mass_max_temp_blups_med_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
-                                           scale(nestling_number) + scale(days_summer) + 
-                                           (1|fnest_id), 
-                                         data = subset(mass_max_outliers_removed,
-                                                       feeding_expontd_blups_strat == 2,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_max_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
-
-## Check diagnostics for the full model
-plot(mass_max_temp_blups_med_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_max_temp_blups_med_adj_noout_lmer))
-  qqline(resid(mass_max_temp_blups_med_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_max_temp_blups_med_adj_noout_lmer))
-
-
-summary(mass_max_temp_blups_med_adj_noout_lmer)
-confint(mass_max_temp_blups_med_adj_noout_lmer) 
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_max_temp_blups_med_adj_noout_lmer <- bootMer(x = mass_max_temp_blups_med_adj_noout_lmer,
-                                                 FUN = fixef, nsim = 2000,
-                                                 seed = 632760,
-                                                 use.u = F, type = 'parametric')
-tidy(boot_mass_max_temp_blups_med_adj_noout_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_max_temp_blups_med_adj_noout_lmer <- boot.ci(boot_mass_max_temp_blups_med_adj_noout_lmer,
-                                                  type = c('perc', 'norm', 'basic'),
-                                                  index = 2) # CI for 1st betas
-print(bt_ci_mass_max_temp_blups_med_adj_noout_lmer)
 
 
 ## HIGH parental care - adjusted, outliers removed
 mass_max_temp_blups_high_noout_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
-                                            scale(nestling_number) + scale(days_summer) + 
-                                            (1|fnest_id), 
-                                          data = subset(mass_max_outliers_removed,
-                                                        feeding_expontd_blups_strat == 3,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_max_temp) &
-                                                          !is.na(x = feeding_expontd_blups)))
+                                                  scale(nestling_number) + scale(days_summer) + 
+                                                  (1|fnest_id), 
+                                                data = subset(mass_max_outliers_removed,
+                                                              feeding_expontd_blups_strat == 2,
+                                                              !is.na(x = mass_pre_obs) & 
+                                                                !is.na(x = nest_max_temp) &
+                                                                !is.na(x = feeding_expontd_blups)))
 
 
 ## Check diagnostics for the full model
@@ -752,19 +962,71 @@ confint(mass_max_temp_blups_high_noout_adj_lmer)
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_max_temp_blups_high_noout_adj_lmer <- bootMer(x = mass_max_temp_blups_high_noout_adj_lmer,
-                                                  FUN = fixef, nsim = 2000,
-                                                  seed = 632760,
-                                                  use.u = F, type = 'parametric')
+                                                        FUN = fixef, nsim = 2000,
+                                                        seed = 632760,
+                                                        use.u = F, type = 'parametric')
 tidy(boot_mass_max_temp_blups_high_noout_adj_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
 bt_ci_mass_max_temp_blups_high_noout_adj_lmer <- boot.ci(boot_mass_max_temp_blups_high_noout_adj_lmer,
-                                                   type = c('perc', 'norm', 'basic'),
-                                                   index = 2) # CI for 1st betas
+                                                         type = c('perc', 'norm', 'basic'),
+                                                         index = 2) # CI for 1st betas
 print(bt_ci_mass_max_temp_blups_high_noout_adj_lmer)
 
 
 
 ##################### Temperature interquartile range #########################
+
+### Interaction model - unadjusted
+mass_iqr_temp_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+                                   scale(feeding_expontd_blups) +
+                                   (1|fnest_id), 
+                                 data = subset(late_nestling_parent_care,
+                                               !is.na(x = mass_pre_obs) & 
+                                                 !is.na(x = nest_iqr_temp) &
+                                                 !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_lmer))
+  qqline(resid(mass_iqr_temp_blups_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_temp_blups_lmer, vars=c("Cook"))
+infIndexPlot(mass_iqr_temp_blups_lmer, vars=c("Studentized"))
+
+summary(mass_iqr_temp_blups_lmer)
+confint(mass_iqr_temp_blups_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_blups_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_lmer <- bootMer(x = mass_iqr_temp_blups_lmer,
+                                         FUN = fixef, nsim = 2000,
+                                         seed = 632760,
+                                         use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_lmer <- boot.ci(boot_mass_iqr_temp_blups_lmer,
+                                          type = c('perc', 'norm', 'basic'),
+                                          index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_temp_blups_lmer_2 <- boot.ci(boot_mass_iqr_temp_blups_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 3) # CI for 2nd betas
+print(bt_ci_mass_iqr_temp_blups_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_iqr_temp_blups_lmer_3 <- boot.ci(boot_mass_iqr_temp_blups_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 4) # CI for 3rd betas
+print(bt_ci_mass_iqr_temp_blups_lmer_3)
+
 
 ### Stratified models - unadjusted
 ## LOW parental care model - unadjusted
@@ -802,46 +1064,11 @@ bt_ci_mass_iqr_temp_blups_low_lmer <- boot.ci(boot_mass_iqr_temp_blups_low_lmer,
 print(bt_ci_mass_iqr_temp_blups_low_lmer)
 
 
-## MED parental care - unadjusted
-mass_iqr_temp_blups_med_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
-                                       (1|fnest_id), 
-                                     data = subset(late_nestling_parent_care,
-                                                   feeding_expontd_blups_strat == 2,
-                                                   !is.na(x = mass_pre_obs) & 
-                                                     !is.na(x = nest_iqr_temp) &
-                                                     !is.na(x = feeding_expontd_blups)))
-
-## Check diagnostics for the full model
-plot(mass_iqr_temp_blups_med_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_iqr_temp_blups_med_lmer))
-  qqline(resid(mass_iqr_temp_blups_med_lmer))}
-# Histogram of residuals
-hist(resid(mass_iqr_temp_blups_med_lmer))
-
-
-summary(mass_iqr_temp_blups_med_lmer)
-confint(mass_iqr_temp_blups_med_lmer) 
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_iqr_temp_blups_med_lmer <- bootMer(x = mass_iqr_temp_blups_med_lmer,
-                                             FUN = fixef, nsim = 2000,
-                                             seed = 632760,
-                                             use.u = F, type = 'parametric')
-tidy(boot_mass_iqr_temp_blups_med_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_iqr_temp_blups_med_lmer <- boot.ci(boot_mass_iqr_temp_blups_med_lmer,
-                                              type = c('perc', 'norm', 'basic'),
-                                              index = 2) # CI for 1st betas
-print(bt_ci_mass_iqr_temp_blups_med_lmer)
-
-
 ## HIGH parental care - unadjusted 
 mass_iqr_temp_blups_high_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
                                         (1|fnest_id), 
                                       data = subset(late_nestling_parent_care,
-                                                    feeding_expontd_blups_strat == 3,
+                                                    feeding_expontd_blups_strat == 2,
                                                     !is.na(x = mass_pre_obs) & 
                                                       !is.na(x = nest_iqr_temp) &
                                                       !is.na(x = feeding_expontd_blups)))
@@ -871,6 +1098,60 @@ bt_ci_mass_iqr_temp_blups_high_lmer <- boot.ci(boot_mass_iqr_temp_blups_high_lme
                                                type = c('perc', 'norm', 'basic'),
                                                index = 2) # CI for 1st betas
 print(bt_ci_mass_iqr_temp_blups_high_lmer)
+
+
+### Interaction model - adjusted
+mass_iqr_temp_blups_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+                                                 scale(feeding_expontd_blups) + 
+                                                 scale(nestling_number) + scale(days_summer) +
+                                                 (1|fnest_id), 
+                                               data = subset(late_nestling_parent_care,
+                                                             !is.na(x = mass_pre_obs) & 
+                                                               !is.na(x = nest_iqr_temp) &
+                                                               !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_adj_lmer))
+  qqline(resid(mass_iqr_temp_blups_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_temp_blups_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_iqr_temp_blups_adj_lmer, vars=c("Studentized"))
+
+summary(mass_iqr_temp_blups_adj_lmer)
+confint(mass_iqr_temp_blups_adj_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_blups_adj_lmer)
+
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_adj_lmer <- bootMer(x = mass_iqr_temp_blups_adj_lmer,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_adj_lmer <- boot.ci(boot_mass_iqr_temp_blups_adj_lmer,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_temp_blups_adj_lmer_2 <- boot.ci(boot_mass_iqr_temp_blups_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 3) # CI for 2nd betas
+print(bt_ci_mass_iqr_temp_blups_adj_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_iqr_temp_blups_adj_lmer_5 <- boot.ci(boot_mass_iqr_temp_blups_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 6) # CI for 3rd betas
+print(bt_ci_mass_iqr_temp_blups_adj_lmer_5)
 
 
 ### Stratified models - adjusted
@@ -910,48 +1191,12 @@ bt_ci_mass_iqr_temp_blups_low_adj_lmer <- boot.ci(boot_mass_iqr_temp_blups_low_a
 print(bt_ci_mass_iqr_temp_blups_low_adj_lmer)
 
 
-## MED parental care - adjusted
-mass_iqr_temp_blups_med_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
-                                           scale(nestling_number) + scale(days_summer) + 
-                                           (1|fnest_id), 
-                                         data = subset(late_nestling_parent_care,
-                                                       feeding_expontd_blups_strat == 2,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_iqr_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
-
-## Check diagnostics for the full model
-plot(mass_iqr_temp_blups_med_adj_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_iqr_temp_blups_med_adj_lmer))
-  qqline(resid(mass_iqr_temp_blups_med_adj_lmer))}
-# Histogram of residuals
-hist(resid(mass_iqr_temp_blups_med_adj_lmer))
-
-
-summary(mass_iqr_temp_blups_med_adj_lmer)
-confint(mass_iqr_temp_blups_med_adj_lmer) 
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_iqr_temp_blups_med_adj_lmer <- bootMer(x = mass_iqr_temp_blups_med_adj_lmer,
-                                                 FUN = fixef, nsim = 2000,
-                                                 seed = 632760,
-                                                 use.u = F, type = 'parametric')
-tidy(boot_mass_iqr_temp_blups_med_adj_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_iqr_temp_blups_med_adj_lmer <- boot.ci(boot_mass_iqr_temp_blups_med_adj_lmer,
-                                                  type = c('perc', 'norm', 'basic'),
-                                                  index = 2) # CI for 1st betas
-print(bt_ci_mass_iqr_temp_blups_med_adj_lmer)
-
-
 ## HIGH parental care - adjusted 
 mass_iqr_temp_blups_high_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
                                             scale(nestling_number) + scale(days_summer) + 
                                             (1|fnest_id), 
                                           data = subset(late_nestling_parent_care,
-                                                        feeding_expontd_blups_strat == 3,
+                                                        feeding_expontd_blups_strat == 2,
                                                         !is.na(x = mass_pre_obs) & 
                                                           !is.na(x = nest_iqr_temp) &
                                                           !is.na(x = feeding_expontd_blups)))
@@ -982,17 +1227,118 @@ bt_ci_mass_iqr_temp_blups_high_adj_lmer <- boot.ci(boot_mass_iqr_temp_blups_high
 print(bt_ci_mass_iqr_temp_blups_high_adj_lmer)
 
 
+### Interaction model - unadjusted, outliers removed 
+mass_iqr_temp_blups_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+                                         scale(feeding_expontd_blups) +
+                                         (1|fnest_id), 
+                                       data = subset(mass_max_outliers_removed,
+                                                     !is.na(x = mass_pre_obs) & 
+                                                       !is.na(x = nest_iqr_temp) &
+                                                       !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_noout_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_noout_lmer))
+  qqline(resid(mass_iqr_temp_blups_noout_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_noout_lmer))
+
+summary(mass_iqr_temp_blups_noout_lmer)
+confint(mass_iqr_temp_blups_noout_lmer)  
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_blups_noout_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_noout_lmer <- bootMer(x = mass_iqr_temp_blups_noout_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_noout_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_noout_lmer <- boot.ci(boot_mass_iqr_temp_blups_noout_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_noout_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_temp_blups_noout_lmer_2 <- boot.ci(boot_mass_iqr_temp_blups_noout_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 3) # CI for 2nd betas
+print(bt_ci_mass_iqr_temp_blups_noout_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_iqr_temp_blups_noout_lmer_3 <- boot.ci(boot_mass_iqr_temp_blups_noout_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 4) # CI for 3rd betas
+print(bt_ci_mass_iqr_temp_blups_noout_lmer_3)
+
+
+### Interaction model - adjusted, outliers removed 
+mass_iqr_temp_blups_adj_noout_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+                                                       scale(feeding_expontd_blups) + 
+                                                       scale(nestling_number) + scale(days_summer) +
+                                                       (1|fnest_id), 
+                                                     data = subset(mass_max_outliers_removed,
+                                                                   !is.na(x = mass_pre_obs) & 
+                                                                     !is.na(x = nest_iqr_temp) &
+                                                                     !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_adj_noout_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_adj_noout_lmer))
+  qqline(resid(mass_iqr_temp_blups_adj_noout_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_adj_noout_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_temp_blups_adj_noout_lmer, vars=c("Cook"))
+infIndexPlot(mass_iqr_temp_blups_adj_noout_lmer, vars=c("Studentized"))
+
+summary(mass_iqr_temp_blups_adj_noout_lmer)
+confint(mass_iqr_temp_blups_adj_noout_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_blups_adj_noout_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_adj_noout_lmer <- bootMer(x = mass_iqr_temp_blups_adj_noout_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_adj_noout_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_adj_noout_lmer <- boot.ci(boot_mass_iqr_temp_blups_adj_noout_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_temp_blups_adj_noout_lmer_2 <- boot.ci(boot_mass_iqr_temp_blups_adj_noout_lmer,
+                                                      type = c('perc', 'norm', 'basic'),
+                                                      index = 3) # CI for 2nd betas
+print(bt_ci_mass_iqr_temp_blups_adj_noout_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_iqr_temp_blups_adj_noout_lmer_5 <- boot.ci(boot_mass_iqr_temp_blups_adj_noout_lmer,
+                                                      type = c('perc', 'norm', 'basic'),
+                                                      index = 6) # CI for 3rd betas
+print(bt_ci_mass_iqr_temp_blups_adj_noout_lmer_5)
+
 
 ### Stratified models - adjusted, outliers removed
 ## LOW parental care model - adjusted, outliers removed
 mass_iqr_temp_blups_low_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
-                                           scale(nestling_number) + scale(days_summer) + 
-                                           (1|fnest_id), 
-                                         data = subset(mass_max_outliers_removed,
-                                                       feeding_expontd_blups_strat == 1,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_iqr_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
+                                                 scale(nestling_number) + scale(days_summer) + 
+                                                 (1|fnest_id), 
+                                               data = subset(mass_max_outliers_removed,
+                                                             feeding_expontd_blups_strat == 1,
+                                                             !is.na(x = mass_pre_obs) & 
+                                                               !is.na(x = nest_iqr_temp) &
+                                                               !is.na(x = feeding_expontd_blups)))
 
 ## Check diagnostics for the full model
 plot(mass_iqr_temp_blups_low_adj_noout_lmer)
@@ -1009,62 +1355,26 @@ confint(mass_iqr_temp_blups_low_adj_noout_lmer)
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_temp_blups_low_adj_noout_lmer <- bootMer(x = mass_iqr_temp_blups_low_adj_noout_lmer,
-                                                 FUN = fixef, nsim = 2000,
-                                                 seed = 632760,
-                                                 use.u = F, type = 'parametric')
+                                                       FUN = fixef, nsim = 2000,
+                                                       seed = 632760,
+                                                       use.u = F, type = 'parametric')
 tidy(boot_mass_iqr_temp_blups_low_adj_noout_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
 bt_ci_mass_iqr_temp_blups_low_adj_noout_lmer <- boot.ci(boot_mass_iqr_temp_blups_low_adj_noout_lmer,
-                                                  type = c('perc', 'norm', 'basic'),
-                                                  index = 2) # CI for 1st betas
+                                                        type = c('perc', 'norm', 'basic'),
+                                                        index = 2) # CI for 1st betas
 print(bt_ci_mass_iqr_temp_blups_low_adj_noout_lmer)
-
-
-## MED parental care - adjusted, outliers removed
-mass_iqr_temp_blups_med_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
-                                           scale(nestling_number) + scale(days_summer) + 
-                                           (1|fnest_id), 
-                                         data = subset(mass_max_outliers_removed,
-                                                       feeding_expontd_blups_strat == 2,
-                                                       !is.na(x = mass_pre_obs) & 
-                                                         !is.na(x = nest_iqr_temp) &
-                                                         !is.na(x = feeding_expontd_blups)))
-
-## Check diagnostics for the full model
-plot(mass_iqr_temp_blups_med_adj_noout_lmer)
-# Normal QQplot
-{qqnorm(resid(mass_iqr_temp_blups_med_adj_noout_lmer))
-  qqline(resid(mass_iqr_temp_blups_med_adj_noout_lmer))}
-# Histogram of residuals
-hist(resid(mass_iqr_temp_blups_med_adj_noout_lmer))
-
-
-summary(mass_iqr_temp_blups_med_adj_noout_lmer)
-confint(mass_iqr_temp_blups_med_adj_noout_lmer) 
-
-## Bootstrap parameter estimates
-# bootstrapping number of resampling simulations
-boot_mass_iqr_temp_blups_med_adj_noout_lmer <- bootMer(x = mass_iqr_temp_blups_med_adj_noout_lmer,
-                                                 FUN = fixef, nsim = 2000,
-                                                 seed = 632760,
-                                                 use.u = F, type = 'parametric')
-tidy(boot_mass_iqr_temp_blups_med_adj_noout_lmer) # beta estimates and SE
-# use 'boot' package to generate 95% CI for 1st beta
-bt_ci_mass_iqr_temp_blups_med_adj_noout_lmer <- boot.ci(boot_mass_iqr_temp_blups_med_adj_noout_lmer,
-                                                  type = c('perc', 'norm', 'basic'),
-                                                  index = 2) # CI for 1st betas
-print(bt_ci_mass_iqr_temp_blups_med_adj_noout_lmer)
 
 
 ## HIGH parental care - adjusted, outliers removed
 mass_iqr_temp_blups_high_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
-                                            scale(nestling_number) + scale(days_summer) + 
-                                            (1|fnest_id), 
-                                          data = subset(mass_max_outliers_removed,
-                                                        feeding_expontd_blups_strat == 3,
-                                                        !is.na(x = mass_pre_obs) & 
-                                                          !is.na(x = nest_iqr_temp) &
-                                                          !is.na(x = feeding_expontd_blups)))
+                                                  scale(nestling_number) + scale(days_summer) + 
+                                                  (1|fnest_id), 
+                                                data = subset(mass_max_outliers_removed,
+                                                              feeding_expontd_blups_strat == 2,
+                                                              !is.na(x = mass_pre_obs) & 
+                                                                !is.na(x = nest_iqr_temp) &
+                                                                !is.na(x = feeding_expontd_blups)))
 
 
 ## Check diagnostics for the full model
@@ -1081,17 +1391,19 @@ confint(mass_iqr_temp_blups_high_adj_noout_lmer)
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
 boot_mass_iqr_temp_blups_high_adj_noout_lmer <- bootMer(x = mass_iqr_temp_blups_high_adj_noout_lmer,
-                                                  FUN = fixef, nsim = 2000,
-                                                  seed = 632760,
-                                                  use.u = F, type = 'parametric')
+                                                        FUN = fixef, nsim = 2000,
+                                                        seed = 632760,
+                                                        use.u = F, type = 'parametric')
 tidy(boot_mass_iqr_temp_blups_high_adj_noout_lmer) # beta estimates and SE
 # use 'boot' package to generate 95% CI for 1st beta
 bt_ci_mass_iqr_temp_blups_high_adj_noout_lmer <- boot.ci(boot_mass_iqr_temp_blups_high_adj_noout_lmer,
-                                                   type = c('perc', 'norm', 'basic'),
-                                                   index = 2) # CI for 1st betas
+                                                         type = c('perc', 'norm', 'basic'),
+                                                         index = 2) # CI for 1st betas
 print(bt_ci_mass_iqr_temp_blups_high_adj_noout_lmer)
 
 
+######## Create model results tables for stratified parental care models #######
+##### Two categories
 
 ######## Create model results tables for straified parental care mdoels #######
 
@@ -1110,19 +1422,6 @@ low_un_b <- c(paste(round(fixef(mass_min_temp_blups_low_lmer)[2], 2), " (",
                     sep = ""))
 
 
-med_un_b <- c(paste(round(fixef(mass_min_temp_blups_med_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_min_temp_blups_med_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_min_temp_blups_med_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_max_temp_blups_med_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_max_temp_blups_med_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_max_temp_blups_med_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_iqr_temp_blups_med_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_iqr_temp_blups_med_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_iqr_temp_blups_med_lmer[[6]][5], 2), ")",
-                    sep = ""))
-
 
 high_un_b <- c(paste(round(fixef(mass_min_temp_blups_high_lmer)[2], 2), " (", 
                      round(bt_ci_mass_min_temp_blups_high_lmer[[6]][4], 2), ", ", 
@@ -1138,27 +1437,20 @@ high_un_b <- c(paste(round(fixef(mass_min_temp_blups_high_lmer)[2], 2), " (",
                      sep = ""))
 
 # Extract p-values for unadjusted models
-low_un_p <- c(round(summary(mass_min_temp_blups_low_lmer)$coefficients[2, "Pr(>|t|)"], 2),
-              round(summary(mass_max_temp_blups_low_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
-              round(summary(mass_iqr_temp_blups_low_lmer)$coefficients[2, "Pr(>|t|)"], 2))
+low_un_p <- c(round(summary(mass_min_temp_blups_low_lmer)$coefficients[2, "Pr(>|t|)"], 3),
+              round(summary(mass_max_temp_blups_low_lmer)$coefficients[2, "Pr(>|t|)"], 3), 
+              as.character(round(summary(mass_iqr_temp_blups_low_lmer)$coefficients[2, "Pr(>|t|)"], 4)))
 
-med_un_p <- c(round(summary(mass_min_temp_blups_med_lmer)$coefficients[2, "Pr(>|t|)"], 2),
-              round(summary(mass_max_temp_blups_med_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
-              as.character(round(summary(mass_iqr_temp_blups_med_lmer)$coefficients[2, "Pr(>|t|)"], 3)))
 
 high_un_p <- c(round(summary(mass_min_temp_blups_high_lmer)$coefficients[2, "Pr(>|t|)"], 2),
-              round(summary(mass_max_temp_blups_high_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
-              round(summary(mass_iqr_temp_blups_high_lmer)$coefficients[2, "Pr(>|t|)"], 2))
+               round(summary(mass_max_temp_blups_high_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
+               round(summary(mass_iqr_temp_blups_high_lmer)$coefficients[2, "Pr(>|t|)"], 2))
 
 
 # Extract t-values for unadjusted models
 low_un_t <- c(round(summary(mass_min_temp_blups_low_lmer)$coefficients[2, "t value"], 2),
               round(summary(mass_max_temp_blups_low_lmer)$coefficients[2, "t value"], 2), 
               round(summary(mass_iqr_temp_blups_low_lmer)$coefficients[2, "t value"], 2))
-
-med_un_t <- c(round(summary(mass_min_temp_blups_med_lmer)$coefficients[2, "t value"], 2),
-              round(summary(mass_max_temp_blups_med_lmer)$coefficients[2, "t value"], 2), 
-              round(summary(mass_iqr_temp_blups_med_lmer)$coefficients[2, "t value"], 2))
 
 high_un_t <- c(round(summary(mass_min_temp_blups_high_lmer)$coefficients[2, "t value"], 2),
                round(summary(mass_max_temp_blups_high_lmer)$coefficients[2, "t value"], 2), 
@@ -1167,16 +1459,12 @@ high_un_t <- c(round(summary(mass_min_temp_blups_high_lmer)$coefficients[2, "t v
 
 # Extract degrees of freedom for unadjusted models
 low_un_df <- c(round(summary(mass_min_temp_blups_low_lmer)$coefficients[2, "df"], 2),
-              round(summary(mass_max_temp_blups_low_lmer)$coefficients[2, "df"], 2), 
-              round(summary(mass_iqr_temp_blups_low_lmer)$coefficients[2, "df"], 2))
-
-med_un_df <- c(round(summary(mass_min_temp_blups_med_lmer)$coefficients[2, "df"], 2),
-              round(summary(mass_max_temp_blups_med_lmer)$coefficients[2, "df"], 2), 
-              round(summary(mass_iqr_temp_blups_med_lmer)$coefficients[2, "df"], 2))
+               round(summary(mass_max_temp_blups_low_lmer)$coefficients[2, "df"], 2), 
+               round(summary(mass_iqr_temp_blups_low_lmer)$coefficients[2, "df"], 2))
 
 high_un_df <- c(round(summary(mass_min_temp_blups_high_lmer)$coefficients[2, "df"], 2),
-               round(summary(mass_max_temp_blups_high_lmer)$coefficients[2, "df"], 2), 
-               round(summary(mass_iqr_temp_blups_high_lmer)$coefficients[2, "df"], 2))
+                round(summary(mass_max_temp_blups_high_lmer)$coefficients[2, "df"], 2), 
+                round(summary(mass_iqr_temp_blups_high_lmer)$coefficients[2, "df"], 2))
 
 
 # Extract Betas for adjusted models
@@ -1191,19 +1479,6 @@ low_ad_b <- c(paste(round(fixef(mass_min_temp_blups_low_adj_lmer)[2], 2), " (",
               paste(round(fixef(mass_iqr_temp_blups_low_adj_lmer)[2], 2), " (", 
                     round(bt_ci_mass_iqr_temp_blups_low_adj_lmer[[6]][4], 2), ", ", 
                     round(bt_ci_mass_iqr_temp_blups_low_adj_lmer[[6]][5], 2), ")",
-                    sep = ""))
-
-med_ad_b <- c(paste(round(fixef(mass_min_temp_blups_med_adj_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_min_temp_blups_med_adj_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_min_temp_blups_med_adj_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_max_temp_blups_med_adj_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_max_temp_blups_med_adj_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_max_temp_blups_med_adj_lmer[[6]][5], 2), ")",
-                    sep = ""),
-              paste(round(fixef(mass_iqr_temp_blups_med_adj_lmer)[2], 2), " (", 
-                    round(bt_ci_mass_iqr_temp_blups_med_adj_lmer[[6]][4], 2), ", ", 
-                    round(bt_ci_mass_iqr_temp_blups_med_adj_lmer[[6]][5], 2), ")",
                     sep = ""))
 
 
@@ -1225,23 +1500,15 @@ low_ad_p <- c(round(summary(mass_min_temp_blups_low_adj_lmer)$coefficients[2, "P
               round(summary(mass_max_temp_blups_low_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
               round(summary(mass_iqr_temp_blups_low_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2))
 
-med_ad_p <- c(round(summary(mass_min_temp_blups_med_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2),
-              round(summary(mass_max_temp_blups_med_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
-              round(summary(mass_iqr_temp_blups_med_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2))
-
 high_ad_p <- c(round(summary(mass_min_temp_blups_high_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2),
                round(summary(mass_max_temp_blups_high_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
-               round(summary(mass_iqr_temp_blups_high_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2))
+               as.character(round(summary(mass_iqr_temp_blups_high_adj_lmer)$coefficients[2, "Pr(>|t|)"], 3)))
 
 
 # Extract t-values for adjusted models
 low_ad_t <- c(round(summary(mass_min_temp_blups_low_adj_lmer)$coefficients[2, "t value"], 2),
               round(summary(mass_max_temp_blups_low_adj_lmer)$coefficients[2, "t value"], 2), 
               round(summary(mass_iqr_temp_blups_low_adj_lmer)$coefficients[2, "t value"], 2))
-
-med_ad_t <- c(round(summary(mass_min_temp_blups_med_adj_lmer)$coefficients[2, "t value"], 2),
-              round(summary(mass_max_temp_blups_med_adj_lmer)$coefficients[2, "t value"], 2), 
-              round(summary(mass_iqr_temp_blups_med_adj_lmer)$coefficients[2, "t value"], 2))
 
 high_ad_t <- c(round(summary(mass_min_temp_blups_high_adj_lmer)$coefficients[2, "t value"], 2),
                round(summary(mass_max_temp_blups_high_adj_lmer)$coefficients[2, "t value"], 2), 
@@ -1253,13 +1520,949 @@ low_ad_df <- c(round(summary(mass_min_temp_blups_low_adj_lmer)$coefficients[2, "
                round(summary(mass_max_temp_blups_low_adj_lmer)$coefficients[2, "df"], 2), 
                round(summary(mass_iqr_temp_blups_low_adj_lmer)$coefficients[2, "df"], 2))
 
-med_ad_df <- c(round(summary(mass_min_temp_blups_med_adj_lmer)$coefficients[2, "df"], 2),
-               round(summary(mass_max_temp_blups_med_adj_lmer)$coefficients[2, "df"], 2), 
-               round(summary(mass_iqr_temp_blups_med_adj_lmer)$coefficients[2, "df"], 2))
-
 high_ad_df <- c(round(summary(mass_min_temp_blups_high_adj_lmer)$coefficients[2, "df"], 2),
                 round(summary(mass_max_temp_blups_high_adj_lmer)$coefficients[2, "df"], 2), 
                 round(summary(mass_iqr_temp_blups_high_adj_lmer)$coefficients[2, "df"], 2))
+
+
+# Bind the values together into a single dataframe
+parental_care_strat_ad <- data.frame(
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
+  type <- c("Adjusted", "Adjusted", "Adjusted"),
+  low_ad_b, low_ad_df, low_ad_t, low_ad_p,
+  high_ad_b, high_ad_df, high_ad_t,  high_ad_p
+)
+
+parental_care_strat_un <- data.frame(
+  variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
+  type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
+  low_un_b, low_un_df, low_un_t, low_un_p,
+  high_un_b, high_un_df, high_un_t,  high_un_p
+)
+
+colnames(parental_care_strat_ad) <- c("variable", "type",
+                                      "low_b", "low_df", "low_t", "low_p",
+                                      "high_b", "high_df", "high_t", "high_p")
+
+colnames(parental_care_strat_un) <- c("variable", "type",
+                                      "low_b", "low_df", "low_t", "low_p",
+                                      "high_b", "high_df", "high_t", "high_p")
+
+parental_care_strat <- rbind(parental_care_strat_un, parental_care_strat_ad)
+
+parental_care_strat <- arrange(parental_care_strat,
+                               factor(variable, levels = c("Minimum temperature", "Maximum temperature", "Temperature variability")))
+
+
+str(parental_care_strat)
+
+# Create display table
+parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %>%
+  tab_header(
+    title = md("**S5 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by two levels of parental feeding, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
+  ) %>%
+  tab_footnote(
+    footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
+    locations = cells_column_labels(columns = c(low_b, high_b))
+  ) %>%
+  tab_footnote(
+    footnote = md(paste("R-squared for adjusted minimum temperature models. ",
+                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(2))
+  ) %>%
+  tab_footnote(
+    footnote = md(paste("R-squared for adjusted maximum temperature models. ",
+                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(4))
+  ) %>%
+  tab_footnote(
+    footnote = md(paste("R-squared for adjusted temperature variability models. ",
+                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[2], 2),
+                        sep = "")),
+    locations = cells_stub(rows = c(6))
+  ) %>%
+  tab_stubhead(
+    label = md("Type")
+  ) %>%
+  tab_row_group(
+    label = md("**Effect of temperature variability**"), 
+    rows = c(5:6)
+  ) %>%
+  tab_row_group(
+    label = md("**Effect of maximum temperature**"), 
+    rows = c(3:4)
+  ) %>%
+  tab_row_group(
+    label = md("**Effect of minimum temperature**"), 
+    rows = c(1:2)
+  ) %>%
+  tab_spanner(
+    label = paste("Low parental feeding models (n = ", nobs(mass_min_temp_blups_low_adj_lmer), ")", sep = ""),
+    columns = c(low_b, low_df, low_t, low_p)
+  ) %>%
+  tab_spanner(
+    label = paste("High parental feeding models (n = ", nobs(mass_min_temp_blups_high_adj_lmer),")", sep = ""),
+    columns = c(high_b, high_df, high_t, high_p)
+  ) %>% 
+  cols_label(
+    ends_with("n") ~ "N", 
+    ends_with("b") ~ "β (95% CI)",
+    ends_with("p") ~ "p-value",
+    ends_with("t") ~ "t-value",
+    ends_with("df") ~ "DF",
+    type = "Type"
+  ) %>%
+  cols_hide(variable)  %>%
+  opt_table_font(font = "Arial", size = 11)  %>%
+  tab_options(footnotes.font.size = 10)
+
+
+parental_care_strat_mod_table
+gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.docx") 
+gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.html")
+
+
+######### Stratified models with three categories ######
+
+######################### Minimum temperature #################################
+
+### Stratified models - unadjusted
+## LOW parental care model - unadjusted
+mass_min_temp_blups_3_low_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
+                                         (1|fnest_id), 
+                                       data = subset(late_nestling_parent_care,
+                                                     feeding_expontd_blups_strat_3 == 1,
+                                                     !is.na(x = mass_pre_obs) & 
+                                                       !is.na(x = nest_min_temp) &
+                                                       !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_3_low_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_3_low_lmer))
+  qqline(resid(mass_min_temp_blups_3_low_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_3_low_lmer))
+
+
+summary(mass_min_temp_blups_3_low_lmer)
+confint(mass_min_temp_blups_3_low_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_3_low_lmer <- bootMer(x = mass_min_temp_blups_3_low_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_3_low_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_3_low_lmer <- boot.ci(boot_mass_min_temp_blups_3_low_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_3_low_lmer)
+
+
+## MED parental care- unadjusted
+mass_min_temp_blups_3_med_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
+                                         (1|fnest_id), 
+                                       data = subset(late_nestling_parent_care,
+                                                     feeding_expontd_blups_strat_3 == 2,
+                                                     !is.na(x = mass_pre_obs) & 
+                                                       !is.na(x = nest_min_temp) &
+                                                       !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_3_med_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_3_med_lmer))
+  qqline(resid(mass_min_temp_blups_3_med_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_3_med_lmer))
+
+
+summary(mass_min_temp_blups_3_med_lmer)
+confint(mass_min_temp_blups_3_med_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_3_med_lmer <- bootMer(x = mass_min_temp_blups_3_med_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_3_med_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_3_med_lmer <- boot.ci(boot_mass_min_temp_blups_3_med_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_3_med_lmer)
+
+
+## HIGH parental care - unadjusted
+mass_min_temp_blups_3_high_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
+                                          (1|fnest_id), 
+                                        data = subset(late_nestling_parent_care,
+                                                      feeding_expontd_blups_strat_3 == 3,
+                                                      !is.na(x = mass_pre_obs) & 
+                                                        !is.na(x = nest_min_temp) &
+                                                        !is.na(x = feeding_expontd_blups)))
+
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_3_high_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_3_high_lmer))
+  qqline(resid(mass_min_temp_blups_3_high_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_3_high_lmer))
+
+
+summary(mass_min_temp_blups_3_high_lmer)
+confint(mass_min_temp_blups_3_high_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_3_high_lmer <- bootMer(x = mass_min_temp_blups_3_high_lmer,
+                                                FUN = fixef, nsim = 2000,
+                                                seed = 632760,
+                                                use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_3_high_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_3_high_lmer <- boot.ci(boot_mass_min_temp_blups_3_high_lmer,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_3_high_lmer)
+
+
+### Straified models - adjusted
+## LOW parental care model - adjusted
+mass_min_temp_blups_3_low_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
+                                             scale(nestling_number) + scale(days_summer) + 
+                                             (1|fnest_id), 
+                                           data = subset(late_nestling_parent_care,
+                                                         feeding_expontd_blups_strat_3 == 1,
+                                                         !is.na(x = mass_pre_obs) & 
+                                                           !is.na(x = nest_min_temp) &
+                                                           !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_3_low_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_3_low_adj_lmer))
+  qqline(resid(mass_min_temp_blups_3_low_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_3_low_adj_lmer))
+
+
+summary(mass_min_temp_blups_3_low_adj_lmer)
+confint(mass_min_temp_blups_3_low_adj_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_3_low_adj_lmer <- bootMer(x = mass_min_temp_blups_3_low_adj_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_3_low_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_3_low_adj_lmer <- boot.ci(boot_mass_min_temp_blups_3_low_adj_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_3_low_adj_lmer)
+
+
+## MED parental care - adjusted
+mass_min_temp_blups_3_med_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) + 
+                                             scale(nestling_number) + scale(days_summer) + 
+                                             (1|fnest_id), 
+                                           data = subset(late_nestling_parent_care,
+                                                         feeding_expontd_blups_strat_3 == 2,
+                                                         !is.na(x = mass_pre_obs) & 
+                                                           !is.na(x = nest_min_temp) &
+                                                           !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_3_med_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_3_med_adj_lmer))
+  qqline(resid(mass_min_temp_blups_3_med_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_3_med_adj_lmer))
+
+
+summary(mass_min_temp_blups_3_med_adj_lmer)
+confint(mass_min_temp_blups_3_med_adj_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_3_med_adj_lmer <- bootMer(x = mass_min_temp_blups_3_med_adj_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_3_med_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_3_med_adj_lmer <- boot.ci(boot_mass_min_temp_blups_3_med_adj_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_3_med_adj_lmer)
+
+
+## HIGH parental care - adjusted 
+mass_min_temp_blups_3_high_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) +
+                                              scale(nestling_number) + scale(days_summer) + 
+                                              (1|fnest_id), 
+                                            data = subset(late_nestling_parent_care,
+                                                          feeding_expontd_blups_strat_3 == 3,
+                                                          !is.na(x = mass_pre_obs) & 
+                                                            !is.na(x = nest_min_temp) &
+                                                            !is.na(x = feeding_expontd_blups)))
+
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_3_high_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_3_high_adj_lmer))
+  qqline(resid(mass_min_temp_blups_3_high_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_3_high_adj_lmer))
+
+
+summary(mass_min_temp_blups_3_high_adj_lmer)
+confint(mass_min_temp_blups_3_high_adj_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_3_high_adj_lmer <- bootMer(x = mass_min_temp_blups_3_high_adj_lmer,
+                                                    FUN = fixef, nsim = 2000,
+                                                    seed = 632760,
+                                                    use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_3_high_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_3_high_adj_lmer <- boot.ci(boot_mass_min_temp_blups_3_high_adj_lmer,
+                                                     type = c('perc', 'norm', 'basic'),
+                                                     index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_3_high_adj_lmer)
+
+
+
+############################## Maximum temperature ############################
+
+### Stratified models - unadjusted
+## LOW parental care model - unadjusted
+mass_max_temp_blups_3_low_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
+                                         (1|fnest_id), 
+                                       data = subset(late_nestling_parent_care,
+                                                     feeding_expontd_blups_strat_3 == 1,
+                                                     !is.na(x = mass_pre_obs) & 
+                                                       !is.na(x = nest_max_temp) &
+                                                       !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_3_low_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_3_low_lmer))
+  qqline(resid(mass_max_temp_blups_3_low_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_3_low_lmer))
+
+
+summary(mass_max_temp_blups_3_low_lmer)
+confint(mass_max_temp_blups_3_low_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_3_low_lmer <- bootMer(x = mass_max_temp_blups_3_low_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_3_low_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_3_low_lmer <- boot.ci(boot_mass_max_temp_blups_3_low_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_3_low_lmer)
+
+
+## MED parental care - unadjusted
+mass_max_temp_blups_3_med_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
+                                         (1|fnest_id), 
+                                       data = subset(late_nestling_parent_care,
+                                                     feeding_expontd_blups_strat_3 == 2,
+                                                     !is.na(x = mass_pre_obs) & 
+                                                       !is.na(x = nest_max_temp) &
+                                                       !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_3_med_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_3_med_lmer))
+  qqline(resid(mass_max_temp_blups_3_med_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_3_med_lmer))
+
+
+summary(mass_max_temp_blups_3_med_lmer)
+confint(mass_max_temp_blups_3_med_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_3_med_lmer <- bootMer(x = mass_max_temp_blups_3_med_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_3_med_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_3_med_lmer <- boot.ci(boot_mass_max_temp_blups_3_med_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_3_med_lmer)
+
+
+## HIGH parental care - unadjusted 
+mass_max_temp_blups_3_high_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
+                                          (1|fnest_id), 
+                                        data = subset(late_nestling_parent_care,
+                                                      feeding_expontd_blups_strat_3 == 3,
+                                                      !is.na(x = mass_pre_obs) & 
+                                                        !is.na(x = nest_max_temp) &
+                                                        !is.na(x = feeding_expontd_blups)))
+
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_3_high_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_3_high_lmer))
+  qqline(resid(mass_max_temp_blups_3_high_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_3_high_lmer))
+
+
+summary(mass_max_temp_blups_3_high_lmer)
+confint(mass_max_temp_blups_3_high_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_3_high_lmer <- bootMer(x = mass_max_temp_blups_3_high_lmer,
+                                                FUN = fixef, nsim = 2000,
+                                                seed = 632760,
+                                                use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_3_high_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_3_high_lmer <- boot.ci(boot_mass_max_temp_blups_3_high_lmer,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_3_high_lmer)
+
+
+### Stratified models - adjusted
+## LOW parental care model - adjusted
+mass_max_temp_blups_3_low_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
+                                             scale(nestling_number) + scale(days_summer) + 
+                                             (1|fnest_id), 
+                                           data = subset(late_nestling_parent_care,
+                                                         feeding_expontd_blups_strat_3 == 1,
+                                                         !is.na(x = mass_pre_obs) & 
+                                                           !is.na(x = nest_max_temp) &
+                                                           !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_3_low_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_3_low_adj_lmer))
+  qqline(resid(mass_max_temp_blups_3_low_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_3_low_adj_lmer))
+
+
+summary(mass_max_temp_blups_3_low_adj_lmer)
+confint(mass_max_temp_blups_3_low_adj_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_3_low_adj_lmer <- bootMer(x = mass_max_temp_blups_3_low_adj_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_3_low_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_3_low_adj_lmer <- boot.ci(boot_mass_max_temp_blups_3_low_adj_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_3_low_adj_lmer)
+
+
+## MED parental care - adjusted
+mass_max_temp_blups_3_med_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) + 
+                                             scale(nestling_number) + scale(days_summer) + 
+                                             (1|fnest_id), 
+                                           data = subset(late_nestling_parent_care,
+                                                         feeding_expontd_blups_strat_3 == 2,
+                                                         !is.na(x = mass_pre_obs) & 
+                                                           !is.na(x = nest_max_temp) &
+                                                           !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_3_med_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_3_med_adj_lmer))
+  qqline(resid(mass_max_temp_blups_3_med_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_3_med_adj_lmer))
+
+
+summary(mass_max_temp_blups_3_med_adj_lmer)
+confint(mass_max_temp_blups_3_med_adj_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_3_med_adj_lmer <- bootMer(x = mass_max_temp_blups_3_med_adj_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_3_med_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_3_med_adj_lmer <- boot.ci(boot_mass_max_temp_blups_3_med_adj_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_3_med_adj_lmer)
+
+
+## HIGH parental care - adjusted 
+mass_max_temp_blups_3_high_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) +
+                                              scale(nestling_number) + scale(days_summer) + 
+                                              (1|fnest_id), 
+                                            data = subset(late_nestling_parent_care,
+                                                          feeding_expontd_blups_strat_3 == 3,
+                                                          !is.na(x = mass_pre_obs) & 
+                                                            !is.na(x = nest_max_temp) &
+                                                            !is.na(x = feeding_expontd_blups)))
+
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_3_high_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_3_high_adj_lmer))
+  qqline(resid(mass_max_temp_blups_3_high_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_3_high_adj_lmer))
+
+summary(mass_max_temp_blups_3_high_adj_lmer)
+confint(mass_max_temp_blups_3_high_adj_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_3_high_adj_lmer <- bootMer(x = mass_max_temp_blups_3_high_adj_lmer,
+                                                    FUN = fixef, nsim = 2000,
+                                                    seed = 632760,
+                                                    use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_3_high_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_3_high_adj_lmer <- boot.ci(boot_mass_max_temp_blups_3_high_adj_lmer,
+                                                     type = c('perc', 'norm', 'basic'),
+                                                     index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_3_high_adj_lmer)
+
+
+
+##################### Temperature interquartile range #########################
+
+
+### Stratified models - unadjusted
+## LOW parental care model - unadjusted
+mass_iqr_temp_blups_3_low_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
+                                         (1|fnest_id), 
+                                       data = subset(late_nestling_parent_care,
+                                                     feeding_expontd_blups_strat_3 == 1,
+                                                     !is.na(x = mass_pre_obs) & 
+                                                       !is.na(x = nest_iqr_temp) &
+                                                       !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_3_low_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_3_low_lmer))
+  qqline(resid(mass_iqr_temp_blups_3_low_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_3_low_lmer))
+
+
+summary(mass_iqr_temp_blups_3_low_lmer)
+confint(mass_iqr_temp_blups_3_low_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_3_low_lmer <- bootMer(x = mass_iqr_temp_blups_3_low_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_3_low_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_3_low_lmer <- boot.ci(boot_mass_iqr_temp_blups_3_low_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_3_low_lmer)
+
+
+## MED parental care - unadjusted
+mass_iqr_temp_blups_3_med_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
+                                         (1|fnest_id), 
+                                       data = subset(late_nestling_parent_care,
+                                                     feeding_expontd_blups_strat_3 == 2,
+                                                     !is.na(x = mass_pre_obs) & 
+                                                       !is.na(x = nest_iqr_temp) &
+                                                       !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_3_med_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_3_med_lmer))
+  qqline(resid(mass_iqr_temp_blups_3_med_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_3_med_lmer))
+
+
+summary(mass_iqr_temp_blups_3_med_lmer)
+confint(mass_iqr_temp_blups_3_med_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_3_med_lmer <- bootMer(x = mass_iqr_temp_blups_3_med_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_3_med_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_3_med_lmer <- boot.ci(boot_mass_iqr_temp_blups_3_med_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_3_med_lmer)
+
+
+## HIGH parental care - unadjusted 
+mass_iqr_temp_blups_3_high_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
+                                          (1|fnest_id), 
+                                        data = subset(late_nestling_parent_care,
+                                                      feeding_expontd_blups_strat_3 == 3,
+                                                      !is.na(x = mass_pre_obs) & 
+                                                        !is.na(x = nest_iqr_temp) &
+                                                        !is.na(x = feeding_expontd_blups)))
+
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_3_high_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_3_high_lmer))
+  qqline(resid(mass_iqr_temp_blups_3_high_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_3_high_lmer))
+
+
+summary(mass_iqr_temp_blups_3_high_lmer)
+confint(mass_iqr_temp_blups_3_high_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_3_high_lmer <- bootMer(x = mass_iqr_temp_blups_3_high_lmer,
+                                                FUN = fixef, nsim = 2000,
+                                                seed = 632760,
+                                                use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_3_high_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_3_high_lmer <- boot.ci(boot_mass_iqr_temp_blups_3_high_lmer,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_3_high_lmer)
+
+
+### Stratified models - adjusted
+## LOW parental care model - adjusted
+mass_iqr_temp_blups_3_low_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
+                                             scale(nestling_number) + scale(days_summer) + 
+                                             (1|fnest_id), 
+                                           data = subset(late_nestling_parent_care,
+                                                         feeding_expontd_blups_strat_3 == 1,
+                                                         !is.na(x = mass_pre_obs) & 
+                                                           !is.na(x = nest_iqr_temp) &
+                                                           !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_3_low_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_3_low_adj_lmer))
+  qqline(resid(mass_iqr_temp_blups_3_low_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_3_low_adj_lmer))
+
+
+summary(mass_iqr_temp_blups_3_low_adj_lmer)
+confint(mass_iqr_temp_blups_3_low_adj_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_3_low_adj_lmer <- bootMer(x = mass_iqr_temp_blups_3_low_adj_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_3_low_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_3_low_adj_lmer <- boot.ci(boot_mass_iqr_temp_blups_3_low_adj_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_3_low_adj_lmer)
+
+
+## MED parental care - adjusted
+mass_iqr_temp_blups_3_med_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) + 
+                                             scale(nestling_number) + scale(days_summer) + 
+                                             (1|fnest_id), 
+                                           data = subset(late_nestling_parent_care,
+                                                         feeding_expontd_blups_strat_3 == 2,
+                                                         !is.na(x = mass_pre_obs) & 
+                                                           !is.na(x = nest_iqr_temp) &
+                                                           !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_3_med_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_3_med_adj_lmer))
+  qqline(resid(mass_iqr_temp_blups_3_med_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_3_med_adj_lmer))
+
+
+summary(mass_iqr_temp_blups_3_med_adj_lmer)
+confint(mass_iqr_temp_blups_3_med_adj_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_3_med_adj_lmer <- bootMer(x = mass_iqr_temp_blups_3_med_adj_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_3_med_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_3_med_adj_lmer <- boot.ci(boot_mass_iqr_temp_blups_3_med_adj_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_3_med_adj_lmer)
+
+
+## HIGH parental care - adjusted 
+mass_iqr_temp_blups_3_high_adj_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) +
+                                              scale(nestling_number) + scale(days_summer) + 
+                                              (1|fnest_id), 
+                                            data = subset(late_nestling_parent_care,
+                                                          feeding_expontd_blups_strat_3 == 3,
+                                                          !is.na(x = mass_pre_obs) & 
+                                                            !is.na(x = nest_iqr_temp) &
+                                                            !is.na(x = feeding_expontd_blups)))
+
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_3_high_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_3_high_adj_lmer))
+  qqline(resid(mass_iqr_temp_blups_3_high_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_3_high_adj_lmer))
+
+summary(mass_iqr_temp_blups_3_high_adj_lmer)
+confint(mass_iqr_temp_blups_3_high_adj_lmer) 
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_3_high_adj_lmer <- bootMer(x = mass_iqr_temp_blups_3_high_adj_lmer,
+                                                    FUN = fixef, nsim = 2000,
+                                                    seed = 632760,
+                                                    use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_3_high_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_3_high_adj_lmer <- boot.ci(boot_mass_iqr_temp_blups_3_high_adj_lmer,
+                                                     type = c('perc', 'norm', 'basic'),
+                                                     index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_3_high_adj_lmer)
+
+
+######## Create model results tables for stratified parental care models #######
+##### Three categories
+
+######## Create model results tables for straified parental care mdoels #######
+
+# Extract Betas for unadjusted models
+low_un_b <- c(paste(round(fixef(mass_min_temp_blups_3_low_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_min_temp_blups_3_low_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_min_temp_blups_3_low_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_max_temp_blups_3_low_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_max_temp_blups_3_low_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_max_temp_blups_3_low_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_iqr_temp_blups_3_low_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_iqr_temp_blups_3_low_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_iqr_temp_blups_3_low_lmer[[6]][5], 2), ")",
+                    sep = ""))
+
+
+med_un_b <- c(paste(round(fixef(mass_min_temp_blups_3_med_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_min_temp_blups_3_med_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_min_temp_blups_3_med_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_max_temp_blups_3_med_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_max_temp_blups_3_med_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_max_temp_blups_3_med_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_iqr_temp_blups_3_med_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_iqr_temp_blups_3_med_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_iqr_temp_blups_3_med_lmer[[6]][5], 2), ")",
+                    sep = ""))
+
+
+high_un_b <- c(paste(round(fixef(mass_min_temp_blups_3_high_lmer)[2], 2), " (", 
+                     round(bt_ci_mass_min_temp_blups_3_high_lmer[[6]][4], 2), ", ", 
+                     round(bt_ci_mass_min_temp_blups_3_high_lmer[[6]][5], 2), ")",
+                     sep = ""),
+               paste(round(fixef(mass_max_temp_blups_3_high_lmer)[2], 2), " (", 
+                     round(bt_ci_mass_max_temp_blups_3_high_lmer[[6]][4], 2), ", ", 
+                     round(bt_ci_mass_max_temp_blups_3_high_lmer[[6]][5], 2), ")",
+                     sep = ""),
+               paste(round(fixef(mass_iqr_temp_blups_3_high_lmer)[2], 2), " (", 
+                     round(bt_ci_mass_iqr_temp_blups_3_high_lmer[[6]][4], 2), ", ", 
+                     round(bt_ci_mass_iqr_temp_blups_3_high_lmer[[6]][5], 2), ")",
+                     sep = ""))
+
+# Extract p-values for unadjusted models
+low_un_p <- c(round(summary(mass_min_temp_blups_3_low_lmer)$coefficients[2, "Pr(>|t|)"], 2),
+              round(summary(mass_max_temp_blups_3_low_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
+              round(summary(mass_iqr_temp_blups_3_low_lmer)$coefficients[2, "Pr(>|t|)"], 2))
+
+med_un_p <- c(round(summary(mass_min_temp_blups_3_med_lmer)$coefficients[2, "Pr(>|t|)"], 2),
+              round(summary(mass_max_temp_blups_3_med_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
+              as.character(round(summary(mass_iqr_temp_blups_3_med_lmer)$coefficients[2, "Pr(>|t|)"], 3)))
+
+high_un_p <- c(round(summary(mass_min_temp_blups_3_high_lmer)$coefficients[2, "Pr(>|t|)"], 2),
+               round(summary(mass_max_temp_blups_3_high_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
+               round(summary(mass_iqr_temp_blups_3_high_lmer)$coefficients[2, "Pr(>|t|)"], 2))
+
+
+# Extract t-values for unadjusted models
+low_un_t <- c(round(summary(mass_min_temp_blups_3_low_lmer)$coefficients[2, "t value"], 2),
+              round(summary(mass_max_temp_blups_3_low_lmer)$coefficients[2, "t value"], 2), 
+              round(summary(mass_iqr_temp_blups_3_low_lmer)$coefficients[2, "t value"], 2))
+
+med_un_t <- c(round(summary(mass_min_temp_blups_3_med_lmer)$coefficients[2, "t value"], 2),
+              round(summary(mass_max_temp_blups_3_med_lmer)$coefficients[2, "t value"], 2), 
+              round(summary(mass_iqr_temp_blups_3_med_lmer)$coefficients[2, "t value"], 2))
+
+high_un_t <- c(round(summary(mass_min_temp_blups_3_high_lmer)$coefficients[2, "t value"], 2),
+               round(summary(mass_max_temp_blups_3_high_lmer)$coefficients[2, "t value"], 2), 
+               round(summary(mass_iqr_temp_blups_3_high_lmer)$coefficients[2, "t value"], 2))
+
+
+# Extract degrees of freedom for unadjusted models
+low_un_df <- c(round(summary(mass_min_temp_blups_3_low_lmer)$coefficients[2, "df"], 2),
+               round(summary(mass_max_temp_blups_3_low_lmer)$coefficients[2, "df"], 2), 
+               round(summary(mass_iqr_temp_blups_3_low_lmer)$coefficients[2, "df"], 2))
+
+med_un_df <- c(round(summary(mass_min_temp_blups_3_med_lmer)$coefficients[2, "df"], 2),
+               round(summary(mass_max_temp_blups_3_med_lmer)$coefficients[2, "df"], 2), 
+               round(summary(mass_iqr_temp_blups_3_med_lmer)$coefficients[2, "df"], 2))
+
+high_un_df <- c(round(summary(mass_min_temp_blups_3_high_lmer)$coefficients[2, "df"], 2),
+                round(summary(mass_max_temp_blups_3_high_lmer)$coefficients[2, "df"], 2), 
+                round(summary(mass_iqr_temp_blups_3_high_lmer)$coefficients[2, "df"], 2))
+
+
+# Extract Betas for adjusted models
+low_ad_b <- c(paste(round(fixef(mass_min_temp_blups_3_low_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_min_temp_blups_3_low_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_min_temp_blups_3_low_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_max_temp_blups_3_low_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_max_temp_blups_3_low_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_max_temp_blups_3_low_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_iqr_temp_blups_3_low_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_iqr_temp_blups_3_low_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_iqr_temp_blups_3_low_adj_lmer[[6]][5], 2), ")",
+                    sep = ""))
+
+med_ad_b <- c(paste(round(fixef(mass_min_temp_blups_3_med_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_min_temp_blups_3_med_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_min_temp_blups_3_med_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_max_temp_blups_3_med_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_max_temp_blups_3_med_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_max_temp_blups_3_med_adj_lmer[[6]][5], 2), ")",
+                    sep = ""),
+              paste(round(fixef(mass_iqr_temp_blups_3_med_adj_lmer)[2], 2), " (", 
+                    round(bt_ci_mass_iqr_temp_blups_3_med_adj_lmer[[6]][4], 2), ", ", 
+                    round(bt_ci_mass_iqr_temp_blups_3_med_adj_lmer[[6]][5], 2), ")",
+                    sep = ""))
+
+
+high_ad_b <- c(paste(round(fixef(mass_min_temp_blups_3_high_adj_lmer)[2], 2), " (", 
+                     round(bt_ci_mass_min_temp_blups_3_high_adj_lmer[[6]][4], 2), ", ", 
+                     round(bt_ci_mass_min_temp_blups_3_high_adj_lmer[[6]][5], 2), ")",
+                     sep = ""),
+               paste(round(fixef(mass_max_temp_blups_3_high_adj_lmer)[2], 2), " (", 
+                     round(bt_ci_mass_max_temp_blups_3_high_adj_lmer[[6]][4], 2), ", ", 
+                     round(bt_ci_mass_max_temp_blups_3_high_adj_lmer[[6]][5], 2), ")",
+                     sep = ""),
+               paste(round(fixef(mass_iqr_temp_blups_3_high_adj_lmer)[2], 2), " (", 
+                     round(bt_ci_mass_iqr_temp_blups_3_high_adj_lmer[[6]][4], 2), ", ", 
+                     round(bt_ci_mass_iqr_temp_blups_3_high_adj_lmer[[6]][5], 2), ")",
+                     sep = ""))
+
+# Extract p-values for adjusted models
+low_ad_p <- c(round(summary(mass_min_temp_blups_3_low_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2),
+              round(summary(mass_max_temp_blups_3_low_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
+              round(summary(mass_iqr_temp_blups_3_low_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2))
+
+med_ad_p <- c(round(summary(mass_min_temp_blups_3_med_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2),
+              round(summary(mass_max_temp_blups_3_med_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
+              round(summary(mass_iqr_temp_blups_3_med_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2))
+
+high_ad_p <- c(round(summary(mass_min_temp_blups_3_high_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2),
+               round(summary(mass_max_temp_blups_3_high_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
+               round(summary(mass_iqr_temp_blups_3_high_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2))
+
+
+# Extract t-values for adjusted models
+low_ad_t <- c(round(summary(mass_min_temp_blups_3_low_adj_lmer)$coefficients[2, "t value"], 2),
+              round(summary(mass_max_temp_blups_3_low_adj_lmer)$coefficients[2, "t value"], 2), 
+              round(summary(mass_iqr_temp_blups_3_low_adj_lmer)$coefficients[2, "t value"], 2))
+
+med_ad_t <- c(round(summary(mass_min_temp_blups_3_med_adj_lmer)$coefficients[2, "t value"], 2),
+              round(summary(mass_max_temp_blups_3_med_adj_lmer)$coefficients[2, "t value"], 2), 
+              round(summary(mass_iqr_temp_blups_3_med_adj_lmer)$coefficients[2, "t value"], 2))
+
+high_ad_t <- c(round(summary(mass_min_temp_blups_3_high_adj_lmer)$coefficients[2, "t value"], 2),
+               round(summary(mass_max_temp_blups_3_high_adj_lmer)$coefficients[2, "t value"], 2), 
+               round(summary(mass_iqr_temp_blups_3_high_adj_lmer)$coefficients[2, "t value"], 2))
+
+
+# Extract degrees of freedom for unadjusted models
+low_ad_df <- c(round(summary(mass_min_temp_blups_3_low_adj_lmer)$coefficients[2, "df"], 2),
+               round(summary(mass_max_temp_blups_3_low_adj_lmer)$coefficients[2, "df"], 2), 
+               round(summary(mass_iqr_temp_blups_3_low_adj_lmer)$coefficients[2, "df"], 2))
+
+med_ad_df <- c(round(summary(mass_min_temp_blups_3_med_adj_lmer)$coefficients[2, "df"], 2),
+               round(summary(mass_max_temp_blups_3_med_adj_lmer)$coefficients[2, "df"], 2), 
+               round(summary(mass_iqr_temp_blups_3_med_adj_lmer)$coefficients[2, "df"], 2))
+
+high_ad_df <- c(round(summary(mass_min_temp_blups_3_high_adj_lmer)$coefficients[2, "df"], 2),
+                round(summary(mass_max_temp_blups_3_high_adj_lmer)$coefficients[2, "df"], 2), 
+                round(summary(mass_iqr_temp_blups_3_high_adj_lmer)$coefficients[2, "df"], 2))
 
 
 # Bind the values together into a single dataframe
@@ -1298,9 +2501,9 @@ parental_care_strat <- arrange(parental_care_strat,
 str(parental_care_strat)
 
 # Create display table
-parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %>%
+parental_care_strat_three_mod_table <- gt(parental_care_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**S5 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by levels of parental feeding, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
+    title = md("**S5 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by three levels of parental feeding, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
@@ -1308,34 +2511,34 @@ parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %
   ) %>%
   tab_footnote(
     footnote = md(paste("R-squared for adjusted minimum temperature models. ",
-                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)[2], 2),
-                        "; Medium parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_med_adj_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_med_adj_lmer)[2], 2),
-                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)[2], 2),
-                 sep = "")),
+                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_3_low_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_3_low_adj_lmer)[2], 2),
+                        "; Medium parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_3_med_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_3_med_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_3_high_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_temp_blups_3_high_adj_lmer)[2], 2),
+                        sep = "")),
     locations = cells_stub(rows = c(2))
-    ) %>%
+  ) %>%
   tab_footnote(
     footnote = md(paste("R-squared for adjusted maximum temperature models. ",
-                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)[2], 2),
-                        "; Medium parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_med_adj_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_med_adj_lmer)[2], 2),
-                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)[2], 2),
+                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_3_low_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_3_low_adj_lmer)[2], 2),
+                        "; Medium parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_3_med_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_3_med_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_3_high_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_temp_blups_3_high_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(4))
   ) %>%
   tab_footnote(
     footnote = md(paste("R-squared for adjusted temperature variability models. ",
-                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)[2], 2),
-                        "; Medium parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_med_adj_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_med_adj_lmer)[2], 2),
-                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)[2], 2),
+                        "Low parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_3_low_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_3_low_adj_lmer)[2], 2),
+                        "; Medium parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_3_med_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_3_med_adj_lmer)[2], 2),
+                        "; High parental feeding model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_3_high_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_temp_blups_3_high_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(6))
   ) %>%
@@ -1355,15 +2558,15 @@ parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %
     rows = c(1:2)
   ) %>%
   tab_spanner(
-    label = paste("Low parental feeding models (n = ", nobs(mass_min_temp_blups_low_adj_lmer), ")", sep = ""),
+    label = paste("Low parental feeding models (n = ", nobs(mass_min_temp_blups_3_low_adj_lmer), ")", sep = ""),
     columns = c(low_b, low_df, low_t, low_p)
   ) %>%
   tab_spanner(
-    label = paste("Medium parental feeding models (n = ", nobs(mass_min_temp_blups_med_adj_lmer), ")", sep = ""),
+    label = paste("Medium parental feeding models (n = ", nobs(mass_min_temp_blups_3_med_adj_lmer), ")", sep = ""),
     columns = c(med_b, med_df, med_t, med_p)
   ) %>%
   tab_spanner(
-    label = paste("High parental feeding models (n = ", nobs(mass_min_temp_blups_high_adj_lmer),")", sep = ""),
+    label = paste("High parental feeding models (n = ", nobs(mass_min_temp_blups_3_high_adj_lmer),")", sep = ""),
     columns = c(high_b, high_df, high_t, high_p)
   ) %>% 
   cols_label(
@@ -1379,9 +2582,9 @@ parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %
   tab_options(footnotes.font.size = 10)
 
 
-parental_care_strat_mod_table
-gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.docx") 
-gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.html")
+parental_care_strat_three_mod_table
+gtsave(parental_care_strat_three_mod_table, filename = "Output/parental_care_adjusted_strat_3.docx") 
+gtsave(parental_care_strat_three_mod_table, filename = "Output/parental_care_adjusted_strat_3.html")
 
 
 
@@ -1392,6 +2595,58 @@ gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_
 ########## Relative size calculated at mid development ########################
 
 ########################### Minimum temp ######################################
+
+### Interaction model - unadjusted
+mass_min_temp_mid_size_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
+                                  mid_size_order +
+                                  (1|fnest_id), 
+                                data = subset(late_nestling_parent_care,
+                                              !is.na(x = mid_size_order) & 
+                                                !is.na(x = nest_min_temp)&
+                                                !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_mid_size_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_mid_size_lmer))
+  qqline(resid(mass_min_temp_mid_size_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_mid_size_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_min_temp_mid_size_lmer, vars=c("Cook"))
+infIndexPlot(mass_min_temp_mid_size_lmer, vars=c("Studentized"))
+
+summary(mass_min_temp_mid_size_lmer)
+confint(mass_min_temp_mid_size_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_mid_size_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_mid_size_lmer <- bootMer(x = mass_min_temp_mid_size_lmer,
+                                         FUN = fixef, nsim = 2000,
+                                         seed = 632760,
+                                         use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_mid_size_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_mid_size_lmer <- boot.ci(boot_mass_min_temp_mid_size_lmer,
+                                          type = c('perc', 'norm', 'basic'),
+                                          index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_mid_size_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_temp_mid_size_lmer_2 <- boot.ci(boot_mass_min_temp_mid_size_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 3) # CI for 2nd betas
+print(bt_ci_mass_min_temp_mid_size_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_min_temp_mid_size_lmer_3 <- boot.ci(boot_mass_min_temp_mid_size_lmer,
+                                            type = c('perc', 'norm', 'basic'),
+                                            index = 4) # CI for 3rd betas
+print(bt_ci_mass_min_temp_mid_size_lmer_3)
+
 
 ### Stratified models - unadjusted
 # SMALL nestlings - unadjusted
@@ -1460,6 +2715,60 @@ bt_ci_mass_min_temp_mid_size_big_lmer <- boot.ci(boot_mass_min_temp_mid_size_big
                                                      type = c('perc', 'norm', 'basic'),
                                                      index = 2) # CI for 1st betas
 print(bt_ci_mass_min_temp_mid_size_big_lmer)
+
+
+### Interaction model - adjusted
+mass_min_temp_mid_size_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_min_temp) *
+                                      mid_size_order + scale(nestling_number) +
+                                      scale(days_summer) +
+                                      (1|fnest_id), 
+                                    data = subset(late_nestling_parent_care,
+                                                  !is.na(x = mid_size_order) & 
+                                                    !is.na(x = nest_min_temp)&
+                                                    !is.na(x = mass_pre_obs)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_mid_size_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_mid_size_adj_lmer))
+  qqline(resid(mass_min_temp_mid_size_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_mid_size_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_min_temp_mid_size_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_min_temp_mid_size_adj_lmer, vars=c("Studentized"))
+
+summary(mass_min_temp_mid_size_adj_lmer)
+confint(mass_min_temp_mid_size_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_mid_size_adj_lmer)
+
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_mid_size_adj_lmer <- bootMer(x = mass_min_temp_mid_size_adj_lmer,
+                                                   FUN = fixef, nsim = 2000,
+                                                   seed = 632760,
+                                                   use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_mid_size_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_mid_size_adj_lmer <- boot.ci(boot_mass_min_temp_mid_size_adj_lmer,
+                                                    type = c('perc', 'norm', 'basic'),
+                                                    index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_mid_size_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_temp_mid_size_adj_lmer_2 <- boot.ci(boot_mass_min_temp_mid_size_adj_lmer,
+                                                      type = c('perc', 'norm', 'basic'),
+                                                      index = 3) # CI for 2nd betas
+print(bt_ci_mass_min_temp_mid_size_adj_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_min_temp_mid_size_adj_lmer_5 <- boot.ci(boot_mass_min_temp_mid_size_adj_lmer,
+                                                      type = c('perc', 'norm', 'basic'),
+                                                      index = 6) # CI for 3rd betas
+print(bt_ci_mass_min_temp_mid_size_adj_lmer_5)
 
 
 ## Stratified models - adjusted
@@ -1535,6 +2844,57 @@ print(bt_ci_mass_min_temp_mid_size_big_adj_lmer)
 
 ############################## Maximum temperature ############################
 
+### Interaction model - unadjusted
+mass_max_temp_mid_size_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
+                                  mid_size_order +
+                                  (1|fnest_id), 
+                                data = subset(late_nestling_parent_care,
+                                              !is.na(x = mass_pre_obs) & 
+                                                !is.na(x = nest_max_temp) &
+                                                !is.na(x = mid_size_order)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_mid_size_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_mid_size_lmer))
+  qqline(resid(mass_max_temp_mid_size_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_mid_size_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_max_temp_mid_size_lmer, vars=c("Cook"))
+infIndexPlot(mass_max_temp_mid_size_lmer, vars=c("Studentized"))
+
+summary(mass_max_temp_mid_size_lmer)
+confint(mass_max_temp_mid_size_lmer) 
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_mid_size_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_mid_size_lmer<- bootMer(x = mass_max_temp_mid_size_lmer,
+                                            FUN = fixef, nsim = 2000,
+                                            seed = 632760,
+                                            use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_mid_size_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_mid_size_lmer <- boot.ci(boot_mass_max_temp_mid_size_lmer,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_mid_size_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_temp_mid_size_lmer_2 <- boot.ci(boot_mass_max_temp_mid_size_lmer,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd betas
+print(bt_ci_mass_max_temp_mid_size_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_max_temp_mid_size_lmer_3 <- boot.ci(boot_mass_max_temp_mid_size_lmer,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 4) # CI for 3rd betas
+print(bt_ci_mass_max_temp_mid_size_lmer_3)
+
 
 ### Stratified models - unadjusted
 # SMALL nestlings - unadjusted
@@ -1604,6 +2964,59 @@ bt_ci_mass_max_temp_mid_size_big_lmer <- boot.ci(boot_mass_max_temp_mid_size_big
                                                      index = 2) # CI for 1st betas
 print(bt_ci_mass_max_temp_mid_size_big_lmer)
 
+
+### Interaction model - adjusted
+mass_max_temp_mid_size_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_max_temp) *
+                                      mid_size_order + scale(nestling_number) +
+                                      scale(days_summer) +
+                                      (1|fnest_id), 
+                                    data = subset(late_nestling_parent_care,
+                                                  !is.na(x = mass_pre_obs) & 
+                                                    !is.na(x = nest_max_temp) &
+                                                    !is.na(x = mid_size_order)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_mid_size_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_mid_size_adj_lmer))
+  qqline(resid(mass_max_temp_mid_size_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_mid_size_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_max_temp_mid_size_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_max_temp_mid_size_adj_lmer, vars=c("Studentized"))
+
+summary(mass_max_temp_mid_size_adj_lmer)
+confint(mass_max_temp_mid_size_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_mid_size_adj_lmer)
+
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_mid_size_adj_lmer <- bootMer(x = mass_max_temp_mid_size_adj_lmer,
+                                                FUN = fixef, nsim = 2000,
+                                                seed = 632760,
+                                                use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_mid_size_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_mid_size_adj_lmer <- boot.ci(boot_mass_max_temp_mid_size_adj_lmer,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_mid_size_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_temp_mid_size_adj_lmer_2 <- boot.ci(boot_mass_max_temp_mid_size_adj_lmer,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 3) # CI for 2nd betas
+print(bt_ci_mass_max_temp_mid_size_adj_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_max_temp_mid_size_adj_lmer_5 <- boot.ci(boot_mass_max_temp_mid_size_adj_lmer,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 6) # CI for 3rd betas
+print(bt_ci_mass_max_temp_mid_size_adj_lmer_5)
 
 
 ### Stratified models - adjusted
@@ -1679,6 +3092,57 @@ print(bt_ci_mass_max_temp_mid_size_big_adj_lmer)
 
 ######################### Temperature interquartile range #####################
 
+### Interaction model - unadjusted
+mass_iqr_temp_mid_size_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+                                  mid_size_order +
+                                  (1|fnest_id), 
+                                data = subset(late_nestling_parent_care,
+                                              !is.na(x = mass_pre_obs) & 
+                                                !is.na(x = nest_iqr_temp) &
+                                                !is.na(x = mid_size_order)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_mid_size_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_mid_size_lmer))
+  qqline(resid(mass_iqr_temp_mid_size_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_mid_size_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_temp_mid_size_lmer, vars=c("Cook"))
+infIndexPlot(mass_iqr_temp_mid_size_lmer, vars=c("Studentized"))
+
+summary(mass_iqr_temp_mid_size_lmer)
+confint(mass_iqr_temp_mid_size_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_mid_size_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_mid_size_lmer <- bootMer(x = mass_iqr_temp_mid_size_lmer,
+                                           FUN = fixef, nsim = 2000,
+                                           seed = 632760,
+                                           use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_mid_size_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_mid_size_lmer <- boot.ci(boot_mass_iqr_temp_mid_size_lmer,
+                                             type = c('perc', 'norm', 'basic'),
+                                             index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_mid_size_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_temp_mid_size_lmer_2 <- boot.ci(boot_mass_iqr_temp_mid_size_lmer,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 3) # CI for 2nd betas
+print(bt_ci_mass_iqr_temp_mid_size_lmer_2)
+
+# use 'boot' package to generate 95% CI for 3rd beta
+bt_ci_mass_iqr_temp_mid_size_lmer_3 <- boot.ci(boot_mass_iqr_temp_mid_size_lmer,
+                                               type = c('perc', 'norm', 'basic'),
+                                               index = 4) # CI for 3rd betas
+print(bt_ci_mass_iqr_temp_mid_size_lmer_3)
+
 
 ### Stratified models - unadjusted
 # SMALL nestlings - unadjusted
@@ -1748,6 +3212,59 @@ bt_ci_mass_iqr_temp_mid_size_big_lmer <- boot.ci(boot_mass_iqr_temp_mid_size_big
                                                      type = c('perc', 'norm', 'basic'),
                                                      index = 2) # CI for 1st betas
 print(bt_ci_mass_iqr_temp_mid_size_big_lmer)
+
+
+### Interaction model - adjusted
+mass_iqr_temp_mid_size_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+                                      mid_size_order + scale(nestling_number) + 
+                                      scale(days_summer) +
+                                      (1|fnest_id), 
+                                    data = subset(late_nestling_parent_care,
+                                                  !is.na(x = mass_pre_obs) & 
+                                                    !is.na(x = nest_iqr_temp) &
+                                                    !is.na(x = mid_size_order)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_mid_size_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_mid_size_adj_lmer))
+  qqline(resid(mass_iqr_temp_mid_size_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_mid_size_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_temp_mid_size_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_iqr_temp_mid_size_adj_lmer, vars=c("Studentized"))
+
+summary(mass_iqr_temp_mid_size_adj_lmer)
+confint(mass_iqr_temp_mid_size_adj_lmer)
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_mid_size_adj_lmer)
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_mid_size_adj_lmer <- bootMer(x = mass_iqr_temp_mid_size_adj_lmer,
+                                                FUN = fixef, nsim = 2000,
+                                                seed = 632760,
+                                                use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_mid_size_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_mid_size_adj_lmer <- boot.ci(boot_mass_iqr_temp_mid_size_adj_lmer,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_mid_size_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_temp_mid_size_adj_lmer_2 <- boot.ci(boot_mass_iqr_temp_mid_size_adj_lmer,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 3) # CI for 2nd betas
+print(bt_ci_mass_iqr_temp_mid_size_adj_lmer_2)
+
+# use 'boot' package to generate 95% CI for 5th beta
+bt_ci_mass_iqr_temp_mid_size_adj_lmer_5 <- boot.ci(boot_mass_iqr_temp_mid_size_adj_lmer,
+                                                   type = c('perc', 'norm', 'basic'),
+                                                   index = 6) # CI for 3rd betas
+print(bt_ci_mass_iqr_temp_mid_size_adj_lmer_5)
 
 
 ### Stratified models - adjusted
@@ -1826,6 +3343,15 @@ print(bt_ci_mass_iqr_temp_mid_size_big_adj_lmer)
 
 ######## Create model results tables for stratified relative size models ######
 
+# Extract number of observations for unadjusted models
+small_un_n <- c(nobs(mass_min_temp_mid_size_small_lmer), 
+                nobs(mass_max_temp_mid_size_small_lmer),
+                nobs(mass_iqr_temp_mid_size_small_lmer))
+
+big_un_n <- c(nobs(mass_min_temp_mid_size_big_lmer), 
+              nobs(mass_max_temp_mid_size_big_lmer),
+              nobs(mass_iqr_temp_mid_size_big_lmer))
+
 
 # Extract Betas for unadjusted models
 small_un_b <- c(paste(round(fixef(mass_min_temp_mid_size_small_lmer)[2], 2), " (", 
@@ -1858,31 +3384,21 @@ big_un_b <- c(paste(round(fixef(mass_min_temp_mid_size_big_lmer)[2], 2), " (",
 # Extract p-values for unadjusted models
 small_un_p <- c(round(summary(mass_min_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"], 2),
               round(summary(mass_max_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
-              as.character(round(summary(mass_iqr_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"]), 3))
+              as.character(round(summary(mass_iqr_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"], 3)))
 
 big_un_p <- c(round(summary(mass_min_temp_mid_size_big_lmer)$coefficients[2, "Pr(>|t|)"], 2),
                 as.character(round(summary(mass_max_temp_mid_size_big_lmer)$coefficients[2, "Pr(>|t|)"], 3)), 
                 as.character(round(summary(mass_iqr_temp_mid_size_big_lmer)$coefficients[2, "Pr(>|t|)"], 4)))
 
 
-# Extract t-values for unadjusted models
-small_un_t <- c(round(summary(mass_min_temp_mid_size_small_lmer)$coefficients[2, "t value"], 2),
-                round(summary(mass_max_temp_mid_size_small_lmer)$coefficients[2, "t value"], 2), 
-                round(summary(mass_iqr_temp_mid_size_small_lmer)$coefficients[2, "t value"], 2))
+# Extract number of observations for adjusted models
+small_ad_n <- c(nobs(mass_min_temp_mid_size_small_adj_lmer), 
+                nobs(mass_max_temp_mid_size_small_adj_lmer),
+                nobs(mass_iqr_temp_mid_size_small_adj_lmer))
 
-big_un_t <- c(round(summary(mass_min_temp_mid_size_big_lmer)$coefficients[2, "t value"], 2),
-              round(summary(mass_max_temp_mid_size_big_lmer)$coefficients[2, "t value"], 2), 
-              round(summary(mass_iqr_temp_mid_size_big_lmer)$coefficients[2, "t value"], 2))
-
-# Extract degrees of freedom for unadjusted models
-small_un_df <- c(round(summary(mass_min_temp_mid_size_small_lmer)$coefficients[2, "df"], 2),
-                round(summary(mass_max_temp_mid_size_small_lmer)$coefficients[2, "df"], 2), 
-                round(summary(mass_iqr_temp_mid_size_small_lmer)$coefficients[2, "df"], 2))
-
-big_un_df <- c(round(summary(mass_min_temp_mid_size_big_lmer)$coefficients[2, "df"], 2),
-              round(summary(mass_max_temp_mid_size_big_lmer)$coefficients[2, "df"], 2), 
-              round(summary(mass_iqr_temp_mid_size_big_lmer)$coefficients[2, "df"], 2))
-
+big_ad_n <- c(nobs(mass_min_temp_mid_size_big_adj_lmer), 
+              nobs(mass_max_temp_mid_size_big_adj_lmer),
+              nobs(mass_iqr_temp_mid_size_big_adj_lmer))
 
 # Extract Betas for adjusted models
 small_ad_b <- c(paste(round(fixef(mass_min_temp_mid_size_small_adj_lmer)[2], 2), " (", 
@@ -1921,49 +3437,30 @@ big_ad_p <- c(round(summary(mass_min_temp_mid_size_big_adj_lmer)$coefficients[2,
               round(summary(mass_max_temp_mid_size_big_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
               as.character(round(summary(mass_iqr_temp_mid_size_big_adj_lmer)$coefficients[2, "Pr(>|t|)"], 4)))
 
-# Extract t-values for adjusted models
-small_ad_t <- c(round(summary(mass_min_temp_mid_size_small_adj_lmer)$coefficients[2, "t value"], 2),
-                round(summary(mass_max_temp_mid_size_small_adj_lmer)$coefficients[2, "t value"], 2), 
-                round(summary(mass_iqr_temp_mid_size_small_adj_lmer)$coefficients[2, "t value"], 2))
-
-big_ad_t <- c(round(summary(mass_min_temp_mid_size_big_adj_lmer)$coefficients[2, "t value"], 2),
-              round(summary(mass_max_temp_mid_size_big_adj_lmer)$coefficients[2, "t value"], 2), 
-              round(summary(mass_iqr_temp_mid_size_big_adj_lmer)$coefficients[2, "t value"], 2))
-
-# Extract degrees of freedom for djusted models
-small_ad_df <- c(round(summary(mass_min_temp_mid_size_small_adj_lmer)$coefficients[2, "df"], 2),
-                 round(summary(mass_max_temp_mid_size_small_adj_lmer)$coefficients[2, "df"], 2), 
-                 round(summary(mass_iqr_temp_mid_size_small_adj_lmer)$coefficients[2, "df"], 2))
-
-big_ad_df <- c(round(summary(mass_min_temp_mid_size_big_adj_lmer)$coefficients[2, "df"], 2),
-               round(summary(mass_max_temp_mid_size_big_adj_lmer)$coefficients[2, "df"], 2), 
-               round(summary(mass_iqr_temp_mid_size_big_adj_lmer)$coefficients[2, "df"], 2))
-
-
 
 
 # Bind the values together into a single dataframe
 size_strat_ad <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
-  small_ad_b, small_ad_df, small_ad_t,  small_ad_p,
-  big_ad_b, big_ad_df, big_ad_t, big_ad_p
+  small_ad_n, small_ad_b, small_ad_p,
+  big_ad_n, big_ad_b, big_ad_p
 )
 
 size_strat_un <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
-  small_un_b, small_un_df, small_un_t,  small_un_p,
-  big_un_b, big_un_df, big_un_t, big_un_p
+  small_un_n, small_un_b, small_un_p,
+  big_un_n, big_un_b, big_un_p
 )
 
 colnames(size_strat_ad) <- c("variable", "type",
-                             "small_b", "small_df", "small_t", "small_p", 
-                             "big_b", "big_df", "big_t",  "big_p")
+                             "small_n", "small_b", "small_p", 
+                             "big_n", "big_b", "big_p")
 
 colnames(size_strat_un) <- c("variable", "type",
-                             "small_b", "small_df", "small_t","small_p", 
-                             "big_b", "big_df", "big_t", "big_p")
+                             "small_n", "small_b", "small_p", 
+                             "big_n", "big_b", "big_p")
 
 size_strat <- rbind(size_strat_un, size_strat_ad)
 
@@ -1975,7 +3472,7 @@ str(size_strat)
 # Create display table
 size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**S4 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by relative nestling size at days eight to nine measure (smallest vs. other), for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
+    title = md("**Supplemental Table 4.** Associations of nestling mass and temperature, assessed in separate models stratified by relative nestling size at mid development measure (smallest vs. other). Temperature variability is defined as the interquartile range. ")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
@@ -2024,19 +3521,17 @@ size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
     rows = c(1:2)
   ) %>%
   tab_spanner(
-    label = paste("Small size models (n = ", nobs(mass_min_temp_mid_size_small_adj_lmer), ")", sep = ""),
-    columns = c(small_b, small_df, small_t, small_p)
+    label = "Small size models",
+    columns = c(small_n, small_b, small_p)
   ) %>%
   tab_spanner(
-    label = paste("Big size models (n = ", nobs(mass_min_temp_mid_size_big_adj_lmer), ")", sep = ""),
-    columns = c(big_b, big_df, big_t, big_p)
+    label = "Other size models",
+    columns = c(big_n, big_b, big_p)
   )  %>% 
   cols_label(
     ends_with("n") ~ "N", 
     ends_with("b") ~ "β (95% CI)",
-    ends_with("p") ~ "p-value",
-    ends_with("t") ~ "t-value",
-    ends_with("df") ~ "DF",
+    ends_with("p") ~ "P",
     type = "Type"
   ) %>%
   cols_hide(variable)  %>%
@@ -2992,6 +4487,15 @@ print(bt_ci_mass_iqr_after_thermo_adj_noout_lmer)
 
 ########## Create model results tables for developmental stages models ########
 
+# Extract number of observations for unadjusted models
+before_un_n <- c(nobs(mass_min_before_thermo_lmer), 
+                nobs(mass_max_before_thermo_lmer),
+                nobs(mass_iqr_before_thermo_lmer))
+
+after_un_n <- c(nobs(mass_min_after_thermo_lmer), 
+                 nobs(mass_max_after_thermo_lmer),
+                 nobs(mass_iqr_after_thermo_lmer))
+
 
 # Extract Betas for unadjusted models
 before_un_b <- c(paste(round(fixef(mass_min_before_thermo_lmer)[2], 2), " (", 
@@ -3030,23 +4534,16 @@ after_un_p <- c(round(summary(mass_min_after_thermo_lmer)$coefficients[2, "Pr(>|
                  as.character(round(summary(mass_max_after_thermo_lmer)$coefficients[2, "Pr(>|t|)"], 3)), 
                  as.character(round(summary(mass_iqr_after_thermo_lmer)$coefficients[2, "Pr(>|t|)"], 4)))
 
-# Extract t-values for unadjusted models
-before_un_t <- c(round(summary(mass_min_before_thermo_lmer)$coefficients[2, "t value"], 2),
-                 round(summary(mass_max_before_thermo_lmer)$coefficients[2, "t value"], 2), 
-                 round(summary(mass_iqr_before_thermo_lmer)$coefficients[2, "t value"], 2))
 
-after_un_t <- c(round(summary(mass_min_after_thermo_lmer)$coefficients[2, "t value"], 2),
-                round(summary(mass_max_after_thermo_lmer)$coefficients[2, "t value"], 2), 
-                round(summary(mass_iqr_after_thermo_lmer)$coefficients[2, "t value"], 2))
+# Extract number of observations for adjusted models
+before_ad_n <- c(nobs(mass_min_before_thermo_adj_lmer), 
+                 nobs(mass_max_before_thermo_adj_lmer),
+                 nobs(mass_iqr_before_thermo_adj_lmer))
 
-# Extract degrees of freedom for unadjusted models
-before_un_df <- c(round(summary(mass_min_before_thermo_lmer)$coefficients[2, "df"], 2),
-                 round(summary(mass_max_before_thermo_lmer)$coefficients[2, "df"], 2), 
-                 round(summary(mass_iqr_before_thermo_lmer)$coefficients[2, "df"], 2))
+after_ad_n <- c(nobs(mass_min_after_thermo_adj_lmer), 
+                nobs(mass_max_after_thermo_adj_lmer),
+                nobs(mass_iqr_after_thermo_adj_lmer))
 
-after_un_df <- c(round(summary(mass_min_after_thermo_lmer)$coefficients[2, "df"], 2),
-                round(summary(mass_max_after_thermo_lmer)$coefficients[2, "df"], 2), 
-                round(summary(mass_iqr_after_thermo_lmer)$coefficients[2, "df"], 2))
 
 
 # Extract Betas for unadjusted models
@@ -3077,6 +4574,15 @@ after_ad_b <- c(paste(round(fixef(mass_min_after_thermo_adj_lmer)[2], 2), " (",
                       round(bt_ci_mass_iqr_after_thermo_adj_lmer[[6]][5], 2), ")",
                       sep = ""))
 
+# Extract number of observations for adjusted models
+before_ad_n <- c(nobs(mass_min_before_thermo_adj_lmer), 
+                 nobs(mass_max_before_thermo_adj_lmer),
+                 nobs(mass_iqr_before_thermo_adj_lmer))
+
+after_ad_n <- c(nobs(mass_min_after_thermo_adj_lmer), 
+                nobs(mass_max_after_thermo_adj_lmer),
+                nobs(mass_iqr_after_thermo_adj_lmer))
+
 
 # Extract p-values for adjusted models
 before_ad_p <- c(as.character(round(summary(mass_min_before_thermo_adj_lmer)$coefficients[2, "Pr(>|t|)"], 3)),
@@ -3087,47 +4593,29 @@ after_ad_p <- c(round(summary(mass_min_after_thermo_adj_lmer)$coefficients[2, "P
                 as.character(round(summary(mass_max_after_thermo_adj_lmer)$coefficients[2, "Pr(>|t|)"], 3)), 
                 as.character(round(summary(mass_iqr_after_thermo_adj_lmer)$coefficients[2, "Pr(>|t|)"], 4)))
 
-# Extract t-values for unadjusted models
-before_ad_t <- c(round(summary(mass_min_before_thermo_adj_lmer)$coefficients[2, "t value"], 2),
-                 round(summary(mass_max_before_thermo_adj_lmer)$coefficients[2, "t value"], 2), 
-                 round(summary(mass_iqr_before_thermo_adj_lmer)$coefficients[2, "t value"], 2))
-
-after_ad_t <- c(round(summary(mass_min_after_thermo_adj_lmer)$coefficients[2, "t value"], 2),
-                round(summary(mass_max_after_thermo_adj_lmer)$coefficients[2, "t value"], 2), 
-                round(summary(mass_iqr_after_thermo_adj_lmer)$coefficients[2, "t value"], 2))
-
-# Extract degrees of freedom for unadjusted models
-before_ad_df <- c(round(summary(mass_min_before_thermo_adj_lmer)$coefficients[2, "df"], 2),
-                  round(summary(mass_max_before_thermo_adj_lmer)$coefficients[2, "df"], 2), 
-                  round(summary(mass_iqr_before_thermo_adj_lmer)$coefficients[2, "df"], 2))
-
-after_ad_df <- c(round(summary(mass_min_after_thermo_adj_lmer)$coefficients[2, "df"], 2),
-                 round(summary(mass_max_after_thermo_adj_lmer)$coefficients[2, "df"], 2), 
-                 round(summary(mass_iqr_after_thermo_adj_lmer)$coefficients[2, "df"], 2))
-
 
 # Bind the values together into a single dataframe
 devel_ad <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
-  before_ad_b, before_ad_df, before_ad_t, before_ad_p, 
-  after_ad_b, after_ad_df, after_ad_t, after_ad_p
+  before_ad_n, before_ad_b, before_ad_p, 
+  after_ad_n, after_ad_b, after_ad_p
 )
 
 devel_un <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
-  before_un_b, before_un_df, before_un_t, before_un_p,
- after_un_b, after_un_df, after_un_t, after_un_p
+  before_un_n, before_un_b, before_un_p,
+  after_un_n, after_un_b, after_un_p
 )
 
 colnames(devel_ad) <- c("variable", "type",
-                        "before_b", "before_df", "before_t", "before_p", 
-                        "after_b", "after_df", "after_t", "after_p")
+                                      "before_n", "before_b", "before_p", 
+                                      "after_n", "after_b", "after_p")
 
 colnames(devel_un) <- c("variable", "type",
-                        "before_b", "before_df", "before_t", "before_p", 
-                        "after_b", "after_df", "after_t", "after_p")
+                        "before_n", "before_b", "before_p", 
+                        "after_n", "after_b", "after_p")
 
 devel <- rbind(devel_un, devel_ad)
 
@@ -3140,7 +4628,7 @@ str(devel)
 # Create display table
 devel_mod_table <- gt(devel, rowname_col = "type") %>%
   tab_header(
-    title = md("**S3 Table. Associations of three temperature variables in early and late development (before or after six days post-hatch) with nestling mass for wild barns swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each developmental stage is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
+    title = md("**Supplemental Table 3.** Associations of three temperature variables before or after thermoregulatory independence (defined as occurring six days post-hatch) with nestling mass. Temperature variability is defined as the interquartile range. ")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature before or after thermoregulatory independence are the explanatory variables of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors as z-score standardized.",
@@ -3189,19 +4677,17 @@ devel_mod_table <- gt(devel, rowname_col = "type") %>%
     rows = c(1:2)
   ) %>%
   tab_spanner(
-    label = paste("Before models (n = ", nobs(mass_min_before_thermo_adj_lmer), ")", sep = ""),
-    columns = c(before_b, before_df, before_t, before_p)
+    label = "Before models",
+    columns = c(before_n, before_b, before_p)
   ) %>%
   tab_spanner(
-    label = paste("After models (n = ", nobs(mass_min_after_thermo_adj_lmer), ")", sep = ""),
-    columns = c(after_b, after_df, after_t, after_p)
+    label = "After models",
+    columns = c(after_n, after_b, after_p)
   ) %>%
   cols_label(
     ends_with("n") ~ "N", 
     ends_with("b") ~ "β (95% CI)",
-    ends_with("p") ~ "p-value",
-    ends_with("t") ~ "t-value",
-    ends_with("df") ~ "DF",
+    ends_with("p") ~ "P",
     type = "Type"
   ) %>%
   cols_hide(variable)  %>%
@@ -4159,6 +5645,8 @@ print(bt_ci_mass_iqr_after_thermo_adj_lmer_7)
 ###############################################################################
 
 ################### Parental feeding models (question 3) #####################
+##### Two categories
+
 
 ### Minimum temperature
 
@@ -4167,15 +5655,11 @@ print(bt_ci_mass_iqr_after_thermo_adj_lmer_7)
 pred_low <- ggpredict(mass_min_temp_blups_low_adj_lmer, c("nest_min_temp"))
 pred_low$feeding <- "1"
 
-# Med
-pred_med <- ggpredict(mass_min_temp_blups_med_adj_lmer, c("nest_min_temp"))
-pred_med$feeding <- "2"
-
 # High
 pred_high <- ggpredict(mass_min_temp_blups_high_adj_lmer, c("nest_min_temp"))
-pred_high$feeding <- "3"
+pred_high$feeding <- "2"
 
-pred_feeding <- rbind(pred_low, pred_med, pred_high)
+pred_feeding <- rbind(pred_low, pred_high)
 
 ## create a subset of the raw data excluding missing data
 sub <- subset(late_nestling_parent_care,
@@ -4184,9 +5668,9 @@ sub <- subset(late_nestling_parent_care,
                 !is.na(x = feeding_expontd_blups))
 
 ## Create vectors of colors for plot
-cols <- c("#481567FF", "#20A387FF", "#95D840FF")
-lines <- c(3, 4, 1)
-shapes <- c(17, 16, 15)
+cols <- c("#481567FF", "#95D840FF")
+lines <- c(4, 1)
+shapes <- c(16, 15)
 
 ## Create plot of model predictions and raw data
 temp_min_feeding_blups_predicted <- ggplot() +
@@ -4203,13 +5687,13 @@ temp_min_feeding_blups_predicted <- ggplot() +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
         legend.text = element_text(size = 9), legend.title = element_text(size = 11),
         legend.key.size = unit(1.5, 'cm')) +
-  scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
+  scale_color_manual(values = cols, labels=c("Low", "High"),
                      aesthetics = c("colour", "fill")) +
-  scale_linetype_manual(values = lines, labels=c("Low", "Med", "High")) +
-  scale_shape_manual(values = shapes, labels=c("Low", "Med", "High")) +
+  scale_linetype_manual(values = lines, labels=c("Low", "High")) +
+  scale_shape_manual(values = shapes, labels=c("Low", "High")) +
   guides(
     shape = guide_legend(override.aes = list(size = 3))
-    )
+  )
 
 # Print plot
 print(temp_min_feeding_blups_predicted)
@@ -4223,15 +5707,11 @@ print(temp_min_feeding_blups_predicted)
 pred_low <- ggpredict(mass_max_temp_blups_low_adj_lmer, c("nest_max_temp"))
 pred_low$feeding <- "1"
 
-# Med
-pred_med <- ggpredict(mass_max_temp_blups_med_adj_lmer, c("nest_max_temp"))
-pred_med$feeding <- "2"
-
 # High
 pred_high <- ggpredict(mass_max_temp_blups_high_adj_lmer, c("nest_max_temp"))
-pred_high$feeding <- "3"
+pred_high$feeding <- "2"
 
-pred_feeding <- rbind(pred_low, pred_med, pred_high)
+pred_feeding <- rbind(pred_low, pred_high)
 
 ## Create subset of raw data excluding missing data
 sub <- subset(late_nestling_parent_care,
@@ -4246,7 +5726,7 @@ temp_max_feeding_blups_predicted <- ggplot() +
   geom_point(data = sub, aes(x = nest_max_temp, y = mass_pre_obs,
                              col = as.character(feeding_expontd_blups_strat),
                              shape = as.character(feeding_expontd_blups_strat)), 
-              size = 1.5, alpha = 0.5) +
+             size = 1.5, alpha = 0.5) +
   theme_classic() +
   labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
        colour = "Parent feeding level",  
@@ -4254,10 +5734,10 @@ temp_max_feeding_blups_predicted <- ggplot() +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
         legend.text = element_text(size = 9), legend.title = element_text(size = 11),
         legend.key.size = unit(1.5, 'cm')) +
-  scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
+  scale_color_manual(values = cols, labels=c("Low", "High"),
                      aesthetics = c("colour", "fill")) +
-  scale_linetype_manual(values = lines, labels=c("Low", "Med", "High")) +
-  scale_shape_manual(values = shapes, labels=c("Low", "Med", "High"))  +
+  scale_linetype_manual(values = lines, labels=c("Low", "High")) +
+  scale_shape_manual(values = shapes, labels=c("Low", "High"))  +
   guides(
     shape = guide_legend(override.aes = list(size = 3))
   )
@@ -4273,15 +5753,11 @@ print(temp_max_feeding_blups_predicted)
 pred_low <- ggpredict(mass_iqr_temp_blups_low_adj_lmer, c("nest_iqr_temp"))
 pred_low$feeding <- "1"
 
-# Med
-pred_med <- ggpredict(mass_iqr_temp_blups_med_adj_lmer, c("nest_iqr_temp"))
-pred_med$feeding <- "2"
-
 # High
 pred_high <- ggpredict(mass_iqr_temp_blups_high_adj_lmer, c("nest_iqr_temp"))
-pred_high$feeding <- "3"
+pred_high$feeding <- "2"
 
-pred_feeding <- rbind(pred_low, pred_med, pred_high)
+pred_feeding <- rbind(pred_low, pred_high)
 
 # Create subset of raw data excluding missing data
 sub <- subset(late_nestling_parent_care,
@@ -4300,15 +5776,15 @@ temp_iqr_feeding_blups_predicted <- ggplot() +
              size = 1.5, alpha = 0.5) +
   theme_classic() +
   labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
-       colour = "Parent feeding level",  
+       colour = "Parent feeding level", 
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
         legend.text = element_text(size = 9), legend.title = element_text(size = 11),
         legend.key.size = unit(1.5, 'cm')) +
-  scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
+  scale_color_manual(values = cols, labels=c("Low", "High"),
                      aesthetics = c("colour", "fill")) +
-  scale_linetype_manual(values = lines, labels=c("Low", "Med", "High")) +
-  scale_shape_manual(values = shapes, labels=c("Low", "Med", "High"))  +
+  scale_linetype_manual(values = lines, labels=c("Low", "High")) +
+  scale_shape_manual(values = shapes, labels=c("Low", "High"))  +
   guides(
     shape = guide_legend(override.aes = list(size = 3))
   )
@@ -4341,6 +5817,190 @@ ggsave('combined_temp_feeding_predictions_pattern_shape.tif', plot = combined_te
        units = c('in'), dpi = 300, limitsize = TRUE, bg = "white")
 
 
+################### Parental feeding models -- three cat #####################
+### Three categories
+
+### Minimum temperature
+
+## Compute predicted values from stratified models and bind them together
+# Low
+pred_low <- ggpredict(mass_min_temp_blups_3_low_adj_lmer, c("nest_min_temp"))
+pred_low$feeding <- "1"
+
+# Med
+pred_med <- ggpredict(mass_min_temp_blups_3_med_adj_lmer, c("nest_min_temp"))
+pred_med$feeding <- "2"
+
+# High
+pred_high <- ggpredict(mass_min_temp_blups_3_high_adj_lmer, c("nest_min_temp"))
+pred_high$feeding <- "3"
+
+pred_feeding <- rbind(pred_low, pred_med, pred_high)
+
+## create a subset of the raw data excluding missing data
+sub <- subset(late_nestling_parent_care,
+              !is.na(x = mass_pre_obs) & 
+                !is.na(x = nest_min_temp) &
+                !is.na(x = feeding_expontd_blups))
+
+## Create vectors of colors for plot
+cols <- c("#481567FF", "#20A387FF", "#95D840FF")
+lines <- c(2, 4, 1)
+shapes <- c(17, 16, 15)
+
+## Create plot of model predictions and raw data
+temp_min_feeding_blups_3_predicted <- ggplot() +
+  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding, linetype = feeding), 
+            size = 1.5) +
+  geom_point(data = sub, aes(x = nest_min_temp, y = mass_pre_obs,
+                             col = as.character(feeding_expontd_blups_strat_3),
+                             shape = as.character(feeding_expontd_blups_strat_3)), 
+             size = 1.5, alpha = 0.5) +
+  theme_classic() +
+  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
+       colour = "Parent feeding level", 
+       linetype = "Parent feeding level", shape = "Parent feeding level") +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11),
+        legend.key.size = unit(1.5, 'cm')) +
+  scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
+                     aesthetics = c("colour", "fill")) +
+  scale_linetype_manual(values = lines, labels=c("Low", "Med", "High")) +
+  scale_shape_manual(values = shapes, labels=c("Low", "Med", "High")) +
+  guides(
+    shape = guide_legend(override.aes = list(size = 3))
+  )
+
+# Print plot
+print(temp_min_feeding_blups_3_predicted)
+
+
+
+### Maximum temperature
+
+## Compute predicted values from stratified models and bind them together
+# Low
+pred_low <- ggpredict(mass_max_temp_blups_3_low_adj_lmer, c("nest_max_temp"))
+pred_low$feeding <- "1"
+
+# Med
+pred_med <- ggpredict(mass_max_temp_blups_3_med_adj_lmer, c("nest_max_temp"))
+pred_med$feeding <- "2"
+
+# High
+pred_high <- ggpredict(mass_max_temp_blups_3_high_adj_lmer, c("nest_max_temp"))
+pred_high$feeding <- "3"
+
+pred_feeding <- rbind(pred_low, pred_med, pred_high)
+
+## Create subset of raw data excluding missing data
+sub <- subset(late_nestling_parent_care,
+              !is.na(x = mass_pre_obs) & 
+                !is.na(x = nest_max_temp) &
+                !is.na(x = feeding_expontd_blups))
+
+## Plot models predictions and raw data
+temp_max_feeding_blups_3_predicted <- ggplot() +
+  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding, linetype = feeding), 
+            size = 1.5) +
+  geom_point(data = sub, aes(x = nest_max_temp, y = mass_pre_obs,
+                             col = as.character(feeding_expontd_blups_strat_3),
+                             shape = as.character(feeding_expontd_blups_strat_3)), 
+             size = 1.5, alpha = 0.5) +
+  theme_classic() +
+  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
+       colour = "Parent feeding level",
+       linetype = "Parent feeding level", shape = "Parent feeding level") +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11),
+        legend.key.size = unit(1.5, 'cm')) +
+  scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
+                     aesthetics = c("colour", "fill")) +
+  scale_linetype_manual(values = lines, labels=c("Low", "Med", "High")) +
+  scale_shape_manual(values = shapes, labels=c("Low", "Med", "High"))  +
+  guides(
+    shape = guide_legend(override.aes = list(size = 3))
+  )
+
+# Print plot
+print(temp_max_feeding_blups_3_predicted)
+
+
+### Temperature interquartile range
+
+## Compute predicted values from stratified models and bind them together
+# Low
+pred_low <- ggpredict(mass_iqr_temp_blups_3_low_adj_lmer, c("nest_iqr_temp"))
+pred_low$feeding <- "1"
+
+# Med
+pred_med <- ggpredict(mass_iqr_temp_blups_3_med_adj_lmer, c("nest_iqr_temp"))
+pred_med$feeding <- "2"
+
+# High
+pred_high <- ggpredict(mass_iqr_temp_blups_3_high_adj_lmer, c("nest_iqr_temp"))
+pred_high$feeding <- "3"
+
+pred_feeding <- rbind(pred_low, pred_med, pred_high)
+
+# Create subset of raw data excluding missing data
+sub <- subset(late_nestling_parent_care,
+              !is.na(x = mass_pre_obs) & 
+                !is.na(x = nest_iqr_temp) &
+                !is.na(x = feeding_expontd_blups))
+
+
+# Plot model predictions and raw data
+temp_iqr_feeding_blups_3_predicted <- ggplot() +
+  geom_line(data = pred_feeding, aes(x = x, y = predicted, col = feeding, linetype = feeding), 
+            size = 1.5) +
+  geom_point(data = sub, aes(x = nest_iqr_temp, y = mass_pre_obs,
+                             col = as.character(feeding_expontd_blups_strat_3), 
+                             shape = as.character(feeding_expontd_blups_strat_3)), 
+             size = 1.5, alpha = 0.5) +
+  theme_classic() +
+  labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
+       colour = "Parent feeding level", 
+       linetype = "Parent feeding level", shape = "Parent feeding level") +
+  theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
+        legend.text = element_text(size = 9), legend.title = element_text(size = 11),
+        legend.key.size = unit(1.5, 'cm')) +
+  scale_color_manual(values = cols, labels=c("Low", "Med", "High"),
+                     aesthetics = c("colour", "fill")) +
+  scale_linetype_manual(values = lines, labels=c("Low", "Med", "High")) +
+  scale_shape_manual(values = shapes, labels=c("Low", "Med", "High"))  +
+  guides(
+    shape = guide_legend(override.aes = list(size = 3))
+  )
+
+
+# Print plot
+print(temp_iqr_feeding_blups_3_predicted)
+
+
+## Combine plots for the three temperature variables
+combined_temp_feeding_predictions_three <- 
+  ggarrange(temp_min_feeding_blups_3_predicted, temp_max_feeding_blups_3_predicted,
+            temp_iqr_feeding_blups_3_predicted,
+            ncol = 1, nrow = 3, common.legend = TRUE, legend = "bottom", 
+            labels = c("(A)", "(B)", "(C)"), 
+            font.label = list(size = 11, face = "bold", color = "red"), hjust = -0.1) + 
+  theme(plot.margin = margin(t = 4,  # Top margin
+                             r = 4,  # Right margin
+                             b = 0,  # Bottom margin
+                             l = 4)) 
+
+# Print clombined plot
+print(combined_temp_feeding_predictions_three)
+
+# Save combined plot
+ggsave('combined_temp_feeding_predictions_three_strat.tif', plot = combined_temp_feeding_predictions_three, 
+       device = NULL, 
+       path = 'Output/', scale = 1, width = 5.2, 
+       height = 8.75, 
+       units = c('in'), dpi = 300, limitsize = TRUE, bg = "white")
+
+
 
 ####################### Relative size models (question 2) #####################
 
@@ -4363,10 +6023,10 @@ sub <- subset(late_nestling_parent_care,
                 !is.na(x = nest_min_temp) &
                 !is.na(x = mid_size_order))
 
-# Create vector of colors for plot
-cols <- c("#481567FF","#95D840FF")
-lines <- c(3, 1)
-shapes <- c(17, 15)
+## Create vectors of colors for plot
+cols <- c("#481567FF", "#95D840FF")
+lines <- c(4, 1)
+shapes <- c(16, 15)
 
 # Plot model predictions and raw data
 temp_min_size_predicted <- ggplot() +
@@ -4390,7 +6050,6 @@ temp_min_size_predicted <- ggplot() +
   guides(
     shape = guide_legend(override.aes = list(size = 3))
   )
-
 
 # Print plot
 print(temp_min_size_predicted)
@@ -4527,10 +6186,11 @@ sub <- subset(late_nestling_parent_care,
                 !is.na(x = thermo_bef_min_temp) &
                 !is.na(x = thermo_aft_min_temp))
 
+
 # Create vector of colors with labels for plot
 colors <- c("Early" = "#481567FF", "Late" = "#95D840FF")
-lines <- c("Early" = 3, "Late" = 1)
-shapes <- c("Early" = 17, "Late" = 15)
+lines <- c("Early" = 4, "Late" = 1)
+shapes <- c("Early" = 16, "Late" = 15)
 
 # Plot model predictions and raw data
 temp_thermo_both_min_predicted <- ggplot() + 
@@ -4545,7 +6205,7 @@ temp_thermo_both_min_predicted <- ggplot() +
   geom_point(data = sub, aes(x = thermo_aft_min_temp, y = mass_pre_obs, col = "Late", shape = "Late"), 
              size = 1.5, alpha = 0.5) +
   labs(x = "Minimum temperature (C)", y = "Nestling mass (g)", 
-       color = "Developmental stage",  
+       color = "Developmental stage", 
        linetype = "Developmental stage", shape = "Developmental stage") +
   scale_color_manual(values = colors, breaks = c("Early", "Late"),
                      aesthetics = c("color", "fill")) + 
@@ -4627,7 +6287,7 @@ temp_thermo_both_iqr_predicted <- ggplot() +
   geom_point(data = sub, aes(x = thermo_aft_iqr_temp, y = mass_pre_obs, col = "Late", shape = "Late"), 
              size = 1.5, alpha = 0.5) +
   labs(x = "Temperature variability (C)", y = "Nestling mass (g)", 
-       color = "Developmental stage", 
+       color = "Developmental stage",  
        linetype = "Developmental stage", shape = "Developmental stage") +
   scale_color_manual(values = colors, breaks = c("Early", "Late"),
                      aesthetics = c("color", "fill")) + 

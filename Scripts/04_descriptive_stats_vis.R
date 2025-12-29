@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 10/1/2025
+####### Last modified: 12/9/2025
 
 
 # Code Blocks
@@ -32,7 +32,7 @@ library('tidyverse')
 
 ## Graph Plotting and Visualization Packages
 library ('ggplot2')
-library('hrbrthemes')
+#library('hrbrthemes')
 library('viridis')
 library ('gridExtra')
 library('ggpubr')
@@ -124,6 +124,7 @@ prim_merged <- mutate(prim_merged,
 
 
 cor.test(prim_merged$brooding_prop, prim_merged$feeding_rate, method = "spearman")
+subset <- filter(prim_merged, is.na(brooding_prop) == FALSE & is.na(feeding_rate) == FALSE)
 
 # Bind the parental care stats together
 univar_parental_care <- rbind(univar_feeding_blups, univar_feeding_rate, univar_brooding_dur)
@@ -214,7 +215,25 @@ pdf('Output/univar_hatch_date.pdf', height = 3, width = 14)
 grid.table(univar_hatch_date)
 dev.off()
 
+
+
 ## Nest temperature
+
+# Min temp
+univar_temp_mean <- nest_dat %>%
+  summarise (n = sum(!is.na(nest_avg_temp)),
+             avg = round (mean(nest_avg_temp, 
+                               na.rm = T),2),
+             stdev = round (sd(nest_avg_temp, 
+                               na.rm = T), 2),
+             med = round(median(nest_avg_temp,
+                                na.rm = T), 2),
+             min = round(min(nest_avg_temp,
+                             na.rm = T), 2),
+             max = round(max(nest_avg_temp,
+                             na.rm = T), 2)
+  )
+
 # Min temp
 univar_temp_min <- nest_dat %>%
   summarise (n = sum(!is.na(nest_min_temp)),
@@ -290,10 +309,10 @@ univar_temp_aft_thermo <- nest_dat %>%
                              na.rm = T), 2)
   )
 
-univar_temp <- rbind(univar_temp_min, univar_temp_max, 
+univar_temp <- rbind(univar_temp_mean, univar_temp_min, univar_temp_max, 
                      univar_temp_iqr, univar_temp_bef_thermo, univar_temp_aft_thermo)
 
-univar_temp$variable_name <- c("nest_min_temp", 
+univar_temp$variable_name <- c("nest_avg_temp", "nest_min_temp", 
                                "nest_max_temp", "nest_iqr_temp",
                                "thermo_bef_med_temp", "thermo_aft_med_temp")
 
@@ -980,12 +999,15 @@ bivar_feeding_table$variable_name <- bivar_feeding_table$obs_state
 bivar_feeding_table$obs_state <- NULL
 
 # Temperature
+univar_temp_mean$variable_name <- "Mean temperature (C)"
+
 univar_temp_min$variable_name <- "Minimum temperature (C)"
 
 univar_temp_max$variable_name <- "Maximum temperature (C)"
 
 univar_temp_iqr$variable_name <- "Temperature variability (C)"
 
+# Other variables
 univar_brood_size$variable_name <- "Brood size (number of nestlings)"
 
 univar_hatch_date$variable_name <- "Hatch date (days since June 1)"
@@ -993,7 +1015,7 @@ univar_hatch_date$variable_name <- "Hatch date (days since June 1)"
 univar_nestling_age$variable_name <- "Nest age at last measure (days since hatch)"
 
 # Bind all variables together
-summary_stats_df <- rbind(univar_temp_min, univar_temp_max, univar_temp_iqr, univar_brood_size,
+summary_stats_df <- rbind(univar_temp_mean, univar_temp_min, univar_temp_max, univar_temp_iqr, univar_brood_size,
                             univar_hatch_date, univar_nestling_age, bivar_feeding_table,
                             bivar_wing_table, bivar_mass_table)
 
@@ -1019,23 +1041,23 @@ summary_stats_table <- gt(summary_stats_df, rowname_col = "variable_name") %>%
   ) %>%
   tab_row_group(
     label = md("**Nestling mass (g) across development**"), 
-    rows = c(13:15)
+    rows = c(12:16)
   ) %>%
   tab_row_group(
     label = md("**Right wing length (mm) across development**"), 
-    rows = c(10:12)
+    rows = c(11:13)
   ) %>%
   tab_row_group(
     label = md("**Total feeding rate (counts/hour) across development**"), 
-    rows = c(7:9)
+    rows = c(8:10)
   ) %>%
   tab_row_group(
     label = md("**Other nest characteristics**"), 
-    rows = c(4:6)
+    rows = c(5:7)
   ) %>%
   tab_row_group(
     label = md("**Near-nest temperature**"), 
-    rows = c(1:3)
+    rows = c(1:4)
   ) %>%
   tab_footnote(
     footnote = " Parental feeding behaviors are measured at the level of the nest and include the totals for both social parents (maternal and paternal care).",
@@ -1794,19 +1816,19 @@ ggsave('combined_temp_date.png', plot = combined_temp_date,
 ### BLUPs by strata for statified analysis
 ## Create three categories for BLUPs to allow stratification 
 late_nestling_parent_care <- late_nestling_parent_care %>%
-  mutate(feeding_expontd_blups_strat =  as.integer(Hmisc::cut2(feeding_expontd_blups, g=3)))
+  mutate(feeding_expontd_blups_strat =  as.integer(Hmisc::cut2(feeding_expontd_blups, g=2)))
 
 late_nestling_parent_care$blups_factor <- as.factor(late_nestling_parent_care$feeding_expontd_blups_strat)
 
-levels(late_nestling_parent_care$blups_factor) <- c("Low", "Med", "High")
+levels(late_nestling_parent_care$blups_factor) <- c("Low", "High")
 
-cols <- c("#481567FF", "#20A387FF", "#95D840FF")
+cols <- c("#481567FF", "#95D840FF")
 
 
 
 blups_stratified_boxplot <- ggplot(data = late_nestling_parent_care, 
                                    aes(x = blups_factor, y = feeding_expontd_blups, 
-                                       fill = blups_factor), col = "black") +
+                                       fill = blups_factor)) +
   geom_jitter(aes(col = blups_factor), size = 1.5, alpha = 0.5, width = 0.2) +
   geom_boxplot(alpha = 0.5, size = 0.8) +
   theme_classic() +
