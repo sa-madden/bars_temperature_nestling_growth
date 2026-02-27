@@ -66,6 +66,17 @@ load('Data/Tidy/tidy_parent_nestl_weather_data_10-4.RData')
 # Can control for other variables that bias estimates of explanatory
 # variable
 
+
+dat = subset(prim_merged,
+              is.na(total_feeding_visits) == F &
+                is.na(nestling_age) == F &
+                is.na(nestling_number) == F &
+                is.na(obs_med_temp) == F  &
+                is.na(disturb_min) == F)
+mean(dat$obs_duration)/60
+range(dat$obs_duration)/60
+
+
 # NOTE: BLUPs are conditional modes from a generalized linear model
 # (according to Doug Bates). 
 # BLUP = fixef(intrcpt) + ranef

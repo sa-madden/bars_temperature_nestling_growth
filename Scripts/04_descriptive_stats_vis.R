@@ -2,7 +2,7 @@
 ####### nest mircoclimate and nestling growth dataset
 ####### By: Sage Madden
 ####### Created: 12/19/2022
-####### Last modified: 12/9/2025
+####### Last modified: 2/25/2026
 
 
 # Code Blocks
@@ -122,9 +122,50 @@ prim_merged <- mutate(prim_merged,
                       brooding_prop = total_brooding_duration/(obs_duration/3600),
                       feeding_rate = total_feeding_visits/(obs_duration/3600))
 
-
 cor.test(prim_merged$brooding_prop, prim_merged$feeding_rate, method = "spearman")
 subset <- filter(prim_merged, is.na(brooding_prop) == FALSE & is.na(feeding_rate) == FALSE)
+
+
+# Add categories for three different time periods
+prim_merged_cat <- prim_merged %>%
+  group_by(nest_id) %>%
+  mutate(sobs_state =
+           case_when(nestling_age <= 6
+                     ~ c('early'),
+                     nestling_age > 6 & nestling_age <= 10
+                     ~ c('mid'),
+                     nestling_age > 10 
+                     ~ c('late'))) %>%
+  ungroup()
+
+# Create dataset for each time period
+parental_early <- prim_merged_cat %>% filter(obs_state == "early") %>% 
+  filter(is.na(brooding_prop) == FALSE & is.na(feeding_rate) == FALSE)
+
+parental_mid <- prim_merged_cat %>% filter(obs_state == "mid") %>% 
+  filter(is.na(brooding_prop) == FALSE & is.na(feeding_rate) == FALSE)
+
+parental_late <- prim_merged_cat %>% filter(obs_state == "late") %>% 
+  filter(is.na(brooding_prop) == FALSE & is.na(feeding_rate) == FALSE)
+
+# Check correlations by time period
+cor.test(parental_early$brooding_prop, parental_early$feeding_rate, method = "spearman")
+cor.test(parental_mid$brooding_prop, parental_mid$feeding_rate, method = "spearman")
+cor.test(parental_late$brooding_prop, parental_late$feeding_rate, method = "spearman")
+
+colnames(late_nestling_parent_care)
+
+
+# Check correlations of before vs. after temperatures
+
+# Remove duplicate nestlings so that this measure is that the nestling level
+nest_level_temps <- late_nestling_parent_care %>% distinct(nest_id, .keep_all = TRUE)
+
+
+cor.test(nest_level_temps$thermo_bef_min_temp, nest_level_temps$thermo_aft_min_temp, method = "spearman")
+cor.test(nest_level_temps$thermo_bef_max_temp, nest_level_temps$thermo_aft_max_temp, method = "spearman")
+cor.test(nest_level_temps$thermo_bef_iqr_temp, nest_level_temps$thermo_aft_iqr_temp, method = "spearman")
+
 
 # Bind the parental care stats together
 univar_parental_care <- rbind(univar_feeding_blups, univar_feeding_rate, univar_brooding_dur)
@@ -1722,7 +1763,7 @@ daily_max_temps_site_scatter <-
                 col = site, group = nest_ids), data = govee_split,
             size = 0.8) +
   labs(x ='Date', 
-       y ='Daily maximum temperature (C)',
+       y ='Daily maximum temperature (°C)',
        col = "Site") +
   theme_classic() +
   scale_color_viridis(discrete = TRUE, alpha=0.8,
@@ -1750,7 +1791,7 @@ daily_min_temps_site_scatter <-
                 col = site, group = nest_ids), data = govee_split,
             size = 0.8) +
   labs(x ='Date', 
-       y ='Daily minimum temperature (C)',
+       y ='Daily minimum temperature (°C)',
        col = "Site") +
   theme_classic() +
   scale_color_viridis(discrete = TRUE, alpha=0.8,
@@ -1777,7 +1818,7 @@ daily_iqr_temps_site_scatter <-
                 col = site, group = nest_ids), data = govee_split,
             size = 0.8) +
   labs(x ='Date', 
-       y ='Daily temperature variability (C)',
+       y ='Daily temperature variability (°C)',
        col = "Site") +
   theme_classic() +
   scale_color_viridis(discrete = TRUE, alpha=0.8,

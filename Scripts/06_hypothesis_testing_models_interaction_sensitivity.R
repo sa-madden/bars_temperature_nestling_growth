@@ -2,7 +2,7 @@
 ####### nest microclimate and nestling growth dataset
 ####### By: Sage
 ####### Created: 12/19/2022
-####### Last modified: 12/8/2025
+####### Last modified: 2/25/2026
 
 # Code Blocks
 # 1: Configure work space
@@ -41,7 +41,6 @@ library("dplyr")
 
 ## Graph Plotting and Visualization Packages
 library ('ggplot2')
-library('hrbrthemes')
 library('viridis')
 library ('gridExtra')
 library ('dotwhisker')
@@ -90,9 +89,14 @@ late_nestling_parent_care$fnest_id <- as.factor(late_nestling_parent_care$nest_i
 late_nestling_parent_care <- late_nestling_parent_care %>%
   mutate(feeding_expontd_blups_strat =  as.integer(Hmisc::cut2(feeding_expontd_blups, g=2)))
 
+late_nestling_parent_care$feeding_expontd_blups_strat_f <- as.factor(late_nestling_parent_care$feeding_expontd_blups_strat)
+
 ## Create three categories for sensitivity analysis
 late_nestling_parent_care <- late_nestling_parent_care %>%
   mutate(feeding_expontd_blups_strat_3 =  as.integer(Hmisc::cut2(feeding_expontd_blups, g=3)))
+
+late_nestling_parent_care$feeding_expontd_blups_strat_3_f <- as.factor(late_nestling_parent_care$feeding_expontd_blups_strat_3)
+
 
 ### Remove outliers in minimum temp x parental feeding analyses (identified based on 
 ### diagnostic plots later in script)
@@ -117,7 +121,7 @@ before_thermo_outliers_removed <- late_nestling_parent_care[-c(4, 39, 40), ]
 
 ### Interaction model - unadjusted
 mass_min_temp_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                   scale(feeding_expontd_blups) +
+                                   feeding_expontd_blups_strat_f +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = mass_pre_obs) & 
@@ -137,6 +141,7 @@ infIndexPlot(mass_min_temp_blups_lmer, vars=c("Studentized"))
 
 summary(mass_min_temp_blups_lmer)
 confint(mass_min_temp_blups_lmer) 
+anova(mass_min_temp_blups_lmer, ddf="Satterthwaite")
 
 # Calculate R squared 
 r.squaredGLMM(mass_min_temp_blups_lmer)
@@ -189,6 +194,7 @@ hist(resid(mass_min_temp_blups_low_lmer))
 
 summary(mass_min_temp_blups_low_lmer)
 confint(mass_min_temp_blups_low_lmer) 
+anova(mass_min_temp_blups_low_lmer, ddf="Satterthwaite")
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -225,6 +231,7 @@ hist(resid(mass_min_temp_blups_high_lmer))
 
 summary(mass_min_temp_blups_high_lmer)
 confint(mass_min_temp_blups_high_lmer) 
+anova(mass_min_temp_blups_high_lmer, ddf="Satterthwaite")
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -243,7 +250,7 @@ print(bt_ci_mass_min_temp_blups_high_lmer)
 
 ### Interaction model - adjusted
 mass_min_temp_blups_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                                 scale(feeding_expontd_blups) + scale(nestling_number) + 
+                                                 feeding_expontd_blups_strat_f + scale(nestling_number) + 
                                                  scale(days_summer) +
                                                  (1|fnest_id), 
                                                data = subset(late_nestling_parent_care,
@@ -264,6 +271,7 @@ infIndexPlot(mass_min_temp_blups_adj_lmer, vars=c("Studentized"))
 
 summary(mass_min_temp_blups_adj_lmer)
 confint(mass_min_temp_blups_adj_lmer) 
+anova(mass_min_temp_blups_adj_lmer, ddf="Satterthwaite")
 
 # Calculate R squared 
 r.squaredGLMM(mass_min_temp_blups_adj_lmer)
@@ -371,7 +379,7 @@ print(bt_ci_mass_min_temp_blups_high_adj_lmer)
 
 ### Interaction model - unadjusted, outliers removed
 mass_min_temp_blups_noout_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                                   scale(feeding_expontd_blups) +
+                                                   feeding_expontd_blups_strat_f +
                                                    (1|fnest_id), 
                                                  data = subset(mass_outliers_removed,
                                                                !is.na(x = mass_pre_obs) & 
@@ -420,7 +428,7 @@ print(bt_ci_mass_min_temp_blups_noout_lmer_3)
 
 ### Interaction model - adjusted, outliers removed
 mass_min_temp_blups_adj_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_min_temp) *
-                                             scale(feeding_expontd_blups) + scale(nestling_number) + 
+                                             feeding_expontd_blups_strat_f + scale(nestling_number) + 
                                              scale(days_summer) +
                                              (1|fnest_id), 
                                            data = subset(mass_outliers_removed,
@@ -547,7 +555,7 @@ print(bt_ci_mass_min_temp_blups_high_adj_noout_lmer)
 
 ## Interaction model - unadjusted 
 mass_max_temp_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                   scale(feeding_expontd_blups) +
+                                   feeding_expontd_blups_strat_f +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = mass_pre_obs) & 
@@ -670,7 +678,7 @@ print(bt_ci_mass_max_temp_blups_high_lmer)
 
 ### Interaction model - adjusted
 mass_max_temp_blups_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                                 scale(feeding_expontd_blups) + 
+                                                 feeding_expontd_blups_strat_f + 
                                                  scale(nestling_number) + scale(days_summer) +
                                                  (1|fnest_id), 
                                                data = subset(late_nestling_parent_care,
@@ -690,7 +698,7 @@ infIndexPlot(mass_max_temp_blups_adj_lmer, vars=c("Cook"))
 infIndexPlot(mass_max_temp_blups_adj_lmer, vars=c("Studentized"))
 
 summary(mass_max_temp_blups_adj_lmer)
-confint(mass_max_temp_blups_adj_lmer) 
+confint(mass_max_temp_blups_adj_lmer)
 
 # Calculate R squared 
 r.squaredGLMM(mass_max_temp_blups_adj_lmer)
@@ -797,7 +805,7 @@ print(bt_ci_mass_max_temp_blups_high_adj_lmer)
 
 ## Interaction model - unadjusted, outliers removed
 mass_max_temp_blups_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                         scale(feeding_expontd_blups) +
+                                         feeding_expontd_blups_strat_f +
                                          (1|fnest_id), 
                                        data = subset(mass_max_outliers_removed,
                                                      !is.na(x = mass_pre_obs) & 
@@ -847,7 +855,7 @@ print(bt_ci_mass_max_temp_blups_noout_lmer_3)
 
 ### Interaction model - adjusted, outliers removed
 mass_max_temp_blups_adj_noout_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_max_temp) *
-                                                       scale(feeding_expontd_blups) + 
+                                                       feeding_expontd_blups_strat_f + 
                                                        scale(nestling_number) + scale(days_summer) +
                                                        (1|fnest_id), 
                                                      data = subset(mass_max_outliers_removed,
@@ -978,7 +986,7 @@ print(bt_ci_mass_max_temp_blups_high_noout_adj_lmer)
 
 ### Interaction model - unadjusted
 mass_iqr_temp_blups_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                   scale(feeding_expontd_blups) +
+                                   feeding_expontd_blups_strat_f +
                                    (1|fnest_id), 
                                  data = subset(late_nestling_parent_care,
                                                !is.na(x = mass_pre_obs) & 
@@ -1102,7 +1110,7 @@ print(bt_ci_mass_iqr_temp_blups_high_lmer)
 
 ### Interaction model - adjusted
 mass_iqr_temp_blups_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                                 scale(feeding_expontd_blups) + 
+                                                 feeding_expontd_blups_strat_f + 
                                                  scale(nestling_number) + scale(days_summer) +
                                                  (1|fnest_id), 
                                                data = subset(late_nestling_parent_care,
@@ -1229,7 +1237,7 @@ print(bt_ci_mass_iqr_temp_blups_high_adj_lmer)
 
 ### Interaction model - unadjusted, outliers removed 
 mass_iqr_temp_blups_noout_lmer <- lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                         scale(feeding_expontd_blups) +
+                                        feeding_expontd_blups_strat_f +
                                          (1|fnest_id), 
                                        data = subset(mass_max_outliers_removed,
                                                      !is.na(x = mass_pre_obs) & 
@@ -1278,7 +1286,7 @@ print(bt_ci_mass_iqr_temp_blups_noout_lmer_3)
 
 ### Interaction model - adjusted, outliers removed 
 mass_iqr_temp_blups_adj_noout_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
-                                                       scale(feeding_expontd_blups) + 
+                                                       feeding_expontd_blups_strat_f + 
                                                        scale(nestling_number) + scale(days_summer) +
                                                        (1|fnest_id), 
                                                      data = subset(mass_max_outliers_removed,
@@ -1436,6 +1444,17 @@ high_un_b <- c(paste(round(fixef(mass_min_temp_blups_high_lmer)[2], 2), " (",
                      round(bt_ci_mass_iqr_temp_blups_high_lmer[[6]][5], 2), ")",
                      sep = ""))
 
+# Extract SEs from unadjusted models
+low_un_se <- c(round(summary(mass_min_temp_blups_low_lmer)$coefficients[2, "Std. Error"], 2),
+              round(summary(mass_max_temp_blups_low_lmer)$coefficients[2, "Std. Error"], 2), 
+              as.character(round(summary(mass_iqr_temp_blups_low_lmer)$coefficients[2, "Std. Error"], 2)))
+
+
+high_un_se <- c(round(summary(mass_min_temp_blups_high_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_blups_high_lmer)$coefficients[2, "Std. Error"], 2), 
+               round(summary(mass_iqr_temp_blups_high_lmer)$coefficients[2, "Std. Error"], 2))
+
+
 # Extract p-values for unadjusted models
 low_un_p <- c(round(summary(mass_min_temp_blups_low_lmer)$coefficients[2, "Pr(>|t|)"], 3),
               round(summary(mass_max_temp_blups_low_lmer)$coefficients[2, "Pr(>|t|)"], 3), 
@@ -1495,6 +1514,17 @@ high_ad_b <- c(paste(round(fixef(mass_min_temp_blups_high_adj_lmer)[2], 2), " ("
                      round(bt_ci_mass_iqr_temp_blups_high_adj_lmer[[6]][5], 2), ")",
                      sep = ""))
 
+# Extract SEs from adjusted models
+low_ad_se <- c(round(summary(mass_min_temp_blups_low_adj_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_blups_low_adj_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_temp_blups_low_adj_lmer)$coefficients[2, "Std. Error"], 2)))
+
+
+high_ad_se <- c(round(summary(mass_min_temp_blups_high_adj_lmer)$coefficients[2, "Std. Error"], 2),
+                round(summary(mass_max_temp_blups_high_adj_lmer)$coefficients[2, "Std. Error"], 2), 
+                round(summary(mass_iqr_temp_blups_high_adj_lmer)$coefficients[2, "Std. Error"], 2))
+
+
 # Extract p-values for adjusted models
 low_ad_p <- c(round(summary(mass_min_temp_blups_low_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2),
               round(summary(mass_max_temp_blups_low_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
@@ -1529,24 +1559,24 @@ high_ad_df <- c(round(summary(mass_min_temp_blups_high_adj_lmer)$coefficients[2,
 parental_care_strat_ad <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
-  low_ad_b, low_ad_df, low_ad_t, low_ad_p,
-  high_ad_b, high_ad_df, high_ad_t,  high_ad_p
+  low_ad_b, low_ad_se, low_ad_df, low_ad_t, low_ad_p,
+  high_ad_b, high_ad_se, high_ad_df, high_ad_t,  high_ad_p
 )
 
 parental_care_strat_un <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
-  low_un_b, low_un_df, low_un_t, low_un_p,
-  high_un_b, high_un_df, high_un_t,  high_un_p
+  low_un_b, low_un_se, low_un_df, low_un_t, low_un_p,
+  high_un_b, high_un_se, high_un_df, high_un_t,  high_un_p
 )
 
 colnames(parental_care_strat_ad) <- c("variable", "type",
-                                      "low_b", "low_df", "low_t", "low_p",
-                                      "high_b", "high_df", "high_t", "high_p")
+                                      "low_b", "low_se", "low_df", "low_t", "low_p",
+                                      "high_b", "high_se", "high_df", "high_t", "high_p")
 
 colnames(parental_care_strat_un) <- c("variable", "type",
-                                      "low_b", "low_df", "low_t", "low_p",
-                                      "high_b", "high_df", "high_t", "high_p")
+                                      "low_b", "low_se", "low_df", "low_t", "low_p",
+                                      "high_b", "high_se", "high_df", "high_t", "high_p")
 
 parental_care_strat <- rbind(parental_care_strat_un, parental_care_strat_ad)
 
@@ -1559,7 +1589,7 @@ str(parental_care_strat)
 # Create display table
 parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**S5 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by two levels of parental feeding, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
+    title = md("**S5 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by two levels of parental feeding, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding standard error, degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
@@ -1609,14 +1639,15 @@ parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %
   ) %>%
   tab_spanner(
     label = paste("Low parental feeding models (n = ", nobs(mass_min_temp_blups_low_adj_lmer), ")", sep = ""),
-    columns = c(low_b, low_df, low_t, low_p)
+    columns = c(low_b, low_se, low_df, low_t, low_p)
   ) %>%
   tab_spanner(
     label = paste("High parental feeding models (n = ", nobs(mass_min_temp_blups_high_adj_lmer),")", sep = ""),
-    columns = c(high_b, high_df, high_t, high_p)
+    columns = c(high_b, high_se, high_df, high_t, high_p)
   ) %>% 
   cols_label(
-    ends_with("n") ~ "N", 
+    ends_with("n") ~ "N",
+    ends_with('se') ~ "SE",
     ends_with("b") ~ "β (95% CI)",
     ends_with("p") ~ "p-value",
     ends_with("t") ~ "t-value",
@@ -1631,6 +1662,200 @@ parental_care_strat_mod_table <- gt(parental_care_strat, rowname_col = "type") %
 parental_care_strat_mod_table
 gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.docx") 
 gtsave(parental_care_strat_mod_table, filename = "Output/parental_care_adjusted_strat.html")
+
+
+
+########## Adjusted interaction models with three categories
+
+######################### Minimum temperature #################################
+
+### Interaction model - adjusted
+mass_min_temp_blups_3_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_min_temp) *
+                                                 feeding_expontd_blups_strat_3_f + 
+                                                 scale(nestling_number) + scale(days_summer) +
+                                                 (1|fnest_id), 
+                                               data = subset(late_nestling_parent_care,
+                                                             !is.na(x = mass_pre_obs) & 
+                                                               !is.na(x = nest_min_temp) &
+                                                               !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_min_temp_blups_3_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_min_temp_blups_3_adj_lmer))
+  qqline(resid(mass_min_temp_blups_3_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_min_temp_blups_3_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_min_temp_blups_3_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_min_temp_blups_3_adj_lmer, vars=c("Studentized"))
+
+summary(mass_min_temp_blups_3_adj_lmer)
+confint(mass_min_temp_blups_3_adj_lmer) 
+anova(mass_min_temp_blups_3_adj_lmer, ddf="Satterthwaite")
+
+# Calculate R squared 
+r.squaredGLMM(mass_min_temp_blups_3_adj_lmer)
+
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_min_temp_blups_3_adj_lmer <- bootMer(x = mass_min_temp_blups_3_adj_lmer,
+                                             FUN = fixef, nsim = 2000,
+                                             seed = 632760,
+                                             use.u = F, type = 'parametric')
+tidy(boot_mass_min_temp_blups_3_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_min_temp_blups_3_adj_lmer <- boot.ci(boot_mass_min_temp_blups_3_adj_lmer,
+                                              type = c('perc', 'norm', 'basic'),
+                                              index = 2) # CI for 1st betas
+print(bt_ci_mass_min_temp_blups_3_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_min_temp_blups_3_adj_lmer_2 <- boot.ci(boot_mass_min_temp_blups_3_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 3) # CI for 2nd betas
+print(bt_ci_mass_min_temp_blups_3_adj_lmer_2)
+
+# use 'boot' package to generate 95% CI for 6th beta
+bt_ci_mass_min_temp_blups_3_adj_lmer_6 <- boot.ci(boot_mass_min_temp_blups_3_adj_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 7) # CI for 3rd betas
+print(bt_ci_mass_min_temp_blups_3_adj_lmer_6)
+
+# use 'boot' package to generate 95% CI for 7th beta
+bt_ci_mass_min_temp_blups_3_adj_lmer_7<- boot.ci(boot_mass_min_temp_blups_3_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 8) # CI for 3rd betas
+print(bt_ci_mass_min_temp_blups_3_adj_lmer_7)
+
+
+######################### Maximum temperature #################################
+
+### Interaction model - adjusted
+mass_max_temp_blups_3_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_max_temp) *
+                                                   feeding_expontd_blups_strat_3_f + 
+                                                   scale(nestling_number) + scale(days_summer) +
+                                                   (1|fnest_id), 
+                                                 data = subset(late_nestling_parent_care,
+                                                               !is.na(x = mass_pre_obs) & 
+                                                                 !is.na(x = nest_max_temp) &
+                                                                 !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_max_temp_blups_3_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_max_temp_blups_3_adj_lmer))
+  qqline(resid(mass_max_temp_blups_3_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_max_temp_blups_3_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_max_temp_blups_3_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_max_temp_blups_3_adj_lmer, vars=c("Studentized"))
+
+summary(mass_max_temp_blups_3_adj_lmer)
+confint(mass_max_temp_blups_3_adj_lmer) 
+anova(mass_max_temp_blups_3_adj_lmer, ddf="Satterthwaite")
+
+# Calculate R squared 
+r.squaredGLMM(mass_max_temp_blups_3_adj_lmer)
+
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_max_temp_blups_3_adj_lmer <- bootMer(x = mass_max_temp_blups_3_adj_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_max_temp_blups_3_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_max_temp_blups_3_adj_lmer <- boot.ci(boot_mass_max_temp_blups_3_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_max_temp_blups_3_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_max_temp_blups_3_adj_lmer_2 <- boot.ci(boot_mass_max_temp_blups_3_adj_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 3) # CI for 2nd betas
+print(bt_ci_mass_max_temp_blups_3_adj_lmer_2)
+
+# use 'boot' package to generate 95% CI for 6th beta
+bt_ci_mass_max_temp_blups_3_adj_lmer_6 <- boot.ci(boot_mass_max_temp_blups_3_adj_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 7) # CI for 3rd betas
+print(bt_ci_mass_max_temp_blups_3_adj_lmer_6)
+
+# use 'boot' package to generate 95% CI for 7th beta
+bt_ci_mass_max_temp_blups_3_adj_lmer_7<- boot.ci(boot_mass_max_temp_blups_3_adj_lmer,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 8) # CI for 3rd betas
+print(bt_ci_mass_max_temp_blups_3_adj_lmer_7)
+
+
+
+######################### IQR temperature #################################
+
+### Interaction model - adjusted
+mass_iqr_temp_blups_3_adj_lmer <- lmerTest::lmer(mass_pre_obs ~ scale(nest_iqr_temp) *
+                                                   feeding_expontd_blups_strat_3_f + 
+                                                   scale(nestling_number) + scale(days_summer) +
+                                                   (1|fnest_id), 
+                                                 data = subset(late_nestling_parent_care,
+                                                               !is.na(x = mass_pre_obs) & 
+                                                                 !is.na(x = nest_iqr_temp) &
+                                                                 !is.na(x = feeding_expontd_blups)))
+
+## Check diagnostics for the full model
+plot(mass_iqr_temp_blups_3_adj_lmer)
+# Normal QQplot
+{qqnorm(resid(mass_iqr_temp_blups_3_adj_lmer))
+  qqline(resid(mass_iqr_temp_blups_3_adj_lmer))}
+# Histogram of residuals
+hist(resid(mass_iqr_temp_blups_3_adj_lmer))
+# Checking for influential outliers
+infIndexPlot(mass_iqr_temp_blups_3_adj_lmer, vars=c("Cook"))
+infIndexPlot(mass_iqr_temp_blups_3_adj_lmer, vars=c("Studentized"))
+
+summary(mass_iqr_temp_blups_3_adj_lmer)
+confint(mass_iqr_temp_blups_3_adj_lmer) 
+anova(mass_iqr_temp_blups_3_adj_lmer, ddf="Satterthwaite")
+
+# Calculate R squared 
+r.squaredGLMM(mass_iqr_temp_blups_3_adj_lmer)
+
+
+## Bootstrap parameter estimates
+# bootstrapping number of resampling simulations
+boot_mass_iqr_temp_blups_3_adj_lmer <- bootMer(x = mass_iqr_temp_blups_3_adj_lmer,
+                                               FUN = fixef, nsim = 2000,
+                                               seed = 632760,
+                                               use.u = F, type = 'parametric')
+tidy(boot_mass_iqr_temp_blups_3_adj_lmer) # beta estimates and SE
+# use 'boot' package to generate 95% CI for 1st beta
+bt_ci_mass_iqr_temp_blups_3_adj_lmer <- boot.ci(boot_mass_iqr_temp_blups_3_adj_lmer,
+                                                type = c('perc', 'norm', 'basic'),
+                                                index = 2) # CI for 1st betas
+print(bt_ci_mass_iqr_temp_blups_3_adj_lmer)
+
+# use 'boot' package to generate 95% CI for 2nd beta
+bt_ci_mass_iqr_temp_blups_3_adj_lmer_2 <- boot.ci(boot_mass_iqr_temp_blups_3_adj_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 3) # CI for 2nd betas
+print(bt_ci_mass_iqr_temp_blups_3_adj_lmer_2)
+
+
+# use 'boot' package to generate 95% CI for 6th beta
+bt_ci_mass_iqr_temp_blups_3_adj_lmer_6 <- boot.ci(boot_mass_iqr_temp_blups_3_adj_lmer,
+                                                  type = c('perc', 'norm', 'basic'),
+                                                  index = 7) # CI for 3rd betas
+print(bt_ci_mass_iqr_temp_blups_3_adj_lmer_6)
+
+# use 'boot' package to generate 95% CI for 7th beta
+bt_ci_mass_iqr_temp_blups_3_adj_lmer_7<- boot.ci(boot_mass_iqr_temp_blups_3_adj_lmer,
+                                                 type = c('perc', 'norm', 'basic'),
+                                                 index = 8) # CI for 3rd betas
+print(bt_ci_mass_iqr_temp_blups_3_adj_lmer_7)
 
 
 ######### Stratified models with three categories ######
@@ -2340,6 +2565,19 @@ high_un_b <- c(paste(round(fixef(mass_min_temp_blups_3_high_lmer)[2], 2), " (",
                      round(bt_ci_mass_iqr_temp_blups_3_high_lmer[[6]][5], 2), ")",
                      sep = ""))
 
+# Extract SEs from unadjusted models
+low_un_se <- c(round(summary(mass_min_temp_blups_3_low_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_blups_3_low_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_temp_blups_3_low_lmer)$coefficients[2, "Std. Error"], 2)))
+
+med_un_se <- c(round(summary(mass_min_temp_blups_3_med_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_blups_3_med_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_temp_blups_3_med_lmer)$coefficients[2, "Std. Error"], 2)))
+
+high_un_se <- c(round(summary(mass_min_temp_blups_3_high_lmer)$coefficients[2, "Std. Error"], 2),
+                round(summary(mass_max_temp_blups_3_high_lmer)$coefficients[2, "Std. Error"], 2), 
+                round(summary(mass_iqr_temp_blups_3_high_lmer)$coefficients[2, "Std. Error"], 2))
+
 # Extract p-values for unadjusted models
 low_un_p <- c(round(summary(mass_min_temp_blups_3_low_lmer)$coefficients[2, "Pr(>|t|)"], 2),
               round(summary(mass_max_temp_blups_3_low_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
@@ -2423,6 +2661,20 @@ high_ad_b <- c(paste(round(fixef(mass_min_temp_blups_3_high_adj_lmer)[2], 2), " 
                      round(bt_ci_mass_iqr_temp_blups_3_high_adj_lmer[[6]][5], 2), ")",
                      sep = ""))
 
+# Extract SEs from adjusted models
+low_ad_se <- c(round(summary(mass_min_temp_blups_3_low_adj_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_blups_3_low_adj_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_temp_blups_3_low_adj_lmer)$coefficients[2, "Std. Error"], 2)))
+
+med_ad_se <- c(round(summary(mass_min_temp_blups_3_med_adj_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_blups_3_med_adj_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_temp_blups_3_med_adj_lmer)$coefficients[2, "Std. Error"], 2)))
+
+high_ad_se <- c(round(summary(mass_min_temp_blups_3_high_adj_lmer)$coefficients[2, "Std. Error"], 2),
+                round(summary(mass_max_temp_blups_3_high_adj_lmer)$coefficients[2, "Std. Error"], 2), 
+                round(summary(mass_iqr_temp_blups_3_high_adj_lmer)$coefficients[2, "Std. Error"], 2))
+
+
 # Extract p-values for adjusted models
 low_ad_p <- c(round(summary(mass_min_temp_blups_3_low_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2),
               round(summary(mass_max_temp_blups_3_low_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
@@ -2469,28 +2721,28 @@ high_ad_df <- c(round(summary(mass_min_temp_blups_3_high_adj_lmer)$coefficients[
 parental_care_strat_ad <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
-  low_ad_b, low_ad_df, low_ad_t, low_ad_p,
-  med_ad_b, med_ad_df, med_ad_t, med_ad_p,
-  high_ad_b, high_ad_df, high_ad_t,  high_ad_p
+  low_ad_b, low_ad_se, low_ad_df, low_ad_t, low_ad_p,
+  med_ad_b, med_ad_se, med_ad_df, med_ad_t, med_ad_p,
+  high_ad_b, high_ad_se, high_ad_df, high_ad_t,  high_ad_p
 )
 
 parental_care_strat_un <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
-  low_un_b, low_un_df, low_un_t, low_un_p,
-  med_un_b, med_un_df, med_un_t, med_un_p,
-  high_un_b, high_un_df, high_un_t,  high_un_p
+  low_un_b, low_un_se, low_un_df, low_un_t, low_un_p,
+  med_un_b, med_un_se, med_un_df, med_un_t, med_un_p,
+  high_un_b, high_un_se, high_un_df, high_un_t,  high_un_p
 )
 
 colnames(parental_care_strat_ad) <- c("variable", "type",
-                                      "low_b", "low_df", "low_t", "low_p",
-                                      "med_b", "med_df", "med_t", "med_p",
-                                      "high_b", "high_df", "high_t", "high_p")
+                                      "low_b", "low_se", "low_df", "low_t", "low_p",
+                                      "med_b", "med_se", "med_df", "med_t", "med_p",
+                                      "high_b", "high_se", "high_df", "high_t", "high_p")
 
 colnames(parental_care_strat_un) <- c("variable", "type",
-                                      "low_b", "low_df", "low_t", "low_p",
-                                      "med_b", "med_df", "med_t", "med_p",
-                                      "high_b", "high_df", "high_t", "high_p")
+                                      "low_b", "low_se", "low_df", "low_t", "low_p",
+                                      "med_b", "med_se", "med_df", "med_t", "med_p",
+                                      "high_b", "high_se", "high_df", "high_t", "high_p")
 
 parental_care_strat <- rbind(parental_care_strat_un, parental_care_strat_ad)
 
@@ -2503,7 +2755,7 @@ str(parental_care_strat)
 # Create display table
 parental_care_strat_three_mod_table <- gt(parental_care_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**S5 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by three levels of parental feeding, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
+    title = md("**S5 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by three levels of parental feeding, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding standard error, degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
@@ -2559,18 +2811,19 @@ parental_care_strat_three_mod_table <- gt(parental_care_strat, rowname_col = "ty
   ) %>%
   tab_spanner(
     label = paste("Low parental feeding models (n = ", nobs(mass_min_temp_blups_3_low_adj_lmer), ")", sep = ""),
-    columns = c(low_b, low_df, low_t, low_p)
+    columns = c(low_b, low_se, low_df, low_t, low_p)
   ) %>%
   tab_spanner(
     label = paste("Medium parental feeding models (n = ", nobs(mass_min_temp_blups_3_med_adj_lmer), ")", sep = ""),
-    columns = c(med_b, med_df, med_t, med_p)
+    columns = c(med_b, med_se, med_df, med_t, med_p)
   ) %>%
   tab_spanner(
     label = paste("High parental feeding models (n = ", nobs(mass_min_temp_blups_3_high_adj_lmer),")", sep = ""),
-    columns = c(high_b, high_df, high_t, high_p)
+    columns = c(high_b, high_se, high_df, high_t, high_p)
   ) %>% 
   cols_label(
     ends_with("n") ~ "N", 
+    ends_with("se") ~ "SE", 
     ends_with("b") ~ "β (95% CI)",
     ends_with("p") ~ "p-value",
     ends_with("t") ~ "t-value",
@@ -3381,6 +3634,16 @@ big_un_b <- c(paste(round(fixef(mass_min_temp_mid_size_big_lmer)[2], 2), " (",
                     round(bt_ci_mass_iqr_temp_mid_size_big_lmer[[6]][5], 2), ")",
                     sep = ""))
 
+# Extract SEs from unadjusted models
+small_un_se <- c(round(summary(mass_min_temp_mid_size_small_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_mid_size_small_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_temp_mid_size_small_lmer)$coefficients[2, "Std. Error"], 2)))
+
+big_un_se <- c(round(summary(mass_min_temp_mid_size_big_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_mid_size_big_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_temp_mid_size_big_lmer)$coefficients[2, "Std. Error"], 2)))
+
+
 # Extract p-values for unadjusted models
 small_un_p <- c(round(summary(mass_min_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"], 2),
               round(summary(mass_max_temp_mid_size_small_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
@@ -3389,6 +3652,24 @@ small_un_p <- c(round(summary(mass_min_temp_mid_size_small_lmer)$coefficients[2,
 big_un_p <- c(round(summary(mass_min_temp_mid_size_big_lmer)$coefficients[2, "Pr(>|t|)"], 2),
                 as.character(round(summary(mass_max_temp_mid_size_big_lmer)$coefficients[2, "Pr(>|t|)"], 3)), 
                 as.character(round(summary(mass_iqr_temp_mid_size_big_lmer)$coefficients[2, "Pr(>|t|)"], 4)))
+
+# Extract t-values for unadjusted models
+small_un_t <- c(round(summary(mass_min_temp_mid_size_small_lmer)$coefficients[2, "t value"], 2),
+                round(summary(mass_max_temp_mid_size_small_lmer)$coefficients[2, "t value"], 2), 
+                as.character(round(summary(mass_iqr_temp_mid_size_small_lmer)$coefficients[2, "t value"], 2)))
+
+big_un_t <- c(round(summary(mass_min_temp_mid_size_big_lmer)$coefficients[2, "t value"], 2),
+              round(summary(mass_max_temp_mid_size_big_lmer)$coefficients[2, "t value"], 2), 
+              as.character(round(summary(mass_iqr_temp_mid_size_big_lmer)$coefficients[2, "t value"], 2)))
+
+# Extract DF for unadjusted models
+small_un_df <- c(round(summary(mass_min_temp_mid_size_small_lmer)$coefficients[2, "df"], 2),
+                 round(summary(mass_max_temp_mid_size_small_lmer)$coefficients[2, "df"], 2), 
+                 as.character(round(summary(mass_iqr_temp_mid_size_small_lmer)$coefficients[2, "df"], 2)))
+
+big_un_df <- c(round(summary(mass_min_temp_mid_size_big_lmer)$coefficients[2, "df"], 2),
+               round(summary(mass_max_temp_mid_size_big_lmer)$coefficients[2, "df"], 2), 
+               as.character(round(summary(mass_iqr_temp_mid_size_big_lmer)$coefficients[2, "df"], 2)))
 
 
 # Extract number of observations for adjusted models
@@ -3428,6 +3709,16 @@ big_ad_b <- c(paste(round(fixef(mass_min_temp_mid_size_big_adj_lmer)[2], 2), " (
                     round(bt_ci_mass_iqr_temp_mid_size_big_adj_lmer[[6]][5], 2), ")",
                     sep = ""))
 
+# Extract SEs from adjusted models
+small_ad_se <- c(round(summary(mass_min_temp_mid_size_small_adj_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_mid_size_small_adj_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_temp_mid_size_small_adj_lmer)$coefficients[2, "Std. Error"], 2)))
+
+big_ad_se <- c(round(summary(mass_min_temp_mid_size_big_adj_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_temp_mid_size_big_adj_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_temp_mid_size_big_adj_lmer)$coefficients[2, "Std. Error"], 2)))
+
+
 # Extract p-values for adjusted models
 small_ad_p <- c(round(summary(mass_min_temp_mid_size_small_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2),
                 round(summary(mass_max_temp_mid_size_small_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
@@ -3437,30 +3728,48 @@ big_ad_p <- c(round(summary(mass_min_temp_mid_size_big_adj_lmer)$coefficients[2,
               round(summary(mass_max_temp_mid_size_big_adj_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
               as.character(round(summary(mass_iqr_temp_mid_size_big_adj_lmer)$coefficients[2, "Pr(>|t|)"], 4)))
 
+# Extract t-values for adjusted models
+small_ad_t <- c(round(summary(mass_min_temp_mid_size_small_adj_lmer)$coefficients[2, "t value"], 2),
+                round(summary(mass_max_temp_mid_size_small_adj_lmer)$coefficients[2, "t value"], 2), 
+                as.character(round(summary(mass_iqr_temp_mid_size_small_adj_lmer)$coefficients[2, "t value"], 2)))
+
+big_ad_t <- c(round(summary(mass_min_temp_mid_size_big_adj_lmer)$coefficients[2, "t value"], 2),
+              round(summary(mass_max_temp_mid_size_big_adj_lmer)$coefficients[2, "t value"], 2), 
+              as.character(round(summary(mass_iqr_temp_mid_size_big_adj_lmer)$coefficients[2, "t value"], 2)))
+
+# Extract DF for adjusted models
+small_ad_df <- c(round(summary(mass_min_temp_mid_size_small_adj_lmer)$coefficients[2, "df"], 2),
+                round(summary(mass_max_temp_mid_size_small_adj_lmer)$coefficients[2, "df"], 2), 
+                as.character(round(summary(mass_iqr_temp_mid_size_small_adj_lmer)$coefficients[2, "df"], 2)))
+
+big_ad_df <- c(round(summary(mass_min_temp_mid_size_big_adj_lmer)$coefficients[2, "df"], 2),
+              round(summary(mass_max_temp_mid_size_big_adj_lmer)$coefficients[2, "df"], 2), 
+              as.character(round(summary(mass_iqr_temp_mid_size_big_adj_lmer)$coefficients[2, "df"], 2)))
 
 
 # Bind the values together into a single dataframe
 size_strat_ad <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
-  small_ad_n, small_ad_b, small_ad_p,
-  big_ad_n, big_ad_b, big_ad_p
+  small_ad_b, small_ad_se, small_ad_df, small_ad_t, small_ad_p,
+  big_ad_b, big_ad_se, big_ad_df, big_ad_t, big_ad_p
 )
 
 size_strat_un <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
-  small_un_n, small_un_b, small_un_p,
-  big_un_n, big_un_b, big_un_p
+  small_un_b, small_un_se, small_un_df, small_un_t, small_un_p,
+  big_un_b, big_un_se, big_un_df, big_un_t, big_un_p
 )
 
+
 colnames(size_strat_ad) <- c("variable", "type",
-                             "small_n", "small_b", "small_p", 
-                             "big_n", "big_b", "big_p")
+                             "small_b", "small_se", "small_df", "small_t", "small_p",
+                             "big_b", "big_se", "big_df", "big_t", "big_p")
 
 colnames(size_strat_un) <- c("variable", "type",
-                             "small_n", "small_b", "small_p", 
-                             "big_n", "big_b", "big_p")
+                             "small_b", "small_se", "small_df", "small_t", "small_p",
+                             "big_b", "big_se", "big_df", "big_t", "big_p")
 
 size_strat <- rbind(size_strat_un, size_strat_ad)
 
@@ -3472,7 +3781,7 @@ str(size_strat)
 # Create display table
 size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
   tab_header(
-    title = md("**Supplemental Table 4.** Associations of nestling mass and temperature, assessed in separate models stratified by relative nestling size at mid development measure (smallest vs. other). Temperature variability is defined as the interquartile range. ")
+    title = md("S4 Table. Associations of three temperature variables with nestling mass, assessed in separate models stratified by relative nestling size, for wild barn swallows in Boulder County, CO.** Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding standard error, degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature is the explanatory variable of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors are z-score standardized.",
@@ -3521,17 +3830,20 @@ size_strat_mod_table <- gt(size_strat, rowname_col = "type") %>%
     rows = c(1:2)
   ) %>%
   tab_spanner(
-    label = "Small size models",
-    columns = c(small_n, small_b, small_p)
+    label = paste("Small size models (n = ", nobs(mass_min_temp_mid_size_small_adj_lmer), ")", sep = ""),
+    columns = c(small_b, small_se, small_df, small_t, small_p)
   ) %>%
   tab_spanner(
-    label = "Other size models",
-    columns = c(big_n, big_b, big_p)
+    label = paste("Other size models (n = ", nobs(mass_min_temp_mid_size_big_adj_lmer), ")", sep = ""),
+    columns = c(big_b, big_se, big_df, big_t, big_p)
   )  %>% 
   cols_label(
     ends_with("n") ~ "N", 
+    ends_with("se") ~ "SE", 
     ends_with("b") ~ "β (95% CI)",
-    ends_with("p") ~ "P",
+    ends_with("p") ~ "p-value",
+    ends_with("t") ~ "t-value",
+    ends_with("df") ~ "DF",
     type = "Type"
   ) %>%
   cols_hide(variable)  %>%
@@ -3564,6 +3876,9 @@ mass_min_before_thermo_lmer <- lmer(mass_pre_obs ~ scale(thermo_bef_min_temp) +
                                 data = subset(late_nestling_parent_care,
                                                 !is.na(x = thermo_bef_min_temp)&
                                                 !is.na(x = mass_pre_obs)))
+
+
+
 
 ## Check diagnostics for the full model
 plot(mass_min_before_thermo_lmer)
@@ -4525,6 +4840,15 @@ after_un_b <- c(paste(round(fixef(mass_min_after_thermo_lmer)[2], 2), " (",
                        round(bt_ci_mass_iqr_after_thermo_lmer[[6]][5], 2), ")",
                        sep = ""))
 
+# Extract SEs from unadjusted models
+before_un_se <- c(round(summary(mass_min_before_thermo_lmer)$coefficients[2, "Std. Error"], 2),
+                 round(summary(mass_max_before_thermo_lmer)$coefficients[2, "Std. Error"], 2), 
+                 as.character(round(summary(mass_iqr_before_thermo_lmer)$coefficients[2, "Std. Error"], 2)))
+
+after_un_se <- c(round(summary(mass_min_after_thermo_lmer)$coefficients[2, "Std. Error"], 2),
+               round(summary(mass_max_after_thermo_lmer)$coefficients[2, "Std. Error"], 2), 
+               as.character(round(summary(mass_iqr_after_thermo_lmer)$coefficients[2, "Std. Error"], 2)))
+
 # Extract p-values for unadjusted models
 before_un_p <- c(as.character(round(summary(mass_min_before_thermo_lmer)$coefficients[2, "Pr(>|t|)"], 3)),
                 round(summary(mass_max_before_thermo_lmer)$coefficients[2, "Pr(>|t|)"], 2), 
@@ -4533,6 +4857,25 @@ before_un_p <- c(as.character(round(summary(mass_min_before_thermo_lmer)$coeffic
 after_un_p <- c(round(summary(mass_min_after_thermo_lmer)$coefficients[2, "Pr(>|t|)"], 2),
                  as.character(round(summary(mass_max_after_thermo_lmer)$coefficients[2, "Pr(>|t|)"], 3)), 
                  as.character(round(summary(mass_iqr_after_thermo_lmer)$coefficients[2, "Pr(>|t|)"], 4)))
+
+# Extract DF for unadjusted models
+before_un_df <- c(round(summary(mass_min_before_thermo_lmer)$coefficients[2, "df"], 2),
+                  round(summary(mass_max_before_thermo_lmer)$coefficients[2, "df"], 2), 
+                  as.character(round(summary(mass_iqr_before_thermo_lmer)$coefficients[2, "df"], 2)))
+
+after_un_df <- c(round(summary(mass_min_after_thermo_lmer)$coefficients[2, "df"], 2),
+                 round(summary(mass_max_after_thermo_lmer)$coefficients[2, "df"], 2), 
+                 as.character(round(summary(mass_iqr_after_thermo_lmer)$coefficients[2, "df"], 2)))
+
+# Extract t-values for unadjusted models
+before_un_t <- c(round(summary(mass_min_before_thermo_lmer)$coefficients[2, "t value"], 2),
+                 round(summary(mass_max_before_thermo_lmer)$coefficients[2, "t value"], 2), 
+                 as.character(round(summary(mass_iqr_before_thermo_lmer)$coefficients[2, "t value"], 2)))
+
+after_un_t <- c(round(summary(mass_min_after_thermo_lmer)$coefficients[2, "t value"], 2),
+                round(summary(mass_max_after_thermo_lmer)$coefficients[2, "t value"], 2), 
+                as.character(round(summary(mass_iqr_after_thermo_lmer)$coefficients[2, "t value"], 2)))
+
 
 
 # Extract number of observations for adjusted models
@@ -4546,7 +4889,7 @@ after_ad_n <- c(nobs(mass_min_after_thermo_adj_lmer),
 
 
 
-# Extract Betas for unadjusted models
+# Extract Betas for adjusted models
 before_ad_b <- c(paste(round(fixef(mass_min_before_thermo_adj_lmer)[2], 2), " (", 
                        round(bt_ci_mass_min_before_thermo_adj_lmer[[6]][4], 2), ", ", 
                        round(bt_ci_mass_min_before_thermo_adj_lmer[[6]][5], 2), ")",
@@ -4583,6 +4926,14 @@ after_ad_n <- c(nobs(mass_min_after_thermo_adj_lmer),
                 nobs(mass_max_after_thermo_adj_lmer),
                 nobs(mass_iqr_after_thermo_adj_lmer))
 
+# Extract SEs from adjusted models
+before_ad_se <- c(round(summary(mass_min_before_thermo_adj_lmer)$coefficients[2, "Std. Error"], 2),
+                  round(summary(mass_max_before_thermo_adj_lmer)$coefficients[2, "Std. Error"], 2), 
+                  as.character(round(summary(mass_iqr_before_thermo_adj_lmer)$coefficients[2, "Std. Error"], 2)))
+
+after_ad_se <- c(round(summary(mass_min_after_thermo_adj_lmer)$coefficients[2, "Std. Error"], 2),
+                 round(summary(mass_max_after_thermo_adj_lmer)$coefficients[2, "Std. Error"], 2), 
+                 as.character(round(summary(mass_iqr_after_thermo_adj_lmer)$coefficients[2, "Std. Error"], 2)))
 
 # Extract p-values for adjusted models
 before_ad_p <- c(as.character(round(summary(mass_min_before_thermo_adj_lmer)$coefficients[2, "Pr(>|t|)"], 3)),
@@ -4593,29 +4944,47 @@ after_ad_p <- c(round(summary(mass_min_after_thermo_adj_lmer)$coefficients[2, "P
                 as.character(round(summary(mass_max_after_thermo_adj_lmer)$coefficients[2, "Pr(>|t|)"], 3)), 
                 as.character(round(summary(mass_iqr_after_thermo_adj_lmer)$coefficients[2, "Pr(>|t|)"], 4)))
 
+# Extract DF for adjusted models
+before_ad_df <- c(round(summary(mass_min_before_thermo_adj_lmer)$coefficients[2, "df"], 2),
+                  round(summary(mass_max_before_thermo_adj_lmer)$coefficients[2, "df"], 2), 
+                  as.character(round(summary(mass_iqr_before_thermo_adj_lmer)$coefficients[2, "df"], 2)))
+
+after_ad_df <- c(round(summary(mass_min_after_thermo_adj_lmer)$coefficients[2, "df"], 2),
+                 round(summary(mass_max_after_thermo_adj_lmer)$coefficients[2, "df"], 2), 
+                 as.character(round(summary(mass_iqr_after_thermo_adj_lmer)$coefficients[2, "df"], 2)))
+
+# Extract t-values for adjusted models
+before_ad_t <- c(round(summary(mass_min_before_thermo_adj_lmer)$coefficients[2, "t value"], 2),
+                  round(summary(mass_max_before_thermo_adj_lmer)$coefficients[2, "t value"], 2), 
+                  as.character(round(summary(mass_iqr_before_thermo_adj_lmer)$coefficients[2, "t value"], 2)))
+
+after_ad_t <- c(round(summary(mass_min_after_thermo_adj_lmer)$coefficients[2, "t value"], 2),
+                 round(summary(mass_max_after_thermo_adj_lmer)$coefficients[2, "t value"], 2), 
+                 as.character(round(summary(mass_iqr_after_thermo_adj_lmer)$coefficients[2, "t value"], 2)))
+
 
 # Bind the values together into a single dataframe
 devel_ad <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Adjusted", "Adjusted", "Adjusted"),
-  before_ad_n, before_ad_b, before_ad_p, 
-  after_ad_n, after_ad_b, after_ad_p
+  before_ad_b, before_ad_se, before_ad_df, before_ad_t, before_ad_p,
+  after_ad_b, after_ad_se, after_ad_df, after_ad_t, after_ad_p
 )
 
 devel_un <- data.frame(
   variable <- c("Minimum temperature", "Maximum temperature", "Temperature variability"),
   type <- c("Unadjusted", "Unadjusted", "Unadjusted"),
-  before_un_n, before_un_b, before_un_p,
-  after_un_n, after_un_b, after_un_p
+  before_un_b, before_un_se, before_un_df, before_un_t, before_un_p,
+  after_un_b, after_un_se, after_un_df, after_un_t, after_un_p
 )
 
 colnames(devel_ad) <- c("variable", "type",
-                                      "before_n", "before_b", "before_p", 
-                                      "after_n", "after_b", "after_p")
+                        "before_b", "before_se", "before_df", "before_t", "before_p",
+                        "after_b", "after_se", "after_df", "after_t", "after_p")
 
 colnames(devel_un) <- c("variable", "type",
-                        "before_n", "before_b", "before_p", 
-                        "after_n", "after_b", "after_p")
+                        "before_b", "before_se", "before_df", "before_t", "before_p",
+                        "after_b", "after_se", "after_df", "after_t", "after_p")
 
 devel <- rbind(devel_un, devel_ad)
 
@@ -4628,7 +4997,7 @@ str(devel)
 # Create display table
 devel_mod_table <- gt(devel, rowname_col = "type") %>%
   tab_header(
-    title = md("**Supplemental Table 3.** Associations of three temperature variables before or after thermoregulatory independence (defined as occurring six days post-hatch) with nestling mass. Temperature variability is defined as the interquartile range. ")
+    title = md("**Supplemental Table 3.** Associations of three temperature variables in early and late development (before and after six days post-hatch) with nestling mass. Temperature variability is defined as the interquartile range. For each temperature variable, results are provided for unadjusted and adjusted models. Sample size for each stratum is provided in the header (n). For each model, the table provides the effect size and 95% confidence interval for temperature effects (β (95% CI)), and the corresponding standard error, degrees of freedom, t-value, and p-value from a two-tailed t-test using a Satterthwaite degree of freedom estimation.")
   ) %>%
   tab_footnote(
     footnote = "Estimated β (95% CI) from stratified linear mixed models in which temperature before or after thermoregulatory independence are the explanatory variables of interest, nestling mass is the outcome of interest, and nest ID was included as a random intercept. Adjusted models include hatch date and number of nestlings in the nest. Continuous predictors as z-score standardized.",
@@ -4636,28 +5005,28 @@ devel_mod_table <- gt(devel, rowname_col = "type") %>%
   )  %>%
   tab_footnote(
     footnote = md(paste("R-squared for adjusted minimum temperature models. ",
-                        "Before model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_before_thermo_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_before_thermo_lmer)[2], 2),
-                        "; After model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_after_thermo_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_after_thermo_lmer)[2], 2),
+                        "Early model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_before_thermo_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_before_thermo_adj_lmer)[2], 2),
+                        "; Late model: Marginal R-squared = ", round(r.squaredGLMM(mass_min_after_thermo_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_min_after_thermo_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(2))
   ) %>%
   tab_footnote(
     footnote = md(paste("R-squared for adjusted maximum temperature models. ",
-                        "Before model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_before_thermo_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_before_thermo_lmer)[2], 2),
-                        "; After model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_after_thermo_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_after_thermo_lmer)[2], 2),
+                        "Early model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_before_thermo_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_before_thermo_adj_lmer)[2], 2),
+                        "; Late model: Marginal R-squared = ", round(r.squaredGLMM(mass_max_after_thermo_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_max_after_thermo_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(4))
   ) %>%
   tab_footnote(
     footnote = md(paste("R-squared for adjusted temperature variability models. ",
-                        "Before model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_before_thermo_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_before_thermo_lmer)[2], 2),
-                        "; After model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_after_thermo_lmer)[1], 2),
-                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_after_thermo_lmer)[2], 2),
+                        "Early model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_before_thermo_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_before_thermo_adj_lmer)[2], 2),
+                        "; Later model: Marginal R-squared = ", round(r.squaredGLMM(mass_iqr_after_thermo_adj_lmer)[1], 2),
+                        ", Conditional R-squared = ", round(r.squaredGLMM(mass_iqr_after_thermo_adj_lmer)[2], 2),
                         sep = "")),
     locations = cells_stub(rows = c(6))
   ) %>%
@@ -4677,17 +5046,20 @@ devel_mod_table <- gt(devel, rowname_col = "type") %>%
     rows = c(1:2)
   ) %>%
   tab_spanner(
-    label = "Before models",
-    columns = c(before_n, before_b, before_p)
+    label = paste("Early development models (n = ", nobs(mass_min_before_thermo_adj_lmer), ")", sep = ""),
+    columns = c(before_b, before_se, before_df, before_t, before_p)
   ) %>%
   tab_spanner(
-    label = "After models",
-    columns = c(after_n, after_b, after_p)
+    label = paste("Late development models (n = ", nobs(mass_min_after_thermo_adj_lmer), ")", sep = ""),
+    columns = c(after_b, after_se, after_df, after_t, after_p)
   ) %>%
   cols_label(
     ends_with("n") ~ "N", 
+    ends_with("se") ~ "SE", 
     ends_with("b") ~ "β (95% CI)",
-    ends_with("p") ~ "P",
+    ends_with("p") ~ "p-value",
+    ends_with("t") ~ "t-value",
+    ends_with("df") ~ "DF",
     type = "Type"
   ) %>%
   cols_hide(variable)  %>%
@@ -5640,6 +6012,7 @@ print(bt_ci_mass_iqr_after_thermo_adj_lmer_7)
 
 
 
+
 ###############################################################################
 ##############                 Model visualizations              ##############
 ###############################################################################
@@ -5681,7 +6054,7 @@ temp_min_feeding_blups_predicted <- ggplot() +
                              shape = as.character(feeding_expontd_blups_strat)), 
              size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
+  labs(x = "Minimum temperature (°C)", y = "Nestling mass (g)",
        colour = "Parent feeding level", 
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
@@ -5728,7 +6101,7 @@ temp_max_feeding_blups_predicted <- ggplot() +
                              shape = as.character(feeding_expontd_blups_strat)), 
              size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
+  labs(x = "Maximum temperature (°C)", y = "Nestling mass (g)",
        colour = "Parent feeding level",  
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
@@ -5775,7 +6148,7 @@ temp_iqr_feeding_blups_predicted <- ggplot() +
                              shape = as.character(feeding_expontd_blups_strat)), 
              size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
+  labs(x = "Temperature variability (°C)", y = "Nestling mass (g)",
        colour = "Parent feeding level", 
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
@@ -5845,7 +6218,7 @@ sub <- subset(late_nestling_parent_care,
 
 ## Create vectors of colors for plot
 cols <- c("#481567FF", "#20A387FF", "#95D840FF")
-lines <- c(2, 4, 1)
+lines <- c(4, 2, 1)
 shapes <- c(17, 16, 15)
 
 ## Create plot of model predictions and raw data
@@ -5857,7 +6230,7 @@ temp_min_feeding_blups_3_predicted <- ggplot() +
                              shape = as.character(feeding_expontd_blups_strat_3)), 
              size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
+  labs(x = "Minimum temperature (°C)", y = "Nestling mass (g)",
        colour = "Parent feeding level", 
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
@@ -5908,7 +6281,7 @@ temp_max_feeding_blups_3_predicted <- ggplot() +
                              shape = as.character(feeding_expontd_blups_strat_3)), 
              size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
+  labs(x = "Maximum temperature (°C)", y = "Nestling mass (g)",
        colour = "Parent feeding level",
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
@@ -5959,7 +6332,7 @@ temp_iqr_feeding_blups_3_predicted <- ggplot() +
                              shape = as.character(feeding_expontd_blups_strat_3)), 
              size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
+  labs(x = "Temperature variability (°C)", y = "Nestling mass (g)",
        colour = "Parent feeding level", 
        linetype = "Parent feeding level", shape = "Parent feeding level") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
@@ -6037,7 +6410,7 @@ temp_min_size_predicted <- ggplot() +
                              shape = as.character(mid_size_order)), 
              size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)",
+  labs(x = "Minimum temperature (°C)", y = "Nestling mass (g)",
        colour = "Relative nestling size", 
        linetype = "Relative nestling size", shape = "Relative nestling size") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
@@ -6083,7 +6456,7 @@ temp_max_size_predicted <- ggplot() +
                              shape = as.character(mid_size_order)), 
              size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)",
+  labs(x = "Maximum temperature (°C)", y = "Nestling mass (g)",
        colour = "Relative nestling size", 
        linetype = "Relative nestling size", shape = "Relative nestling size") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
@@ -6129,7 +6502,7 @@ temp_iqr_size_predicted <- ggplot() +
                              shape = as.character(mid_size_order)), 
              size = 1.5, alpha = 0.5) +
   theme_classic() +
-  labs(x = "Temperature variability (C)", y = "Nestling mass (g)",
+  labs(x = "Temperature variability (°C)", y = "Nestling mass (g)",
        colour = "Relative nestling size", 
        linetype = "Relative nestling size", shape = "Relative nestling size") +
   theme(axis.text = element_text(size = 9), axis.title = element_text(size = 11),
@@ -6204,7 +6577,7 @@ temp_thermo_both_min_predicted <- ggplot() +
              size = 1.5, alpha = 0.5) +
   geom_point(data = sub, aes(x = thermo_aft_min_temp, y = mass_pre_obs, col = "Late", shape = "Late"), 
              size = 1.5, alpha = 0.5) +
-  labs(x = "Minimum temperature (C)", y = "Nestling mass (g)", 
+  labs(x = "Minimum temperature (°C)", y = "Nestling mass (g)", 
        color = "Developmental stage", 
        linetype = "Developmental stage", shape = "Developmental stage") +
   scale_color_manual(values = colors, breaks = c("Early", "Late"),
@@ -6246,7 +6619,7 @@ temp_thermo_both_max_predicted <- ggplot() +
              size = 1.5, alpha = 0.5) +
   geom_point(data = sub, aes(x = thermo_aft_max_temp, y = mass_pre_obs, col = "Late", shape = "Late"), 
              size = 1.5, alpha = 0.5) +
-  labs(x = "Maximum temperature (C)", y = "Nestling mass (g)", 
+  labs(x = "Maximum temperature (°C)", y = "Nestling mass (g)", 
        color = "Developmental stage",  
        linetype = "Developmental stage", shape = "Developmental stage") +
   scale_color_manual(values = colors, breaks = c("Early", "Late"),
@@ -6286,7 +6659,7 @@ temp_thermo_both_iqr_predicted <- ggplot() +
              size = 1.5, alpha = 0.5) +
   geom_point(data = sub, aes(x = thermo_aft_iqr_temp, y = mass_pre_obs, col = "Late", shape = "Late"), 
              size = 1.5, alpha = 0.5) +
-  labs(x = "Temperature variability (C)", y = "Nestling mass (g)", 
+  labs(x = "Temperature variability (°C)", y = "Nestling mass (g)", 
        color = "Developmental stage",  
        linetype = "Developmental stage", shape = "Developmental stage") +
   scale_color_manual(values = colors, breaks = c("Early", "Late"),
