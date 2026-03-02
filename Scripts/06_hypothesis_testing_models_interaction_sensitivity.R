@@ -2,7 +2,7 @@
 ####### nest microclimate and nestling growth dataset
 ####### By: Sage
 ####### Created: 12/19/2022
-####### Last modified: 2/25/2026
+####### Last modified: 3/2/2026
 
 # Code Blocks
 # 1: Configure work space
@@ -323,7 +323,9 @@ hist(resid(mass_min_temp_blups_low_adj_lmer))
 
 
 summary(mass_min_temp_blups_low_adj_lmer)
-confint(mass_min_temp_blups_low_adj_lmer) 
+confint(mass_min_temp_blups_low_adj_lmer)
+r.squaredGLMM(mass_min_temp_blups_low_adj_lmer)
+
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -361,6 +363,7 @@ hist(resid(mass_min_temp_blups_high_adj_lmer))
 
 summary(mass_min_temp_blups_high_adj_lmer)
 confint(mass_min_temp_blups_high_adj_lmer) 
+r.squaredGLMM(mass_min_temp_blups_high_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -751,6 +754,7 @@ hist(resid(mass_max_temp_blups_low_adj_lmer))
 
 summary(mass_max_temp_blups_low_adj_lmer)
 confint(mass_max_temp_blups_low_adj_lmer) 
+r.squaredGLMM(mass_max_temp_blups_low_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -787,6 +791,7 @@ hist(resid(mass_max_temp_blups_high_adj_lmer))
 
 summary(mass_max_temp_blups_high_adj_lmer)
 confint(mass_max_temp_blups_high_adj_lmer) 
+r.squaredGLMM(mass_max_temp_blups_high_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -1184,6 +1189,7 @@ hist(resid(mass_iqr_temp_blups_low_adj_lmer))
 
 summary(mass_iqr_temp_blups_low_adj_lmer)
 confint(mass_iqr_temp_blups_low_adj_lmer) 
+r.squaredGLMM(mass_iqr_temp_blups_low_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -1219,7 +1225,8 @@ plot(mass_iqr_temp_blups_high_adj_lmer)
 hist(resid(mass_iqr_temp_blups_high_adj_lmer))
 
 summary(mass_iqr_temp_blups_high_adj_lmer)
-confint(mass_iqr_temp_blups_high_adj_lmer) 
+confint(mass_iqr_temp_blups_high_adj_lmer)
+r.squaredGLMM(mass_iqr_temp_blups_high_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -1991,6 +1998,7 @@ hist(resid(mass_min_temp_blups_3_low_adj_lmer))
 
 summary(mass_min_temp_blups_3_low_adj_lmer)
 confint(mass_min_temp_blups_3_low_adj_lmer) 
+r.squaredGLMM(mass_min_temp_blups_3_low_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2027,6 +2035,7 @@ hist(resid(mass_min_temp_blups_3_med_adj_lmer))
 
 summary(mass_min_temp_blups_3_med_adj_lmer)
 confint(mass_min_temp_blups_3_med_adj_lmer) 
+r.squaredGLMM(mass_min_temp_blups_3_med_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2064,6 +2073,7 @@ hist(resid(mass_min_temp_blups_3_high_adj_lmer))
 
 summary(mass_min_temp_blups_3_high_adj_lmer)
 confint(mass_min_temp_blups_3_high_adj_lmer) 
+r.squaredGLMM(mass_min_temp_blups_3_high_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2211,6 +2221,7 @@ hist(resid(mass_max_temp_blups_3_low_adj_lmer))
 
 summary(mass_max_temp_blups_3_low_adj_lmer)
 confint(mass_max_temp_blups_3_low_adj_lmer) 
+r.squaredGLMM(mass_max_temp_blups_3_low_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2247,6 +2258,7 @@ hist(resid(mass_max_temp_blups_3_med_adj_lmer))
 
 summary(mass_max_temp_blups_3_med_adj_lmer)
 confint(mass_max_temp_blups_3_med_adj_lmer) 
+r.squaredGLMM(mass_max_temp_blups_3_med_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2283,6 +2295,7 @@ hist(resid(mass_max_temp_blups_3_high_adj_lmer))
 
 summary(mass_max_temp_blups_3_high_adj_lmer)
 confint(mass_max_temp_blups_3_high_adj_lmer) 
+r.squaredGLMM(mass_max_temp_blups_3_high_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2431,6 +2444,7 @@ hist(resid(mass_iqr_temp_blups_3_low_adj_lmer))
 
 summary(mass_iqr_temp_blups_3_low_adj_lmer)
 confint(mass_iqr_temp_blups_3_low_adj_lmer) 
+r.squaredGLMM(mass_iqr_temp_blups_3_low_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2467,6 +2481,7 @@ hist(resid(mass_iqr_temp_blups_3_med_adj_lmer))
 
 summary(mass_iqr_temp_blups_3_med_adj_lmer)
 confint(mass_iqr_temp_blups_3_med_adj_lmer) 
+r.squaredGLMM(mass_iqr_temp_blups_3_med_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -2503,6 +2518,7 @@ hist(resid(mass_iqr_temp_blups_3_high_adj_lmer))
 
 summary(mass_iqr_temp_blups_3_high_adj_lmer)
 confint(mass_iqr_temp_blups_3_high_adj_lmer) 
+r.squaredGLMM(mass_iqr_temp_blups_3_high_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3045,6 +3061,7 @@ hist(resid(mass_min_temp_mid_size_small_adj_lmer))
 
 summary(mass_min_temp_mid_size_small_adj_lmer)
 confint(mass_min_temp_mid_size_small_adj_lmer)
+r.squaredGLMM(mass_min_temp_mid_size_small_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3080,6 +3097,7 @@ hist(resid(mass_min_temp_mid_size_small_adj_lmer))
 
 summary(mass_min_temp_mid_size_big_adj_lmer)
 confint(mass_min_temp_mid_size_big_adj_lmer)
+r.squaredGLMM(mass_min_temp_mid_size_big_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3293,6 +3311,7 @@ hist(resid(mass_max_temp_mid_size_small_adj_lmer))
 
 summary(mass_max_temp_mid_size_small_adj_lmer)
 confint(mass_max_temp_mid_size_small_adj_lmer)
+r.squaredGLMM(mass_max_temp_mid_size_small_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3328,6 +3347,7 @@ hist(resid(mass_max_temp_mid_size_big_adj_lmer))
 
 summary(mass_max_temp_mid_size_big_adj_lmer)
 confint(mass_max_temp_mid_size_big_adj_lmer)
+r.squaredGLMM(mass_max_temp_mid_size_big_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3542,6 +3562,7 @@ hist(resid(mass_iqr_temp_mid_size_small_adj_lmer))
 
 summary(mass_iqr_temp_mid_size_small_adj_lmer)
 confint(mass_iqr_temp_mid_size_small_adj_lmer)
+r.squaredGLMM(mass_iqr_temp_mid_size_small_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
@@ -3579,6 +3600,7 @@ hist(resid(mass_iqr_temp_mid_size_big_adj_lmer))
 
 summary(mass_iqr_temp_mid_size_big_adj_lmer)
 confint(mass_iqr_temp_mid_size_big_adj_lmer)
+r.squaredGLMM(mass_iqr_temp_mid_size_big_adj_lmer)
 
 ## Bootstrap parameter estimates
 # bootstrapping number of resampling simulations
