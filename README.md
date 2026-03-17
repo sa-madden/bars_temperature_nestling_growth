@@ -1,4 +1,4 @@
-# The effects of temperature on nestling growth in a songbird depend on developmental and social context
+# The effects of temperature on nestling growth in a songbird depend on developmental constraints
 
 ## Author names, affiliations, and contact information 
 Sage A. Madden<sup>1</sup>, Rebecca J. Safran<sup>2</sup>, Gail L. Patricelli<sup>1</sup>, Sara R. Garcia<sup>2</sup>, Zachary M. Laubach<sup>2</sup> 
